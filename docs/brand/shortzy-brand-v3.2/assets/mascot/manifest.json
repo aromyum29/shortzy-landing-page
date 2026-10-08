@@ -1,0 +1,78 @@
+{
+  "version": "3.2",
+  "poses": {
+    "welcome": {
+      "file": "assets/mascot/welcome.png",
+      "width": 1381,
+      "height": 1139,
+      "format": "PNG",
+      "transparent": true,
+      "useFor": [
+        "welcome",
+        "idle"
+      ]
+    },
+    "thinking": {
+      "file": "assets/mascot/thinking.png",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "transparent": true,
+      "useFor": [
+        "analyzing"
+      ]
+    },
+    "clipping": {
+      "file": "assets/mascot/clipping.png",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "transparent": true,
+      "useFor": [
+        "results",
+        "found",
+        "exporting"
+      ]
+    },
+    "celebration": {
+      "file": "assets/mascot/celebration.png",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "transparent": true,
+      "useFor": [
+        "complete",
+        "done"
+      ]
+    }
+  },
+  "stateToPose": {
+    "idle": "welcome",
+    "validating": null,
+    "uploading": null,
+    "queued": null,
+    "analyzing": "thinking",
+    "results": "clipping",
+    "empty": null,
+    "editing": null,
+    "unsaved": null,
+    "exporting": "clipping",
+    "partial": null,
+    "complete": "celebration",
+    "cancelled": null,
+    "error": null,
+    "offline": null,
+    "credentials": null,
+    "rateLimited": null,
+    "storageFull": null,
+    "welcome": "welcome",
+    "found": "clipping",
+    "done": "celebration"
+  },
+  "defaultDisplay": {
+    "width": 240,
+    "aspectRatio": "1 / 1",
+    "objectFit": "contain"
+  },
+  "referenceOnly": "../../references/mascot-concept-sheet.png"
+}

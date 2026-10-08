@@ -1,0 +1,203 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * Shortzy v3.2 brand tokens (source: docs/brand/shortzy-brand-v3.2/tokens.json).
+ * Palette values are exact. Do not sample colours from the mascot raster.
+ * shadcn semantic variables are mapped onto the brand so any added
+ * shadcn / 21st.dev component inherits Shortzy styling.
+ */
+:root {
+  --sz-maroon: #702f42;
+  --sz-maroon-hover: #612539;
+  --sz-maroon-pressed: #522030;
+  --sz-deep-maroon: #43202b;
+  --sz-paper: #f3f1ee;
+  --sz-white: #ffffff;
+  --sz-ink: #292628;
+  --sz-muted: #625b60;
+  --sz-pebble: #c9c5c1;
+  --sz-coral: #e7ada0;
+  --sz-rose: #e9d6d2;
+  --sz-oat: #d5c28f;
+  --sz-neutral-pressed: #e7e3de;
+  --sz-disabled: #e4e1dd;
+  --sz-success: #2e6751;
+  --sz-success-bg: #e8f0eb;
+  --sz-warning: #795516;
+  --sz-warning-bg: #f5ecd8;
+  --sz-error: #982d3f;
+  --sz-error-bg: #f8e8ea;
+
+  --radius: 12px;
+  --radius-card: 24px;
+
+  /* shadcn semantic mapping */
+  --background: var(--sz-paper);
+  --foreground: var(--sz-ink);
+  --card: var(--sz-white);
+  --card-foreground: var(--sz-ink);
+  --popover: var(--sz-white);
+  --popover-foreground: var(--sz-ink);
+  --primary: var(--sz-maroon);
+  --primary-foreground: var(--sz-white);
+  --secondary: var(--sz-rose);
+  --secondary-foreground: var(--sz-ink);
+  --muted: var(--sz-neutral-pressed);
+  --muted-foreground: var(--sz-muted);
+  --accent: var(--sz-rose);
+  --accent-foreground: var(--sz-maroon-pressed);
+  --destructive: var(--sz-error);
+  --border: var(--sz-pebble);
+  --input: var(--sz-muted);
+  --ring: var(--sz-maroon);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-maroon: var(--sz-maroon);
+  --color-maroon-hover: var(--sz-maroon-hover);
+  --color-maroon-pressed: var(--sz-maroon-pressed);
+  --color-deep: var(--sz-deep-maroon);
+  --color-paper: var(--sz-paper);
+  --color-ink: var(--sz-ink);
+  --color-mute: var(--sz-muted);
+  --color-pebble: var(--sz-pebble);
+  --color-coral: var(--sz-coral);
+  --color-rose: var(--sz-rose);
+  --color-oat: var(--sz-oat);
+  --color-stone: var(--sz-neutral-pressed);
+  --color-success: var(--sz-success);
+  --color-success-bg: var(--sz-success-bg);
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: var(--radius);
+  --radius-xl: 16px;
+  --radius-card: var(--radius-card);
+
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-display-face), var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --ease-brand: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--sz-rose);
+    color: var(--sz-maroon-pressed);
+  }
+  /* Brand focus ring: 3px maroon, 4px offset. Paper ring on dark surfaces. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--sz-maroon);
+    outline-offset: 4px;
+    border-radius: 6px;
+  }
+  .on-dark :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline-color: var(--sz-paper);
+  }
+  [id] {
+    scroll-margin-top: 88px;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Matte paper grain. Very low contrast, no shine. */
+  .grain {
+    position: relative;
+    isolation: isolate;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.15 0 0 0 0 0.16 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Film perforations used as a decorative rail (colour from currentColor). */
+  .perf-rail {
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0 10px,
+      currentColor 10px 24px,
+      transparent 24px 34px
+    );
+  }
+  .perf-rail-y {
+    background-image: repeating-linear-gradient(
+      180deg,
+      transparent 0 10px,
+      currentColor 10px 24px,
+      transparent 24px 34px
+    );
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Face-tracking demo: the 9:16 crop window drifts with the speaker. */
+@keyframes track {
+  0%,
+  100% {
+    transform: translateX(-22%);
+  }
+  50% {
+    transform: translateX(22%);
+  }
+}

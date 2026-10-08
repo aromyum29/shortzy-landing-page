@@ -1,0 +1,176 @@
+"use client";
+
+import { motion, type Variants } from "motion/react";
+import { ArrowRight, Check, Play } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
+import { Mascot } from "@/components/brand/mascot";
+import { AppWindow, APP_H, APP_W } from "@/components/mockups/app-window";
+import { Phone } from "@/components/mockups/phone";
+import { ScaledFrame } from "@/components/mockups/scaled-frame";
+import { site } from "@/lib/site";
+
+const EASE = [0.2, 0.8, 0.2, 1] as const;
+
+const word: Variants = {
+  hidden: { opacity: 0, y: 18, filter: "blur(12px)" },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.7, delay: 0.08 + i * 0.07, ease: EASE },
+  }),
+};
+
+const rise: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: (d: number) => ({ opacity: 1, y: 0, transition: { duration: 0.6, delay: d, ease: EASE } }),
+};
+
+function BlurWords({ text, offset = 0 }: { text: string; offset?: number }) {
+  return text.split(" ").map((w, i) => (
+    <motion.span key={i} custom={i + offset} variants={word} className="inline-block whitespace-pre">
+      {w}
+      {" "}
+    </motion.span>
+  ));
+}
+
+export function Hero() {
+
+  return (
+    <section id="top" aria-labelledby="hero-title" className="grain relative overflow-hidden pt-10 sm:pt-16">
+      <Container className="relative text-center">
+        <motion.div initial="hidden" animate="show" className="flex flex-col items-center">
+          <motion.p
+            variants={rise}
+            custom={0}
+            className="inline-flex items-center gap-2 rounded-full border border-maroon/25 bg-white px-3.5 py-1.5 text-[13px] font-semibold text-maroon"
+          >
+            <span className="rounded-full bg-maroon px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-white">
+              Mac
+            </span>
+            A desktop app for creators. Bring your own AI.
+          </motion.p>
+
+          <h1
+            id="hero-title"
+            className="mt-7 font-display text-[clamp(3.1rem,9vw,7.25rem)] font-extrabold leading-[0.9] tracking-[-0.04em] text-ink"
+          >
+            <span className="block [font-stretch:100%]">
+              <BlurWords text="Long video in." />
+            </span>
+            <span className="relative block text-maroon [font-stretch:75%] tracking-[-0.02em]">
+              <BlurWords text="Shorts out." offset={3} />
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 300 20"
+                preserveAspectRatio="none"
+                className="absolute -bottom-[0.06em] left-1/2 h-[0.16em] w-[min(78%,520px)] -translate-x-1/2 text-oat"
+              >
+                <motion.path
+                  d="M4 13 C 70 6, 150 5, 296 10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="7"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.8, delay: 0.75, ease: EASE }}
+                />
+              </svg>
+            </span>
+          </h1>
+
+          <motion.p
+            variants={rise}
+            custom={0.5}
+            className="mt-7 max-w-[640px] text-pretty text-[17px] leading-relaxed text-mute sm:text-[19px]"
+          >
+            Shortzy is a Mac app that finds the strongest moments in your podcasts, interviews and tutorials,
+            then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI
+            key stays yours.
+          </motion.p>
+
+          <motion.div
+            variants={rise}
+            custom={0.62}
+            className="mt-9 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center"
+          >
+            <Button asChild size="lg" className="group">
+              <a href={site.cta.trial.href}>
+                {site.cta.trial.label}
+                <ArrowRight className="transition-transform duration-200 group-hover:translate-x-0.5" />
+              </a>
+            </Button>
+            <Button asChild size="lg" variant="secondary">
+              <a href={site.cta.howItWorks.href}>
+                <span className="grid size-6 place-items-center rounded-full bg-maroon text-white">
+                  <Play className="!size-3 translate-x-[1px] fill-current" />
+                </span>
+                {site.cta.howItWorks.label}
+              </a>
+            </Button>
+          </motion.div>
+
+          <motion.ul
+            variants={rise}
+            custom={0.72}
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] text-mute"
+          >
+            {["macOS 14+ on Apple Silicon", "Works with Gemini or Qwen", "Your originals are never touched"].map(
+              (t) => (
+                <li key={t} className="flex items-center gap-1.5">
+                  <Check className="size-4 text-maroon" strokeWidth={2.5} aria-hidden="true" />
+                  {t}
+                </li>
+              ),
+            )}
+          </motion.ul>
+        </motion.div>
+      </Container>
+
+      {/* Product stage */}
+      <div className="relative mt-14 sm:mt-20">
+        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 top-[30%] bg-maroon">
+          <div className="perf-rail absolute inset-x-0 top-4 h-3 text-paper/15" />
+          <div className="perf-rail absolute inset-x-0 bottom-4 h-3 text-paper/15" />
+        </div>
+
+        <Container className="relative pb-20 sm:pb-28">
+          <motion.div
+            initial={{ opacity: 0, y: 60, rotateX: 14 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: 1, delay: 0.55, ease: EASE }}
+            style={{ transformPerspective: 1600 }}
+            className="relative mx-auto max-w-[1120px]"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.25, ease: EASE }}
+              className="absolute -top-[52px] left-[3%] z-10 w-[76px] sm:-top-[92px] sm:w-[128px] lg:-top-[118px] lg:w-[160px]"
+            >
+              <Mascot pose="clipping" fluid priority className="h-auto w-full" />
+            </motion.div>
+
+            <div className="relative rounded-[22px] bg-white/0 shadow-[0_40px_80px_-30px_rgba(41,38,40,0.55)]">
+              <ScaledFrame width={APP_W} height={APP_H}>
+                <AppWindow />
+              </ScaledFrame>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 40, y: 20 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.05, ease: EASE }}
+              className="absolute -bottom-[9%] -right-[1%] w-[34%] max-w-[250px] sm:-right-[2%] sm:w-[24%] lg:-right-[4%]"
+            >
+              <Phone />
+            </motion.div>
+          </motion.div>
+        </Container>
+      </div>
+    </section>
+  );
+}
