@@ -389,7 +389,7 @@ const CENTRED_LEFT = 50 - CROP_W / 2;
 const FACE_LEFT = FACE_X - CROP_W / 2;
 const pct = (v: number) => `${v}%`;
 const FRAMING_LABEL = {
-  face: "Sample interview frame. A 9:16 crop window follows the speaker's face, so the vertical output keeps her in frame.",
+  face: "Sample interview frame. A 9:16 crop window follows her face, so the vertical output keeps her in frame.",
   fit: "Sample interview frame. Fit framing keeps the whole 16:9 frame inside the vertical output, with bars above and below.",
 } as const;
 
@@ -494,10 +494,10 @@ function FramingCard() {
 
   return (
     <Card className="lg:col-span-6">
-      <CardTitle>Framing that follows the speaker.</CardTitle>
+      <CardTitle>Framing that follows the face.</CardTitle>
       <CardBody>
-        Talking heads stay in frame as they move. Slides and screen recordings get fit framing so nothing important is
-        cut off. If no face is found, Shortzy tells you it used a centred crop.
+        Face tracking on your computer keeps people in frame as they move. Slides and screen recordings get fit
+        framing. No face found? Shortzy uses a centred crop and tells you.
       </CardBody>
 
       <CardVisual>
@@ -609,8 +609,8 @@ function CostCard() {
     <Card className="lg:col-span-6" lag={0.06}>
       <CardTitle>Know the cost before you click.</CardTitle>
       <CardBody>
-        Shortzy estimates your AI cost from the video length and the model you picked, and shows it as a range.
-        Checking an estimate is free. Nothing runs until you start it.
+        Shortzy works out your AI cost from the video&apos;s length and your model, and shows it as a range. Checking
+        it costs nothing, and nothing runs until you press start.
       </CardBody>
 
       <CardVisual>
@@ -618,7 +618,7 @@ function CostCard() {
           <div ref={frame} className="overflow-hidden rounded-2xl border border-pebble bg-white">
             <motion.img
               src="/product/screens/estimate-card.webp"
-              alt="Shortzy cost estimate step: estimated AI cost for the selected video, shown as a range before you continue"
+              alt="Shortzy cost estimate step for a sample 24-minute video on Qwen 3.8 Omni Flash: estimated AI cost of $0.03 to $0.06, shown before you continue"
               width={800}
               height={480}
               loading="lazy"
@@ -627,8 +627,8 @@ function CostCard() {
             />
           </div>
           <figcaption className="mt-3 text-[0.75rem] leading-snug text-mute">
-            Sample estimate from the app for a 24-minute video. Your cost depends on the video&apos;s length and the
-            model you choose, and your provider&apos;s bill is final.
+            Sample estimate from the app: $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Your cost
+            depends on length and model, and your provider&apos;s bill is final.
           </figcaption>
         </figure>
       </CardVisual>

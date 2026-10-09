@@ -177,14 +177,6 @@
   }
 }
 
-/* Reduced transparency: translucent overlays become solid. */
-@media (prefers-reduced-transparency: reduce) {
-  .on-dark [role="tablist"],
-  .on-dark [aria-label*="product tour"] {
-    background: var(--sz-maroon-pressed);
-  }
-}
-
 @layer utilities {
   .font-display {
     font-family: var(--font-display);
@@ -230,35 +222,5 @@
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
-  }
-}
-
-/* Face-tracking demo: the 9:16 crop window drifts with the speaker. */
-@keyframes track {
-  0%,
-  100% {
-    transform: translateX(-22%);
-  }
-  50% {
-    transform: translateX(22%);
-  }
-}
-
-/* Slow push-in on still photography, like the rendered clips. */
-@keyframes push {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.08);
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }

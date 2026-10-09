@@ -12,10 +12,14 @@ export function Footer() {
             <p className="mt-3 font-display text-[1.125rem] font-semibold tracking-[-0.01em] text-maroon">{site.tagline}</p>
           </div>
           <nav aria-label="Footer">
-            <ul className="grid grid-cols-2 gap-x-10 sm:flex sm:gap-6">
+            {/* Links carry their own padding for 44px targets; the list's negative margin keeps the text on the container edges. */}
+            <ul className="-mx-2 grid grid-cols-2 gap-x-6 sm:flex sm:gap-x-2">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <a href={item.href} className="inline-flex min-h-11 items-center text-[0.9375rem] text-ink/80 hover:text-maroon">
+                  <a
+                    href={item.href}
+                    className="inline-flex min-h-11 min-w-11 items-center rounded-lg px-2 text-[0.9375rem] text-ink/80 transition-colors duration-100 hover:text-maroon"
+                  >
                     {item.label}
                   </a>
                 </li>
@@ -25,7 +29,7 @@ export function Footer() {
         </div>
         <div className="mt-10 flex flex-col gap-2 border-t border-pebble pt-6 text-[0.8125rem] text-mute sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} Shortzy. Made for creators who&apos;d rather be recording.</p>
-          <p>Gemini is a trademark of Google LLC. Qwen is a trademark of Alibaba Cloud.</p>
+          <p>Gemini is a trademark of Google LLC. Qwen is a trademark of Alibaba Cloud. Kimi is a trademark of Moonshot AI.</p>
         </div>
       </Container>
     </footer>

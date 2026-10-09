@@ -144,8 +144,8 @@ const SCREENS: Screen[] = [
     w: 692,
     h: 700,
     alt: "Shortzy results with two ranked sample clips, each with a title, a score marked AI estimate and a Download MP4 button, under the line: Scores are AI estimates, not predictions of views",
-    wide: { x0: 0, y0: 0, x1: 0, y1: 354, w: 692, rest: 1 },
-    compact: { x0: 0, y0: 150, x1: 0, y1: 478, w: 356, rest: 1 },
+    wide: { x0: 0, y0: 0, x1: 0, y1: 262, w: 692, rest: 1 },
+    compact: { x0: 0, y0: 150, x1: 0, y1: 440, w: 356, rest: 1 },
     header: 68,
   },
 ];

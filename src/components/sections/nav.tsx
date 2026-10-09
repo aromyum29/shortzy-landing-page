@@ -10,35 +10,33 @@ import { cn } from "@/lib/utils";
 
 const SPRING = { type: "spring", bounce: 0, visualDuration: 0.3 } as const;
 
-/** Which section is under the middle of the viewport, so the nav can say "you are here". */
-function useActiveSection(ids: string[]) {
+/**
+ * Which section is under the middle of the viewport, so the nav can say "you are here".
+ * Every top-level section is watched, not only the linked ones, so the highlight clears over
+ * sections without a nav link (hero, problem, spec strip, wishlist) instead of sticking to the
+ * last linked one.
+ */
+function useActiveSection() {
   const [active, setActive] = useState<string | null>(null);
   useEffect(() => {
-    const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
+    const els = document.querySelectorAll<HTMLElement>("main > section");
     const io = new IntersectionObserver(
       (entries) => {
-        for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
+        for (const e of entries) if (e.isIntersecting) setActive(e.target.id || null);
       },
       { rootMargin: "-45% 0px -50% 0px" },
     );
     els.forEach((el) => io.observe(el));
-    const clearAtTop = () => window.scrollY < 200 && setActive(null);
-    window.addEventListener("scroll", clearAtTop, { passive: true });
-    return () => {
-      io.disconnect();
-      window.removeEventListener("scroll", clearAtTop);
-    };
-  }, [ids]);
+    return () => io.disconnect();
+  }, []);
   return active;
 }
-
-const SECTION_IDS = nav.map((n) => n.href.slice(1));
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menuId = useId();
-  const active = useActiveSection(SECTION_IDS);
+  const active = useActiveSection();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);

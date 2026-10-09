@@ -48,8 +48,8 @@ export const T = {
   drop: 2945,
   collapse: 5170,
   hoverSelect: [5960, 6110],
-  hoverBold: [6520, 6650],
-  hoverWord: [6650, 6730],
+  hoverWord: [6520, 6650],
+  hoverBold: [6650, 6730],
   scrollStyle: [7055, 7470],
   check1: 7785,
   check2: 7885,
@@ -71,7 +71,7 @@ export const CLICKS = [
   { at: 3485, at2: [744, 702], id: "create" },
   { at: 5730, at2: [332, 434], id: "tabShorts" },
   { at: 6310, at2: [415, 434], id: "tabStyle" },
-  { at: 6850, at2: [584, 610], id: "presetWord" },
+  { at: 6850, at2: [351, 610], id: "presetBold" },
   { at: 7595, at2: [856, 769], id: "analyze" },
   { at: 8640, at2: [1040, 619], id: "seeCost" },
   { at: 10540, at2: [1041, 659], id: "reviewConfirm" },
@@ -100,8 +100,8 @@ const MOVES_IN: { start: number; end: number; to: Pt }[] = [
   { start: 5330, end: 5685, to: [332, 434] },
   { start: 5790, end: 6000, to: [480, 518] },
   { start: 6110, end: 6265, to: [415, 434] },
-  { start: 6370, end: 6555, to: [351, 610] },
-  { start: 6630, end: 6800, to: [584, 610] },
+  { start: 6370, end: 6555, to: [584, 610] },
+  { start: 6630, end: 6800, to: [351, 610] },
   { start: 7100, end: 7510, to: [856, 769] },
   { start: 7810, end: 8160, to: [1040, 619] },
   { start: 8920, end: 9250, to: [655, 390] },
@@ -141,7 +141,7 @@ export const BUBBLES: Bubble[] = [
     id: "B3", text: "Your own AI. Gemini or Qwen.", in: 4040, out: 5150, view: "customize",
     anchor: [370, 622], place: "right", kind: "main",
   },
-  { id: "B4", text: "Pick how your captions look", in: 6350, out: 7460, view: "customize", anchor: [584, 549], place: "top", kind: "main" },
+  { id: "B4", text: "Pick how your captions look", in: 6350, out: 7460, view: "customize", anchor: [476, 549], place: "top", kind: "main" },
   {
     id: "B5", text: "Checked locally. Nothing sent yet.", in: 7740, out: 8840, view: "review",
     anchor: [492, 534], place: "right", kind: "main",
@@ -156,7 +156,7 @@ export const BUBBLES: Bubble[] = [
   },
   {
     id: "B7", text: "Nothing runs until you say so", in: 10780, out: 11880, view: "review",
-    anchor: [900, 742], place: "right", anchorCompact: [540, 768], placeCompact: "bottom", kind: "main",
+    anchor: [1070, 885], place: "top", anchorCompact: [540, 768], placeCompact: "bottom", kind: "main",
   },
   {
     id: "B8a", text: "Your AI finds the moments", in: 12040, out: 13150, view: "finish",
@@ -167,7 +167,7 @@ export const BUBBLES: Bubble[] = [
     anchor: [613, 326], place: "right", anchorCompact: [600, 426], placeCompact: "bottom", kind: "main",
   },
   {
-    id: "B9c", text: "Just your AI usage. No Shortzy credits.", in: 14700, out: 15810, view: "finish",
+    id: "B9c", text: "Just your AI usage. No credits.", in: 14700, out: 15810, view: "finish",
     anchor: [676, 407], place: "right", anchorCompact: [420, 419], placeCompact: "bottom", kind: "main",
   },
   {
@@ -256,6 +256,8 @@ export type Frame = {
   create: "disabled" | "enabled" | "loading";
   importing: boolean;
   tab: "ai" | "shorts" | "style";
+  /** Caption preset: Word highlight is the default; the cursor picks Bold pop, the style the sample clips use. */
+  preset: "word" | "bold";
   presetPulse: boolean;
   stage: "analyze" | "estimate" | "confirm";
   checks: number;
@@ -305,7 +307,8 @@ export function frameAt(time: number): Frame {
     create: t >= CLICK.create ? "loading" : t >= T.drop ? "enabled" : "disabled",
     importing: t < T.collapse,
     tab: t >= CLICK.tabStyle ? "style" : t >= CLICK.tabShorts ? "shorts" : "ai",
-    presetPulse: within(t, CLICK.presetWord, CLICK.presetWord + 420),
+    preset: t >= CLICK.presetBold ? "bold" : "word",
+    presetPulse: within(t, CLICK.presetBold, CLICK.presetBold + 420),
     stage: t >= SCENE.confirm ? "confirm" : t >= SCENE.estimate ? "estimate" : "analyze",
     checks: t >= T.check3 ? 3 : t >= T.check2 ? 2 : t >= T.check1 ? 1 : 0,
     calculating: within(t, T.check2, T.check3),

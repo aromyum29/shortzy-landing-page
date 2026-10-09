@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- decorative, fixed-size art inside an aria-hidden canvas */
 
 import type { CSSProperties, ReactNode } from "react";
-import { AnimatePresence, motion, useTransform } from "motion/react";
+import { AnimatePresence, motion, useTransform, type MotionValue } from "motion/react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,6 +18,7 @@ import {
   Link,
   LoaderCircle,
   Maximize,
+  Pause,
   Play,
   Plus,
   Scissors,
@@ -31,7 +32,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useDemoClock } from "./context";
 import { AI, CLIPS, COST, LIBRARY, OUTPUT, PROJECT, STEPS } from "./data";
-import { importProgressAt, processProgressAt, scrollAt, type Frame, type View } from "./timeline";
+import { importProgressAt, PLAY_AT, processProgressAt, scrollAt, type Frame, type View } from "./timeline";
 
 /*
  * Recreation of the Shortzy desktop app on a fixed 1280 x 800 canvas, using
@@ -793,7 +794,7 @@ const PRESETS = [
   { id: "presetNone", name: "No captions", x: 233, y: 407, w: 222, h: 143 },
 ] as const;
 
-function PresetSample({ id, pulse }: { id: string; pulse: boolean }) {
+function PresetSample({ id }: { id: string }) {
   switch (id) {
     case "presetBold":
       return <span className="text-[12px] font-[800] leading-[15px] text-white">YOUR NEXT<br />GREAT IDEA</span>;
@@ -801,13 +802,7 @@ function PresetSample({ id, pulse }: { id: string; pulse: boolean }) {
       return (
         <span className="flex flex-col items-center text-[12px] font-[700] leading-[16px] text-white">
           Your next
-          <motion.span
-            className="bg-[#e7ada0] px-[4px] text-[#43202b]"
-            animate={pulse ? { scale: [1, 1.14, 1] } : { scale: 1 }}
-            transition={{ duration: 0.36, ease: EASE }}
-          >
-            great
-          </motion.span>
+          <span className="bg-[#e7ada0] px-[4px] text-[#43202b]">great</span>
           idea
         </span>
       );
@@ -833,7 +828,7 @@ function StyleTab({ f }: { f: Frame }) {
         Caption style
       </p>
       {PRESETS.map((p) => {
-        const selected = p.id === "presetWord";
+        const selected = p.id === (f.preset === "bold" ? "presetBold" : "presetWord");
         const hover = f.hover === p.id;
         const press = f.press === p.id;
         return (
@@ -849,14 +844,16 @@ function StyleTab({ f }: { f: Frame }) {
             animate={{ scale: press ? 0.98 : 1 }}
             transition={{ duration: 0.11 }}
           >
-            <div
+            <motion.div
               className={cn(
                 "grid h-[100px] place-items-center rounded-[6px] text-center",
                 p.id === "presetNone" ? "bg-[#f7f6f5]" : "bg-[#432b36]",
               )}
+              animate={selected && f.presetPulse ? { scale: [1, 1.04, 1] } : { scale: 1 }}
+              transition={{ duration: 0.36, ease: EASE }}
             >
-              <PresetSample id={p.id} pulse={selected && f.presetPulse} />
-            </div>
+              <PresetSample id={p.id} />
+            </motion.div>
             <p
               className="flex items-center justify-center gap-[5px] text-[11px] font-[600] leading-[16px]"
               style={{ marginTop: p.h === 149 ? 13 : 10 }}
@@ -1110,7 +1107,7 @@ function ConfirmStage({ f }: { f: Frame }) {
         Send my selected video’s prepared content to {AI.provider} for paid analysis using my AI account.
       </p>
       <p style={abs(124, 490, 540)} className="text-[14px] leading-[24px] text-[#69656b]">
-        If there are fewer distinct moments, we’ll make fewer clips. Analysis still uses AI credits.
+        If there are fewer distinct moments, we’ll make fewer clips. Analysis still uses your AI account.
       </p>
       <Divider top={566} left={124} width={760} />
       <Btn variant="text" style={abs(600, 598)} className="h-[20px] gap-[4px]">
@@ -1272,28 +1269,57 @@ function Results({ f }: { f: Frame }) {
   );
 }
 
+const PLAYER_BAR =
+  "h-[80px] bg-[linear-gradient(to_bottom,transparent,rgba(20,18,20,0.45))] px-[16px] pt-[34px] text-white";
+
+/** The player's control row and scrubber, as the app's native video controls draw them. */
+function PlayerBar({ playing, time, progress }: { playing?: boolean; time: ReactNode; progress?: MotionValue<number> }) {
+  return (
+    <>
+      <div className="flex items-center gap-[10px] text-[12px]">
+        {playing ? <Pause className="size-[13px] fill-current" /> : <Play className="size-[13px] fill-current" />}
+        <span className="tabular-nums">
+          {time} / 0:42
+        </span>
+        <span className="ml-auto flex items-center gap-[16px] opacity-80">
+          <Volume2 className="size-[14px]" />
+          <Maximize className="size-[13px]" />
+          <EllipsisVertical className="size-[14px]" />
+        </span>
+      </div>
+      <div className="mt-[11px] h-[3px] overflow-hidden rounded-full bg-white/35">
+        {progress && <motion.div className="h-full origin-left rounded-full bg-white/80" style={{ scaleX: progress }} />}
+      </div>
+    </>
+  );
+}
+
 /** A clip player at rest: 0:00, so the scrubber shows only its track. */
 function ClipBox({ poster, hideBar }: { poster: string; hideBar: boolean }) {
   return (
     <div className="relative h-[400px] overflow-hidden rounded-[10px] bg-[#252327]">
       <img src={poster} alt="" draggable={false} className="absolute left-1/2 top-0 h-[400px] w-[225px] -translate-x-1/2 object-cover" />
       <motion.div
-        className="absolute inset-x-0 bottom-0 h-[80px] bg-[linear-gradient(to_bottom,transparent,rgba(20,18,20,0.45))] px-[16px] pt-[34px] text-white"
+        className={cn("absolute inset-x-0 bottom-0", PLAYER_BAR)}
         initial={false}
         animate={{ opacity: hideBar ? 0 : 1 }}
         transition={{ duration: 0.2 }}
       >
-        <div className="flex items-center gap-[10px] text-[12px]">
-          <Play className="size-[13px] fill-current" />
-          <span className="tabular-nums">0:00 / 0:42</span>
-          <span className="ml-auto flex items-center gap-[16px] opacity-80">
-            <Volume2 className="size-[14px]" />
-            <Maximize className="size-[13px]" />
-            <EllipsisVertical className="size-[14px]" />
-          </span>
-        </div>
-        <div className="mt-[11px] h-[3px] rounded-full bg-white/35" />
+        <PlayerBar time="0:00" />
       </motion.div>
+    </div>
+  );
+}
+
+/** Clip 1's controls while it plays: pause icon, running time and scrubber, all from the clock. */
+export function PlayingControls() {
+  const { t } = useDemoClock();
+  const elapsed = (v: number) => Math.min(42000, Math.max(0, v - PLAY_AT));
+  const time = useTransform(t, (v) => `0:${String(Math.floor(elapsed(v) / 1000)).padStart(2, "0")}`);
+  const progress = useTransform(t, (v) => elapsed(v) / 42000);
+  return (
+    <div className={cn("rounded-b-[10px]", PLAYER_BAR)}>
+      <PlayerBar playing time={<motion.span>{time}</motion.span>} progress={progress} />
     </div>
   );
 }

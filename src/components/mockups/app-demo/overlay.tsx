@@ -73,18 +73,26 @@ export function Ripple({ t, cam }: Shared) {
 
 const BY_ID = Object.fromEntries(BUBBLES.map((b) => [b.id, b])) as Record<string, Bubble>;
 
+type Fit = {
+  /** Phones: compact anchors and the smallest bubbles. */
+  compact: boolean;
+  /** Tablets: desktop anchors on a smaller canvas, so slightly tighter bubbles. */
+  dense: boolean;
+};
+
 export function Bubbles({
   ids,
   compact,
+  dense,
   still,
   fw,
   fh,
   ...shared
-}: Shared & { ids: string[]; compact: boolean; still: boolean; fw: MotionValue<number>; fh: MotionValue<number> }) {
+}: Shared & Fit & { ids: string[]; still: boolean; fw: MotionValue<number>; fh: MotionValue<number> }) {
   return (
     <AnimatePresence>
       {ids.map((id) => (
-        <BubbleView key={id} b={BY_ID[id]} compact={compact} still={still} fw={fw} fh={fh} {...shared} />
+        <BubbleView key={id} b={BY_ID[id]} compact={compact} dense={dense} still={still} fw={fw} fh={fh} {...shared} />
       ))}
     </AnimatePresence>
   );
@@ -144,10 +152,11 @@ function BubbleView({
   t,
   cam,
   compact,
+  dense,
   still,
   fw,
   fh,
-}: Shared & { b: Bubble; compact: boolean; still: boolean; fw: MotionValue<number>; fh: MotionValue<number> }) {
+}: Shared & Fit & { b: Bubble; still: boolean; fw: MotionValue<number>; fh: MotionValue<number> }) {
   const ref = useRef<HTMLDivElement>(null);
   const w = useMotionValue(0);
   const h = useMotionValue(0);
@@ -187,9 +196,9 @@ function BubbleView({
     aha: "bg-oat text-ink",
   }[b.kind];
   const text = {
-    main: compact ? "text-[0.8125rem] font-semibold" : "text-[0.875rem] font-semibold",
+    main: compact ? "text-[0.8125rem] font-semibold" : dense ? "text-[0.75rem] font-semibold" : "text-[0.875rem] font-semibold",
     qualifier: "text-[0.75rem] font-medium",
-    aha: compact ? "text-[0.875rem] font-semibold" : "text-[0.9375rem] font-semibold",
+    aha: compact ? "text-[0.875rem] font-semibold" : dense ? "text-[0.8125rem] font-semibold" : "text-[0.9375rem] font-semibold",
   }[b.kind];
   const lift = place === "bottom" ? -6 : 6;
 
@@ -199,7 +208,7 @@ function BubbleView({
         ref={ref}
         className={cn(
           "relative w-max rounded-[12px] shadow-[0_10px_24px_-12px_rgba(41,38,40,0.55)]",
-          compact ? "max-w-[12.5rem]" : "max-w-[18rem]",
+          compact ? "max-w-[12.5rem]" : dense ? "max-w-[15rem]" : "max-w-[18rem]",
           tone,
         )}
         style={{ originX, originY }}
@@ -212,7 +221,15 @@ function BubbleView({
           className={cn("absolute size-[10px] rotate-45", tone)}
           style={{ left: tailX, top: tailY }}
         />
-        <span className={cn("relative block text-balance rounded-[12px] px-3 py-2 leading-[1.25]", tone, "border-0", text)}>
+        <span
+          className={cn(
+            "relative block text-balance rounded-[12px] leading-[1.25]",
+            dense ? "px-2.5 py-1.5" : "px-3 py-2",
+            tone,
+            "border-0",
+            text,
+          )}
+        >
           {b.text}
         </span>
       </motion.div>

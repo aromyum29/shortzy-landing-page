@@ -8,9 +8,10 @@ const SPECS = [
   { big: "MP4 · ZIP", small: "one clip or the whole set, saved to your folder." },
 ];
 
+/** The output at a glance, right after How it works shows how it is made. */
 export function Specs() {
   return (
-    <section aria-label="Shortzy at a glance" className="border-b border-pebble bg-paper">
+    <section aria-label="Shortzy at a glance" className="border-t border-pebble bg-paper">
       <Container>
         <dl className="grid grid-cols-2 lg:grid-cols-4">
           {SPECS.map((s, i) => (
@@ -33,8 +34,9 @@ export function Specs() {
             </Reveal>
           ))}
         </dl>
-        <p className="border-t border-pebble py-5 text-center text-[0.875rem] text-mute sm:text-[0.9375rem]">
-          Works best with <span className="font-semibold text-ink">podcasts</span>,{" "}
+        <p className="text-balance border-t border-pebble py-5 text-center text-[0.875rem] text-mute sm:text-[0.9375rem]">
+          From your own video or a YouTube link. Works best with{" "}
+          <span className="font-semibold text-ink">podcasts</span>,{" "}
           <span className="font-semibold text-ink">interviews</span>,{" "}
           <span className="font-semibold text-ink">tutorials</span> and{" "}
           <span className="font-semibold text-ink">business or AI explainers</span>.

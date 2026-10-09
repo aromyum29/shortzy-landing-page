@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { site } from "@/lib/site";
 import { Reveal } from "@/components/ui/reveal";
+import { cn } from "@/lib/utils";
 
 type Status = "idle" | "sending" | "done" | "error" | "unconfigured";
 
@@ -14,6 +15,7 @@ export function FinalCTA() {
   const [invalid, setInvalid] = useState(false);
   const emailId = useId();
   const msgId = useId();
+  const noteId = useId();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -67,9 +69,9 @@ export function FinalCTA() {
             >
               Your next short is <span className="text-maroon">already recorded.</span>
             </h2>
-            <p className="mx-auto mt-5 max-w-[50ch] text-[1.0625rem] leading-relaxed text-ink/75 sm:text-[1.125rem]">
-              Shortzy is coming to Mac and Windows. Join the wishlist and we&apos;ll let you know the moment you can
-              point it at last week&apos;s video.
+            <p className="mx-auto mt-5 max-w-[54ch] text-pretty text-[1.0625rem] leading-relaxed text-ink/75 sm:text-[1.125rem]">
+              Shortzy is coming to Mac and Windows. Pay once, then pay your AI as you go. We&apos;ll tell you when you
+              can point it at last week&apos;s video.
             </p>
 
             <form noValidate onSubmit={onSubmit} className="mx-auto mt-8 flex max-w-[520px] flex-col gap-3 sm:flex-row">
@@ -91,7 +93,7 @@ export function FinalCTA() {
                 autoComplete="email"
                 placeholder="you@example.com"
                 aria-invalid={invalid || undefined}
-                aria-describedby={message ? msgId : undefined}
+                aria-describedby={message ? msgId : noteId}
                 className="min-h-14 w-full flex-1 rounded-lg border border-mute bg-white px-4 text-[1rem] text-ink placeholder:text-mute hover:border-maroon focus:border-maroon aria-[invalid=true]:border-2 aria-[invalid=true]:border-[#982D3F]"
               />
               <Button
@@ -106,31 +108,42 @@ export function FinalCTA() {
               </Button>
             </form>
 
-            <p id={msgId} role="status" aria-live="polite" className="mt-3 min-h-6 text-[0.875rem]">
-              {message && (
-                <span
-                  className={
-                    message.tone === "success"
-                      ? "inline-flex items-center gap-1.5 font-semibold text-success"
-                      : message.tone === "error"
-                        ? "font-semibold text-[#982D3F]"
-                        : "text-ink/75"
-                  }
-                >
-                  {message.tone === "success" && <Check className="size-4" aria-hidden="true" />}
-                  {message.text}
-                </span>
-              )}
-            </p>
+            {/*
+              One line under the form: the risk reversal at rest, replaced in place by the form's
+              status when there is one, so the layout never jumps and nothing is left empty.
+            */}
+            <div className="mx-auto mt-3 grid max-w-[520px] text-[0.875rem] leading-snug">
+              <p
+                id={noteId}
+                className={cn("text-balance text-ink/75 [grid-area:1/1]", message && "invisible")}
+              >
+                Only your email. No payment to join. Leave any time.
+              </p>
+              <p id={msgId} role="status" aria-live="polite" className="[grid-area:1/1]">
+                {message && (
+                  <span
+                    className={
+                      message.tone === "success"
+                        ? "inline-flex items-center gap-1.5 font-semibold text-success"
+                        : message.tone === "error"
+                          ? "font-semibold text-[#982D3F]"
+                          : "text-ink/75"
+                    }
+                  >
+                    {message.tone === "success" && <Check className="size-4" aria-hidden="true" />}
+                    {message.text}
+                  </span>
+                )}
+              </p>
+            </div>
 
-            <div className="mt-4 flex flex-col items-center gap-3">
+            <div className="mt-5 flex justify-center">
               <Button asChild variant="link">
                 <a href={site.cta.howItWorks.href}>
                   <Play className="!size-3.5 fill-current" />
                   {site.cta.howItWorks.label}
                 </a>
               </Button>
-              <p className="text-[0.8125rem] text-ink/70">No spam. Just one email when it&apos;s ready.</p>
             </div>
           </div>
         </Reveal>

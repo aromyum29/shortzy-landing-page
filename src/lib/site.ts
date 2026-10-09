@@ -4,9 +4,16 @@
  */
 export const site = {
   name: "Shortzy",
+  /** Brand tagline (footer). The hero and the share card lead with the positioning line instead. */
   tagline: "Long video in. Shorts out.",
+  /**
+   * The positioning line: page title, share text and share-card alt text. The hero sets the same words
+   * in two styled lines in hero.tsx, and public/og.png shows them too, so change all three together.
+   */
+  headline: "Turn long videos into shorts. Pay once, it's yours.",
+  /** Meta and share description (158 characters, from founder/landing-page.md). */
   description:
-    "Shortzy is a desktop app for Mac and Windows that finds the strongest moments in your podcasts, interviews and tutorials, then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI key stays yours.",
+    "Turn your own videos or YouTube links into captioned shorts on your Mac or Windows PC. Pay once, no subscription. Bring your Gemini or Qwen AI, pay as you go.",
   url: "https://shortzy.app", // TODO: replace with the real domain
 
   cta: {
@@ -29,13 +36,21 @@ export const site = {
    */
   wishlistFormAction: null as string | null,
 
+  /**
+   * Pricing model: a one-time purchase. The amount is not set, and this is a
+   * wishlist page, so no amount is shown anywhere. AI usage is billed by the
+   * user's own provider, never by Shortzy.
+   */
+  pricing: "one-time purchase",
+
   requirements: "Mac (macOS 14+, Apple Silicon) or Windows",
-  storageHint: "about 20 GB free to start",
+  storageHint: "about 20 GB of disk space",
 } as const;
 
+/** Section links, in page order. */
 export const nav = [
   { label: "How it works", href: "#how-it-works" },
-  { label: "Features", href: "#features" },
   { label: "Your AI", href: "#your-ai" },
+  { label: "Features", href: "#features" },
   { label: "FAQ", href: "#faq" },
 ] as const;

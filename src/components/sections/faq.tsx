@@ -3,42 +3,43 @@ import { Container, Eyebrow } from "@/components/ui/container";
 import { site } from "@/lib/site";
 import { Reveal } from "@/components/ui/reveal";
 
+// Ordered by what creators ask first: cost, then privacy and setup, then the rest.
 const FAQS: { q: string; a: React.ReactNode }[] = [
   {
-    q: "Is Shortzy a website or an app?",
-    a: "An app. You download it and it runs on your Mac or Windows PC. Projects, previews and exports live in a folder you choose, and you don't need to install anything else to make it work.",
+    q: "How much does it cost?",
+    a: "Shortzy is a one-time purchase, and the price isn't set yet. There's no subscription, because there's no Shortzy cloud to keep paying for, and there are no credits. Your only running cost is your own AI usage, billed by your provider.",
   },
   {
-    q: "I've never used an API key. Is that a problem?",
-    a: "No. Setup takes you through it in five short steps, with the official link to get a key and a walkthrough for each provider. Think of the key as your AI brain: it lets Shortzy use your AI account, and you pay the provider directly.",
+    q: "How much will the AI part cost me?",
+    a: "It depends on the video's length and your model, and Shortzy shows an estimated range before anything runs. One sample in the app: $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Your provider's bill is final.",
+  },
+  {
+    q: "Do I need an AI account?",
+    a: "Yes, a Gemini or Qwen account with an API key. Kimi is coming soon. Any billing is with that provider, not Shortzy. Never made a key? Setup walks you through it and checks the connection. You can look around first, but you need an AI connected to make clips.",
   },
   {
     q: "Does my video get uploaded anywhere?",
-    a: "Only what the AI needs. To find moments, Shortzy sends the relevant audio, frames or transcript to the provider you connected. Trimming, framing, captions and export happen on your computer, and your original file is never changed.",
+    a: "Not to Shortzy. To find moments, a prepared copy of the audio and video goes to the AI provider you connected, under their terms. Editing and export happen on your computer, your original is never changed, and your key stays in your system's credential store.",
   },
   {
-    q: "How much does the AI part cost?",
-    a: "It depends on the video's length and the model you choose. Shortzy shows an estimated range before you start, and checking an estimate is free. Your provider bills you directly; there are no credit packs.",
-  },
-  {
-    q: "Will my clips go viral?",
-    a: "Nobody can promise that, and we won't. Each clip gets an editorial score with reasons, like a strong opening or a complete answer, so you can decide what to post first.",
-  },
-  {
-    q: "Can I clip any YouTube video?",
-    a: "Shortzy imports public videos and keeps the source attribution. It doesn't get around private or sign-in restricted videos. Only clip videos you own or have permission to reuse.",
-  },
-  {
-    q: "What do I need to run it?",
-    a: `A Mac with Apple Silicon running macOS 14 or later, or a Windows PC, plus ${site.storageHint}. Everything else Shortzy needs is bundled with the app.`,
+    q: "Is Shortzy a website or an app?",
+    a: `An app for your Mac (Apple Silicon, macOS 14 or later) or Windows PC, with everything it needs bundled in. Set aside ${site.storageHint} for your workspace to start. You'll need an internet connection for YouTube imports and AI analysis.`,
   },
   {
     q: "Does it work on Windows?",
-    a: "Yes. Shortzy runs on both Mac and Windows, with the same features on each.",
+    a: "Yes. Shortzy is coming to both Mac and Windows.",
+  },
+  {
+    q: "Will these clips get me views?",
+    a: "Nobody can promise that, and we won't. Each clip gets an editorial score with reasons, like a strong opening or a complete payoff, so you can decide what to post first.",
+  },
+  {
+    q: "Can I clip any YouTube video?",
+    a: "Shortzy imports public videos, keeps the source attribution and doesn't get around private or sign-in restricted videos. Only clip videos you own or have permission to reuse.",
   },
   {
     q: "What does joining the wishlist mean?",
-    a: "You'll hear from us when Shortzy is ready to download. No spam, and you can leave the list at any time.",
+    a: "We'll email you when Shortzy is ready to buy and download. There's no payment to join, no spam, and you can leave the list at any time.",
   },
 ];
 
@@ -54,8 +55,8 @@ export function FAQ() {
           >
             Straight answers.
           </h2>
-          <p className="mt-5 max-w-[36ch] text-[1.0625rem] leading-relaxed text-mute">
-            The things creators ask before they try it.
+          <p className="mt-5 max-w-[36ch] text-pretty text-[1.0625rem] leading-relaxed text-mute">
+            What creators ask first: cost, privacy and setup.
           </p>
         </Reveal>
 

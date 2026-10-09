@@ -18,7 +18,7 @@ import { DemoClock } from "./context";
 import { CLIP_VIDEO, CLIPS } from "./data";
 import { appFont } from "./font";
 import { Bubbles, Cursor, Ripple } from "./overlay";
-import { AppView, FileGhost, Sidebar } from "./screens";
+import { AppView, FileGhost, PlayingControls, Sidebar } from "./screens";
 import {
   beatIndex,
   cameraAt,
@@ -29,6 +29,7 @@ import {
   sceneStart,
   scrollAt,
   STILL_T,
+  T,
   type Frame,
 } from "./timeline";
 
@@ -65,8 +66,11 @@ const useFrozen = () => useSyncExternalStore(() => () => {}, readFrozen, () => n
 
 export function AppDemo() {
   const reduce = usePrefersReducedMotion();
-  const desktop = useMediaQuery("(min-width: 1024px)", true);
-  const compact = !useMediaQuery("(min-width: 640px)", true);
+  // From 640px the 16:10 frame shows the whole canvas (with the two punch-ins); phones follow focus points.
+  const desktop = useMediaQuery("(min-width: 640px)", true);
+  const wide = useMediaQuery("(min-width: 1024px)", true);
+  const compact = !desktop;
+  const dense = desktop && !wide;
   const frozen = useFrozen();
   const still = reduce;
 
@@ -188,6 +192,9 @@ export function AppDemo() {
   const ghostX = useTransform(t, (v) => ghostAt(v)[0] + 14);
   const ghostY = useTransform(t, (v) => ghostAt(v)[1] + 14);
   const videoY = useTransform(t, (v) => 555 - scrollAt("finish", v));
+  const controlsY = useTransform(videoY, (y) => y + 320);
+  // Native controls stay up while the cursor is over the clip, then hide once it leaves.
+  const controlsOpacity = useTransform(t, (v) => 1 - Math.min(1, Math.max(0, (v - T.cursorOut[1]) / 250)));
 
   // Scroll-linked settle: the window tilts back flat as it reaches the middle of the screen.
   const { scrollYProgress } = useScroll({ target: rootRef, offset: ["start end", "center center"] });
@@ -291,6 +298,11 @@ export function AppDemo() {
                   <source src={CLIP_VIDEO.webm} type="video/webm" />
                   <source src={CLIP_VIDEO.mp4} type="video/mp4" />
                 </motion.video>
+                {showVideo && !still && (
+                  <motion.div className="absolute left-[240px] top-0 z-[2] w-[323px]" style={{ y: controlsY, opacity: controlsOpacity }}>
+                    <PlayingControls />
+                  </motion.div>
+                )}
 
                 <AnimatePresence>
                   {f.ghost && (
@@ -315,7 +327,17 @@ export function AppDemo() {
               {/* Unscaled overlay */}
               {measured && (
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-                  <Bubbles key={compact ? "c" : "d"} ids={f.bubbles} compact={compact} still={still} t={t} cam={cam} fw={fw} fh={fh} />
+                  <Bubbles
+                    key={compact ? "c" : dense ? "m" : "d"}
+                    ids={f.bubbles}
+                    compact={compact}
+                    dense={dense}
+                    still={still}
+                    t={t}
+                    cam={cam}
+                    fw={fw}
+                    fh={fh}
+                  />
                   {!still && (
                     <>
                       <Ripple t={t} cam={cam} />
@@ -349,9 +371,9 @@ export function AppDemo() {
         <li>Start a new project.</li>
         <li>Paste a YouTube link or add your own file; the sample uses a 44:48 podcast file.</li>
         <li>Your connected AI, here Gemini, is chosen while the video copies into your workspace.</li>
-        <li>Pick 6 vertical clips, 30 to 60 seconds, with Word highlight captions.</li>
+        <li>Pick 6 vertical clips, 30 to 60 seconds, with Bold pop captions.</li>
         <li>Shortzy checks the video on your computer; nothing has been sent to your AI yet.</li>
-        <li>The estimated AI cost, $0.43 to $1.33 for this sample, is shown before anything runs; your provider bills the actual usage.</li>
+        <li>The estimated AI cost, $0.43 to $1.33 for this sample on Gemini Flash 3.8, is shown before anything runs; your provider bills the actual usage.</li>
         <li>You agree to send the prepared video to Gemini; your AI finds the moments and your computer frames, captions and exports them.</li>
         <li>Six clips arrive ranked by AI estimate scores with reasons; scores are not predictions of views.</li>
       </ol>

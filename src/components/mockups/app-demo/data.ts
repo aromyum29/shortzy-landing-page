@@ -30,7 +30,7 @@ export const OUTPUT = {
   clips: "6 clips",
   shape: "9:16 · Vertical",
   length: "30 to 60 seconds",
-  style: "Word highlight",
+  style: "Bold pop",
 };
 
 export const STEPS = ["Upload", "Customize", "Analyze", "AI cost estimation", "Confirmation", "Final result"];
