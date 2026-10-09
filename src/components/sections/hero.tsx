@@ -4,7 +4,7 @@ import { motion, type Variants } from "motion/react";
 import { ArrowRight, Check, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { ProductShowcase } from "@/components/mockups/product-showcase";
+import { AppDemo } from "@/components/mockups/app-demo";
 import { site } from "@/lib/site";
 
 const EASE = [0.2, 0.8, 0.2, 1] as const;
@@ -33,8 +33,9 @@ function BlurWords({ text, offset = 0 }: { text: string; offset?: number }) {
   ));
 }
 
-export function Hero() {
+const CHECKS = ["Pay once, no credits", "Your own AI, pay as you go", "Edits on your Mac or Windows PC"];
 
+export function Hero() {
   return (
     <section id="top" aria-labelledby="hero-title" className="grain relative overflow-hidden pt-10 sm:pt-16">
       <Container className="relative text-center">
@@ -47,23 +48,25 @@ export function Hero() {
             <span className="shrink-0 whitespace-nowrap rounded-full bg-maroon px-2 py-0.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-white">
               Mac · Windows
             </span>
-            Coming soon. A desktop app for creators.
+            <span>
+              Coming soon<span className="hidden sm:inline">. A desktop app for creators.</span>
+            </span>
           </motion.p>
 
           <h1
             id="hero-title"
-            className="mt-7 font-display text-[clamp(3.1rem,9vw,7.25rem)] font-extrabold leading-[0.9] tracking-[-0.04em] text-ink"
+            className="mt-7 font-display text-[clamp(2.75rem,6.6vw,5.5rem)] font-extrabold leading-[0.92] tracking-[-0.04em] text-ink"
           >
-            <span className="block [font-stretch:100%]">
-              <BlurWords text="Long video in." />
+            <span className="block text-balance [font-stretch:100%]">
+              <BlurWords text="Turn long videos into shorts." />
             </span>
-            <span className="relative block text-maroon [font-stretch:75%] tracking-[-0.02em]">
-              <BlurWords text="Shorts out." offset={3} />
+            <span className="relative mt-[0.06em] block text-maroon [font-stretch:75%] tracking-[-0.02em]">
+              <BlurWords text="Pay once, it’s yours." offset={5} />
               <svg
                 aria-hidden="true"
                 viewBox="0 0 300 20"
                 preserveAspectRatio="none"
-                className="absolute -bottom-[0.06em] left-1/2 h-[0.16em] w-[min(78%,520px)] -translate-x-1/2 text-oat"
+                className="absolute -bottom-[0.08em] left-1/2 h-[0.16em] w-[min(70%,520px)] -translate-x-1/2 text-oat"
               >
                 <motion.path
                   d="M4 13 C 70 6, 150 5, 296 10"
@@ -73,7 +76,7 @@ export function Hero() {
                   strokeLinecap="round"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
+                  transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
                 />
               </svg>
             </span>
@@ -82,11 +85,10 @@ export function Hero() {
           <motion.p
             variants={rise}
             custom={0.2}
-            className="mt-7 max-w-[640px] text-pretty text-[1.0625rem] leading-relaxed text-mute sm:text-[1.1875rem]"
+            className="mt-7 max-w-[640px] text-balance text-[1.0625rem] leading-relaxed text-mute sm:text-[1.1875rem]"
           >
-            Shortzy is a desktop app for Mac and Windows that finds the strongest moments in your podcasts, interviews and tutorials,
-            then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI
-            key stays yours.
+            Add your own video or a YouTube link. Shortzy and your Gemini or Qwen account find the moments, and your computer
+            edits them. Pay your AI as you go.
           </motion.p>
 
           <motion.div
@@ -113,16 +115,14 @@ export function Hero() {
           <motion.ul
             variants={rise}
             custom={0.32}
-            className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[0.875rem] text-mute"
+            className="mt-6 flex flex-col items-start gap-y-2 text-[0.875rem] text-mute sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-6"
           >
-            {["For Mac and Windows", "Works with Gemini or Qwen", "Your originals are never touched"].map(
-              (t) => (
-                <li key={t} className="flex items-center gap-1.5">
-                  <Check className="size-4 text-maroon" strokeWidth={2.5} aria-hidden="true" />
-                  {t}
-                </li>
-              ),
-            )}
+            {CHECKS.map((t) => (
+              <li key={t} className="flex items-center gap-1.5">
+                <Check className="size-4 text-maroon" strokeWidth={2.5} aria-hidden="true" />
+                {t}
+              </li>
+            ))}
           </motion.ul>
         </motion.div>
       </Container>
@@ -140,7 +140,7 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
           >
-            <ProductShowcase />
+            <AppDemo />
           </motion.div>
         </Container>
       </div>
