@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { Container, Eyebrow } from "@/components/ui/container";
 import { site } from "@/lib/site";
+import { Reveal } from "@/components/ui/reveal";
 
 const FAQS: { q: string; a: React.ReactNode }[] = [
   {
@@ -45,7 +46,7 @@ export function FAQ() {
   return (
     <section id="faq" aria-labelledby="faq-title" className="border-t border-pebble py-24 sm:py-32">
       <Container className="grid gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-20">
-        <div className="lg:sticky lg:top-28 lg:self-start">
+        <Reveal className="lg:sticky lg:top-28 lg:self-start">
           <Eyebrow>FAQ</Eyebrow>
           <h2
             id="faq-title"
@@ -56,9 +57,9 @@ export function FAQ() {
           <p className="mt-5 max-w-[36ch] text-[17px] leading-relaxed text-mute">
             The things creators ask before they try it.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="divide-y divide-pebble border-y border-pebble">
+        <Reveal delay={0.12} className="divide-y divide-pebble border-y border-pebble">
           {FAQS.map((f) => (
             <details key={f.q} className="group">
               <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-5 text-[17px] font-semibold sm:text-[18px] [&::-webkit-details-marker]:hidden">
@@ -70,7 +71,7 @@ export function FAQ() {
               <p className="max-w-[62ch] pb-6 pr-12 text-[16px] leading-relaxed text-mute">{f.a}</p>
             </details>
           ))}
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

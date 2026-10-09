@@ -5,6 +5,7 @@ import { ArrowRight, Check, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { site } from "@/lib/site";
+import { Reveal } from "@/components/ui/reveal";
 
 type Status = "idle" | "sending" | "done" | "error" | "unconfigured";
 
@@ -55,7 +56,7 @@ export function FinalCTA() {
   return (
     <section id="wishlist" aria-labelledby="final-title" className="pb-24 pt-8 sm:pb-32">
       <Container>
-        <div className="grain relative overflow-hidden rounded-[32px] bg-rose px-6 py-14 sm:px-12 sm:py-16 lg:px-16">
+        <Reveal className="grain relative overflow-hidden rounded-[32px] bg-rose px-6 py-14 sm:px-12 sm:py-16 lg:px-16">
           <div aria-hidden="true" className="perf-rail absolute inset-x-0 top-4 h-3 text-maroon/10" />
           <div aria-hidden="true" className="perf-rail absolute inset-x-0 bottom-4 h-3 text-maroon/10" />
 
@@ -125,7 +126,7 @@ export function FinalCTA() {
               <p className="text-[13px] text-ink/70">No spam. Just one email when it&apos;s ready.</p>
             </div>
           </div>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

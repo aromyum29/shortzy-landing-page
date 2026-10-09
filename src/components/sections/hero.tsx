@@ -4,9 +4,7 @@ import { motion, type Variants } from "motion/react";
 import { ArrowRight, Check, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { AppWindow, APP_H, APP_W } from "@/components/mockups/app-window";
-import { Phone } from "@/components/mockups/phone";
-import { ScaledFrame } from "@/components/mockups/scaled-frame";
+import { ProductShowcase } from "@/components/mockups/product-showcase";
 import { site } from "@/lib/site";
 
 const EASE = [0.2, 0.8, 0.2, 1] as const;
@@ -46,7 +44,7 @@ export function Hero() {
             custom={0}
             className="inline-flex items-center gap-2 rounded-full border border-maroon/25 bg-white px-3.5 py-1.5 text-[13px] font-semibold text-maroon"
           >
-            <span className="rounded-full bg-maroon px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-white">
+            <span className="shrink-0 whitespace-nowrap rounded-full bg-maroon px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-white">
               Mac · Windows
             </span>
             Coming soon. A desktop app for creators.
@@ -136,28 +134,13 @@ export function Hero() {
           <div className="perf-rail absolute inset-x-0 bottom-4 h-3 text-paper/15" />
         </div>
 
-        <Container className="relative pb-20 sm:pb-28">
+        <Container className="relative pb-14 sm:pb-20">
           <motion.div
-            initial={{ opacity: 0, y: 60, rotateX: 14 }}
-            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.55, ease: EASE }}
-            style={{ transformPerspective: 1600 }}
-            className="relative mx-auto max-w-[1120px]"
           >
-            <div className="relative rounded-[22px] bg-white/0 shadow-[0_40px_80px_-30px_rgba(41,38,40,0.55)]">
-              <ScaledFrame width={APP_W} height={APP_H}>
-                <AppWindow />
-              </ScaledFrame>
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 40, y: 20 }}
-              animate={{ opacity: 1, x: 0, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.05, ease: EASE }}
-              className="absolute -bottom-[9%] -right-[1%] w-[34%] max-w-[250px] sm:-right-[2%] sm:w-[24%] lg:-right-[4%]"
-            >
-              <Phone />
-            </motion.div>
+            <ProductShowcase />
           </motion.div>
         </Container>
       </div>

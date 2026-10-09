@@ -201,3 +201,22 @@
     transform: translateX(22%);
   }
 }
+
+/* Slow push-in on still photography, like the rendered clips. */
+@keyframes push {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,32 +1,33 @@
 import { cn } from "@/lib/utils";
 
-/** Supplied v3.2 wordmark. Minimum width 120px; use on white or paper only. */
-export function Logo({ className, width = 132 }: { className?: string; width?: number }) {
+/**
+ * Shortzy logo lockup, matching the desktop app's sidebar brand: the waving
+ * filmstrip mascot beside the lowercase "shortzy" wordmark and maroon dot.
+ */
+export function Logo({ className, size = "md" }: { className?: string; size?: "sm" | "md" }) {
+  const px = size === "sm" ? 34 : 40;
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/brand/logo.svg"
-      alt="Shortzy"
-      width={width}
-      height={Math.round((width * 72) / 300)}
-      className={cn("block h-auto select-none", className)}
-      draggable={false}
-    />
-  );
-}
-
-/** Supplied standalone mark. Minimum 24px. */
-export function LogoMark({ className, size = 28 }: { className?: string; size?: number }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/brand/logo-mark.svg"
-      alt=""
-      aria-hidden="true"
-      width={size}
-      height={size}
-      className={cn("block select-none", className)}
-      draggable={false}
-    />
+    <span
+      className={cn(
+        "inline-flex select-none items-center gap-[7px] font-sans font-[750] leading-none tracking-[-0.03em] text-ink",
+        size === "sm" ? "text-[20px]" : "text-[23px]",
+        className,
+      )}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/brand/mascot/logo-mascot.webp"
+        alt=""
+        aria-hidden="true"
+        width={px}
+        height={px}
+        draggable={false}
+        className="block shrink-0 object-contain"
+        style={{ width: px, height: px }}
+      />
+      <span>
+        shortzy<span className="ml-[3px] text-maroon">.</span>
+      </span>
+    </span>
   );
 }

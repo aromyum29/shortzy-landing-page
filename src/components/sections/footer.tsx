@@ -8,7 +8,7 @@ export function Footer() {
       <Container>
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div>
-            <Logo width={132} />
+            <Logo />
             <p className="mt-3 font-display text-[18px] font-semibold tracking-[-0.01em] text-maroon">{site.tagline}</p>
           </div>
           <nav aria-label="Footer">

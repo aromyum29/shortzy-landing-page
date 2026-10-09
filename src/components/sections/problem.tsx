@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import { Container, Eyebrow } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 
 const BY_HAND = [
   "Rewatch the whole hour for the good bits",
@@ -17,7 +18,7 @@ export function Problem() {
   return (
     <section aria-labelledby="problem-title" className="py-24 sm:py-32">
       <Container className="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
-        <div>
+        <Reveal>
           <Eyebrow>The slog</Eyebrow>
           <h2
             id="problem-title"
@@ -34,9 +35,9 @@ export function Problem() {
               Shortzy does that part. You keep the decisions: which clips to post, which to skip, and what to change.
             </p>
           </div>
-        </div>
+        </Reveal>
 
-        <div className="relative mx-auto w-full max-w-[520px]">
+        <Reveal delay={0.12} className="relative mx-auto w-full max-w-[520px]">
           <div className="-rotate-[1.5deg] rounded-[24px] border border-pebble bg-white p-6 sm:p-8">
             <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-mute">By hand, every time</p>
             <ol className="mt-4 space-y-3">
@@ -62,7 +63,7 @@ export function Problem() {
               ))}
             </ol>
           </div>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

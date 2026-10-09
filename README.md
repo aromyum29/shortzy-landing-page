@@ -28,7 +28,7 @@ All of these live in [`src/lib/site.ts`](src/lib/site.ts). Every button on the p
 | Section | File | Job |
 | --- | --- | --- |
 | Nav | `src/components/sections/nav.tsx` | Sticky, primary CTA always visible |
-| Hero | `hero.tsx` | Promise + both CTAs + desktop app and phone mockups |
+| Hero | `hero.tsx`, `mockups/product-showcase.tsx` | Promise + both CTAs + real app screens and a playing short |
 | Spec strip | `specs.tsx` | Honest facts in place of logos or testimonials (none exist yet) |
 | Problem | `problem.tsx` | The by-hand routine vs. three steps |
 | How it works | `how-it-works.tsx` | Scroll-driven demo: a long timeline's moments become ranked 9:16 shorts |
@@ -39,21 +39,32 @@ All of these live in [`src/lib/site.ts`](src/lib/site.ts). Every button on the p
 
 ## Product visuals
 
-No product screenshots were supplied, so the app window, phone and clip thumbnails are drawn in code
-(`src/components/mockups/`) from the product handoff. The video frames are flat illustrations in the brand palette.
-To use real screenshots, replace `<AppWindow />` in `hero.tsx` with an image; `ScaledFrame` keeps any 1120×700
-content proportional.
+Product visuals come from the Shortzy Landing Page UI Kit (real frontend screens captured from the QA build,
+9 Oct 2026), optimised into `public/product/`:
+
+- `screens/`: Library, Customize, Ranked clips (hero carousel), plus crops of the results grid and cost estimate.
+- `clips/`: real 9:16 rendered shorts (WebM + MP4) and poster frames, used in the hero phone, How it works and Features.
+- `stills/`: source-video stills used in the caption and framing demos.
+
+The workspace, people, titles, scores and costs in these assets are fictional QA fixtures. The page labels them as a
+sample workspace and keeps the qualifiers (scores are AI estimates, costs are samples). Do not present them as customer
+results or a price promise.
+
+Motion: the hero window cycles the real screens with a slow scroll (pausable, stops off screen), the phone plays the
+matching clip, the window settles flat on scroll, and sections fade in once. Reduced motion shows static screens and
+posters.
 
 ## Brand
 
 - Brand pack v3.2 (authoritative): `docs/brand/shortzy-brand-v3.2/`. Tokens are mapped in `src/app/globals.css`,
   including shadcn's semantic variables, so any shadcn or 21st.dev component picks up the brand.
-- Logo and the four mascot poses are used as supplied (`public/brand/`). Mascots are 720px WebP exports of the original PNGs (only near-invisible edge haze was removed; artwork unchanged).
+- Logo: the app's lockup, waving mascot + "shortzy." (`components/brand/logo.tsx`). Beyond the logo, mascot poses appear only in How it works.
+- The four mascot poses are used as supplied (`public/brand/`). Mascots are 720px WebP exports of the original PNGs (only near-invisible edge haze was removed; artwork unchanged).
 - Positioning, voice and messaging: `docs/brand/landing-messaging.md`, built with the brand-building skills
   in `.claude/skills/` on top of `.agents/brand-context.md`.
 - Typography: Bricolage Grotesque (display), Instrument Sans (body), DM Mono (labels and timecodes). The desktop app keeps
   the brand's system sans stack; these are web-only marketing faces, swappable in `src/app/layout.tsx`.
-- Copy rules: no em dashes, no views guarantees, "local-first" never presented as "offline". Marketed for Mac and Windows. Mascot only in How it works.
+- Copy rules: no em dashes, no views guarantees, "local-first" never presented as "offline". Marketed for Mac and Windows.
 
 ## Stack
 

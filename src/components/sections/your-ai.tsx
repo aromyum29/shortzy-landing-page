@@ -1,10 +1,11 @@
 import { ArrowUpRight, HardDrive, KeyRound } from "lucide-react";
 import { Container, Eyebrow } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 
 const PROVIDERS = [
-  { name: "Gemini", by: "Google", badge: "Recommended", available: true },
-  { name: "Qwen", by: "Alibaba Cloud", available: true },
-  { name: "Kimi", by: "Moonshot AI", badge: "Coming soon", available: false },
+  { name: "Gemini", by: "Google", logo: "/brand/providers/gemini.png", badge: "Recommended", available: true },
+  { name: "Qwen", by: "Alibaba Cloud", logo: "/brand/providers/qwen.png", available: true },
+  { name: "Kimi", by: "Moonshot AI", logo: "/brand/providers/kimi.svg", badge: "Coming soon", available: false },
 ];
 
 const STAYS = [
@@ -19,7 +20,7 @@ export function YourAI() {
     <section id="your-ai" aria-labelledby="ai-title" className="on-dark grain relative bg-deep py-24 text-white sm:py-32">
       <div aria-hidden="true" className="perf-rail absolute inset-x-0 top-5 h-3 text-paper/10" />
       <Container className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20">
-        <div>
+        <Reveal>
           <Eyebrow className="text-rose">Your AI, your bill</Eyebrow>
           <h2
             id="ai-title"
@@ -48,6 +49,16 @@ export function YourAI() {
                     : "rounded-2xl border border-dashed border-white/20 p-4 text-white/60"
                 }
               >
+                <span
+                  className={
+                    p.available
+                      ? "mb-3 grid size-10 place-items-center rounded-xl bg-white"
+                      : "mb-3 grid size-10 place-items-center rounded-xl bg-white/80 opacity-70"
+                  }
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.logo} alt="" width={24} height={24} className="size-6 object-contain" />
+                </span>
                 <p className="font-display text-[22px] font-bold tracking-[-0.02em]">{p.name}</p>
                 <p className="text-[13px] text-white/60">by {p.by}</p>
                 {p.badge && (
@@ -64,9 +75,9 @@ export function YourAI() {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
 
-        <div className="self-center rounded-[24px] bg-paper p-6 text-ink sm:p-8">
+        <Reveal delay={0.12} className="self-center rounded-[24px] bg-paper p-6 text-ink sm:p-8">
           <h3 className="font-display text-[24px] font-bold tracking-[-0.02em]">What goes where</h3>
           <p className="mt-1 text-[15px] text-mute">Local-first, not offline. Here&apos;s exactly what that means.</p>
 
@@ -105,7 +116,7 @@ export function YourAI() {
             Shortzy doesn&apos;t run a cloud that receives your videos. Disconnecting removes the key from Shortzy;
             your provider account stays yours.
           </p>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

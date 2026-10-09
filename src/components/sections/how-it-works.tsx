@@ -14,8 +14,7 @@ import {
 import { Check, Download, Link2 } from "lucide-react";
 import { Container, Eyebrow } from "@/components/ui/container";
 import { Mascot, type MascotPose } from "@/components/brand/mascot";
-import { CLIPS, SEGMENTS, waveform } from "@/components/mockups/app-window";
-import { ClipThumb } from "@/components/mockups/phone";
+import { CLIPS, DEMO_PROJECT, SEGMENTS, waveform } from "@/components/mockups/demo-data";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
@@ -132,7 +131,8 @@ function MorphClip({ p, index, layout }: { p: MotionValue<number>; index: number
       }}
     >
       <motion.div className="absolute inset-0" style={{ opacity: thumb }}>
-        <ClipThumb scene={clip.scene} words={clip.words} active={1} className="h-full rounded-none" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={clip.poster} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
       </motion.div>
       <motion.div style={{ opacity: meta }} className="@container absolute inset-0">
         <span className="absolute left-[6%] top-[4%] rounded-[1.5cqw] bg-white px-[4cqw] py-[1.5cqw] font-mono text-[9cqw] font-medium leading-none text-ink">
@@ -174,7 +174,7 @@ function Stage({ p, step, layout }: { p: MotionValue<number>; step: number; layo
       {/* Header */}
       <div className="absolute inset-x-[4%] top-[4.5%] flex items-center justify-between gap-3">
         <p className="min-w-0 truncate font-display text-[clamp(14px,1.6vw,20px)] font-semibold tracking-[-0.01em]">
-          Founders Podcast · Ep. 42
+          {DEMO_PROJECT.title}
         </p>
         <div className="flex shrink-0 items-center gap-2">
           <motion.span
@@ -210,8 +210,8 @@ function Stage({ p, step, layout }: { p: MotionValue<number>; step: number; layo
         style={{ top: `${track.top + track.h + 1.5}%`, left: `${track.left}%`, width: `${track.w}%` }}
       >
         <span>00:00</span>
-        <span>29:06</span>
-        <span>58:12</span>
+        <span>22:24</span>
+        <span>{DEMO_PROJECT.length}</span>
       </div>
       <motion.div
         className="absolute w-[2px] rounded-full bg-maroon"
@@ -251,7 +251,7 @@ function Stage({ p, step, layout }: { p: MotionValue<number>; step: number; layo
         <p className="text-[13px] font-semibold sm:text-[15px]">Paste a YouTube link or drop a video</p>
         <div className="mt-3 flex w-full max-w-[420px] items-center gap-2 rounded-xl border border-mute bg-white p-1.5 pl-3 text-left">
           <Link2 className="size-4 shrink-0 text-mute" />
-          <span className="min-w-0 flex-1 truncate text-[12px] text-ink sm:text-[13px]">youtube.com/watch?v=founders-ep42</span>
+          <span className="min-w-0 flex-1 truncate text-[12px] text-ink sm:text-[13px]">youtube.com/watch?v=creator-economy</span>
           <span className="rounded-lg bg-maroon px-3 py-1.5 text-[12px] font-semibold text-white">Import</span>
         </div>
         <p className="mt-2 text-[12px] text-mute">or choose a file from your computer</p>

@@ -1,19 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "motion/react";
+import { Reveal } from "@/components/ui/reveal";
 import { Check, Info, ScanFace, Presentation } from "lucide-react";
 import { Container, Eyebrow } from "@/components/ui/container";
 import { Captions, CAPTION_PRESETS, type CaptionPreset } from "@/components/mockups/captions";
-import { Scene } from "@/components/mockups/scene";
-import { ClipThumb } from "@/components/mockups/phone";
+import { LoopVideo } from "@/components/mockups/loop-video";
 import { useWordTicker } from "@/hooks/use-word-ticker";
 import { cn } from "@/lib/utils";
 
-function Card({ className, children }: { className?: string; children: React.ReactNode }) {
+function Card({ className, children, delay = 0 }: { className?: string; children: React.ReactNode; delay?: number }) {
   return (
-    <article className={cn("flex flex-col rounded-[24px] border border-pebble bg-white p-6 sm:p-8", className)}>
+    <motion.article
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.7, delay, ease: [0.2, 0.8, 0.2, 1] }}
+      className={cn("flex flex-col rounded-[24px] border border-pebble bg-white p-6 sm:p-8", className)}
+    >
       {children}
-    </article>
+    </motion.article>
   );
 }
 
@@ -42,7 +49,14 @@ function CaptionsCard() {
       <div className="grid h-full gap-8 sm:grid-cols-[minmax(0,220px)_1fr] sm:items-center lg:grid-cols-[minmax(0,260px)_1fr]">
         <div className="mx-auto w-full max-w-[240px] sm:max-w-none">
           <div className="@container relative aspect-[9/16] overflow-hidden rounded-[18px] bg-deep">
-            <Scene name="studio" vertical className="absolute inset-0" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/product/stills/tutorial.webp"
+              alt=""
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover object-[47%_center] motion-safe:animate-[push_14s_ease-in-out_infinite_alternate]"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/45 to-transparent" />
             <Captions preset={preset} words={LINE} active={active} />
             <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 font-mono text-[11px] text-ink">
               Preview
@@ -106,42 +120,41 @@ function CaptionsCard() {
 
 /* ------------------------------------------------------------------ Ranked */
 
-const DIMENSIONS = [
-  { name: "Opening", v: 0.92 },
-  { name: "Momentum", v: 0.78 },
-  { name: "Payoff", v: 0.95 },
-  { name: "Clarity", v: 0.86 },
-  { name: "Relevance", v: 0.8 },
-  { name: "Audio and visual fit", v: 0.72 },
-];
+const DIMENSIONS = ["Opening", "Momentum", "Payoff", "Clarity", "Relevance", "Audio and visual fit"];
 
 function RankedCard() {
   return (
-    <Card className="lg:col-span-5">
+    <Card className="lg:col-span-5" delay={0.08}>
       <CardTitle>Ranked, with reasons.</CardTitle>
       <CardBody>
         Every clip arrives titled and scored on six things, so you know what to post first and why it was picked.
       </CardBody>
 
-      <div className="mt-6 flex gap-4 rounded-2xl bg-paper p-4">
-        <ClipThumb scene="host" words={["we", "killed", "free"]} active={1} className="w-[72px] shrink-0 self-start" />
-        <div className="min-w-0 flex-1">
-          <p className="flex items-baseline justify-between gap-2">
-            <span className="truncate text-[14px] font-semibold">Why we killed our free plan</span>
-            <span className="font-mono text-[12px] text-maroon tabular">#1</span>
-          </p>
-          <ul className="mt-2.5 space-y-1.5" aria-label="Score breakdown">
-            {DIMENSIONS.map((d) => (
-              <li key={d.name} className="grid grid-cols-[minmax(0,1fr)_88px] items-center gap-2 text-[12px] text-mute">
-                <span className="truncate">{d.name}</span>
-                <span className="h-1.5 overflow-hidden rounded-full bg-pebble/60" aria-hidden="true">
-                  <span className="block h-full rounded-full bg-maroon" style={{ width: `${d.v * 100}%` }} />
-                </span>
-              </li>
-            ))}
-          </ul>
+      <div className="group mt-6 overflow-hidden rounded-2xl border border-pebble bg-white">
+        <div className="relative transition-transform duration-700 ease-brand group-hover:scale-[1.02]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/product/screens/ranked-card.webp"
+            alt="Shortzy results: clip 1 'Trust is the growth strategy nobody can copy' with Viral potential 94/100, AI estimate, and clip 2 with 91/100"
+            width={690}
+            height={706}
+            loading="lazy"
+            className="block h-auto w-full"
+          />
+          <LoopVideo
+            src="/product/clips/podcast-clip-1"
+            poster="/product/clips/podcast-clip-1.webp"
+            className="absolute left-[8.84%] top-[11.47%] h-[56.66%] w-[32.61%] object-cover"
+          />
         </div>
       </div>
+      <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="What each score is built from">
+        {DIMENSIONS.map((d) => (
+          <li key={d} className="rounded-full bg-paper px-2.5 py-1 text-[12px] font-medium text-ink/80">
+            {d}
+          </li>
+        ))}
+      </ul>
       <p className="mt-4 flex items-start gap-2 text-[13px] leading-snug text-mute">
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
         Scores are an editorial estimate from the content itself. They are not a prediction of views.
@@ -154,7 +167,7 @@ function RankedCard() {
 
 function FewerCard() {
   return (
-    <Card className="lg:col-span-5">
+    <Card className="lg:col-span-5" delay={0.16}>
       <CardTitle>Fewer clips beat filler.</CardTitle>
       <CardBody>Ask for 10. If only 6 moments hold up, you get 6, plus a plain reason why.</CardBody>
       <div className="mt-6" role="img" aria-label="Ten requested clip slots: six filled, four skipped">
@@ -215,10 +228,17 @@ function FramingCard() {
       </CardBody>
 
       <div className="mt-6 grid grid-cols-[1fr_auto] items-center gap-4 rounded-2xl bg-paper p-4">
-        <div className="relative aspect-video overflow-hidden rounded-lg">
-          <Scene name={mode === "face" ? "host" : "tutorial"} className="absolute inset-0" />
+        <div className="relative aspect-video overflow-hidden rounded-lg bg-white">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            key={mode}
+            src={mode === "face" ? "/product/stills/interview.webp" : "/product/screens/library-16x9.webp"}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover motion-safe:animate-[fade-in_400ms_ease-out]"
+          />
           {mode === "face" ? (
-            <div className="absolute inset-y-0 left-1/2 w-[31.6%] -translate-x-1/2 motion-safe:animate-[track_5s_ease-in-out_infinite]">
+            <div className="absolute inset-y-0 left-[48%] w-[31.6%] -translate-x-1/2 motion-safe:animate-[track_5s_ease-in-out_infinite]">
               <div className="absolute inset-0 rounded-[3px] border-[3px] border-maroon shadow-[0_0_0_999px_rgba(41,38,40,0.45)]" />
               <span className="absolute -top-px left-1/2 -translate-x-1/2 rounded-b-md bg-maroon px-1.5 py-px font-mono text-[10px] text-white">
                 9:16
@@ -229,14 +249,20 @@ function FramingCard() {
           )}
         </div>
         <div className="w-[64px] sm:w-[84px]">
-          <div className="relative aspect-[9/16] overflow-hidden rounded-md bg-white ring-1 ring-pebble">
-            {mode === "face" ? (
-              <Scene name="host" vertical className="absolute inset-0" />
-            ) : (
-              <div className="absolute inset-x-0 top-1/2 aspect-video -translate-y-1/2">
-                <Scene name="tutorial" className="absolute inset-0" />
-              </div>
-            )}
+          <div className="relative aspect-[9/16] overflow-hidden rounded-md bg-deep ring-1 ring-pebble">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              key={mode}
+              src={mode === "face" ? "/product/stills/interview.webp" : "/product/screens/library-16x9.webp"}
+              alt=""
+              loading="lazy"
+              className={cn(
+                "absolute motion-safe:animate-[fade-in_400ms_ease-out]",
+                mode === "face"
+                  ? "inset-0 h-full w-full object-cover object-[48%_center]"
+                  : "inset-x-0 top-1/2 aspect-video w-full -translate-y-1/2 object-cover",
+              )}
+            />
           </div>
           <p className="mt-1.5 text-center font-mono text-[10px] text-mute">Output</p>
         </div>
@@ -249,7 +275,7 @@ function FramingCard() {
 
 function CostCard() {
   return (
-    <Card className="lg:col-span-6">
+    <Card className="lg:col-span-6" delay={0.08}>
       <CardTitle>Know the cost before you click.</CardTitle>
       <CardBody>
         Shortzy estimates your AI cost from the video length and the model you picked, and shows it as a range.
@@ -257,33 +283,23 @@ function CostCard() {
       </CardBody>
       <div className="h-6 shrink-0" />
 
-      <div className="mt-auto rounded-2xl bg-paper p-4 sm:p-5" aria-hidden="true">
-        <div className="flex items-center justify-between text-[13px]">
-          <span className="font-semibold">Video length</span>
-          <span className="rounded-lg border border-mute bg-white px-2.5 py-1 font-mono text-[12px] tabular">60 min</span>
+      <figure className="group mt-auto">
+        <div className="overflow-hidden rounded-2xl border border-pebble bg-white">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/product/screens/estimate-card.webp"
+            alt="Shortzy cost estimate step: estimated AI cost for the selected video, shown as a range before you continue"
+            width={800}
+            height={480}
+            loading="lazy"
+            className="block h-auto w-full transition-transform duration-700 ease-brand group-hover:scale-[1.02]"
+          />
         </div>
-        <div className="relative mt-3 h-2 rounded-full bg-pebble/70">
-          <div className="absolute inset-y-0 left-0 w-[40%] rounded-full bg-maroon" />
-          <div className="absolute left-[40%] top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-maroon bg-white" />
-        </div>
-        <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-pebble bg-white px-3 py-2.5 text-[13px]">
-          <span className="font-semibold">Gemini</span>
-          <span className="rounded-full bg-rose px-2 py-0.5 text-[11px] font-semibold text-maroon-pressed">
-            Recommended
-          </span>
-          <span className="ml-auto flex items-center gap-1.5 whitespace-nowrap text-mute">
-            Estimated range
-            <span className="flex gap-0.5">
-              <span className="h-2.5 w-6 rounded-sm bg-oat" />
-              <span className="h-2.5 w-10 rounded-sm bg-oat/50" />
-            </span>
-          </span>
-        </div>
-        <div className="mt-3 flex items-center justify-between text-[12px] text-mute">
-          <span>Up to 10 shorts, edited on your computer</span>
-          <span className="rounded-lg bg-maroon px-3 py-1.5 font-semibold text-white">Start</span>
-        </div>
-      </div>
+        <figcaption className="mt-3 text-[12px] leading-snug text-mute">
+          Sample estimate from the app for a 24-minute video. Your cost depends on the video&apos;s length and the
+          model you choose, and your provider&apos;s bill is final.
+        </figcaption>
+      </figure>
     </Card>
   );
 }
@@ -292,7 +308,7 @@ export function Features() {
   return (
     <section id="features" aria-labelledby="features-title" className="py-24 sm:py-32">
       <Container>
-        <div className="max-w-[760px]">
+        <Reveal className="max-w-[760px]">
           <Eyebrow>What&apos;s inside</Eyebrow>
           <h2
             id="features-title"
@@ -303,7 +319,7 @@ export function Features() {
           <p className="mt-5 max-w-[56ch] text-[17px] leading-relaxed text-mute sm:text-[18px]">
             Every pick comes with its reasoning, and every setting can be changed. Here&apos;s what you get.
           </p>
-        </div>
+        </Reveal>
 
         <div className="mt-14 grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
           <CaptionsCard />

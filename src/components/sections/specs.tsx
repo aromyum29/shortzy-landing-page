@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/container";
+import { Reveal } from "@/components/ui/reveal";
 
 const SPECS = [
   { big: "1 to 10", small: "clips per video. Only the strong ones." },
@@ -13,8 +14,10 @@ export function Specs() {
       <Container>
         <dl className="grid grid-cols-2 lg:grid-cols-4">
           {SPECS.map((s, i) => (
-            <div
+            <Reveal
               key={s.big}
+              delay={i * 0.08}
+              y={16}
               className={[
                 "flex flex-col gap-1 py-8 pr-4 sm:py-10",
                 i % 2 === 1 ? "border-l border-pebble pl-4 sm:pl-6" : "",
@@ -27,7 +30,7 @@ export function Specs() {
                 {s.big}
               </dt>
               <dd className="max-w-[24ch] text-[14px] leading-snug text-mute sm:text-[15px]">{s.small}</dd>
-            </div>
+            </Reveal>
           ))}
         </dl>
         <p className="border-t border-pebble py-5 text-center text-[14px] text-mute sm:text-[15px]">

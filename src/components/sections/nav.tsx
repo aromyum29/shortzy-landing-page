@@ -41,7 +41,7 @@ export function Nav() {
       </a>
       <div className="mx-auto flex h-[72px] w-full max-w-[1200px] items-center gap-6 px-4 sm:px-6 lg:px-8">
         <a href="#top" aria-label="Shortzy home" className="shrink-0">
-          <Logo width={124} />
+          <Logo />
         </a>
 
         <nav aria-label="Main" className="ml-4 hidden lg:block">
