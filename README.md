@@ -51,7 +51,9 @@ sample workspace and keeps the qualifiers (scores are AI estimates, costs are sa
 results or a price promise.
 
 Motion: the hero window cycles the real screens with a slow scroll (pausable, stops off screen), the phone plays the
-matching clip, the window settles flat on scroll, and sections fade in once. Reduced motion shows static screens and
+matching clip, the window settles flat on scroll, and sections fade in once. "What's inside" is scroll-scrubbed
+(headline words rise out of their lines, cards rise and settle, bars fill and slots pop as you scroll, with spring
+smoothing). Reduced motion shows static screens and
 posters.
 
 ## Brand

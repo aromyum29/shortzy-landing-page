@@ -156,7 +156,7 @@ export function ProductShowcase() {
   return (
     <div ref={rootRef} className="relative mx-auto max-w-[1120px]">
       <motion.div
-        style={reduce ? undefined : { rotateX: tilt, scale, transformPerspective: 1800 }}
+        style={reduce ? { rotateX: 0, scale: 1 } : { rotateX: tilt, scale, transformPerspective: 1800 }}
         className="relative"
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
@@ -233,7 +233,7 @@ export function ProductShowcase() {
         </div>
 
         <motion.div
-          style={reduce ? undefined : { y: phoneY }}
+          style={reduce ? { y: 0 } : { y: phoneY }}
           className="absolute -bottom-[10%] -right-[1%] z-10 w-[32%] max-w-[240px] sm:-right-[2%] sm:w-[23%] lg:-right-[4%]"
         >
           <PhoneVideo clip={slide.clip} />
@@ -331,7 +331,7 @@ function PanningScreen({ slide, progress, still }: { slide: Slide; progress: Mot
       height={slide.h}
       draggable={false}
       className="absolute inset-x-0 top-0 block h-auto w-full select-none"
-      style={still ? undefined : { y }}
+      style={still ? { y: "0%" } : { y }}
     />
   );
 }
