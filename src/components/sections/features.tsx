@@ -1,7 +1,15 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
-import { motion, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  motion,
+  useInView,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "motion/react";
 import { Check, Info, ScanFace, Presentation } from "lucide-react";
 import { Container, Eyebrow } from "@/components/ui/container";
 import { Captions, CAPTION_PRESETS, type CaptionPreset } from "@/components/mockups/captions";
@@ -361,9 +369,128 @@ function FewerCard() {
 
 /* ---------------------------------------------------------------- Framing */
 
+/*
+ * One real 16:9 sample frame drives both views, so the output is always exactly what sits inside the crop
+ * window. The speaker sways a little (a still frame cannot move on its own), the crop follows her face on a
+ * smoothed path, and as the card scrolls in the crop glides from a plain centred crop onto the face.
+ * Every position below is a percentage of the frame.
+ */
+const FRAME_SRC = "/product/stills/interview.webp";
+/** 32 x 18 copy of the frame, painted underneath so the area shows the person, never a blank box, while it loads. */
+const FRAME_LQIP =
+  "data:image/webp;base64,UklGRgwBAABXRUJQVlA4IAABAABwBQCdASogABIAPtFUo0uoJKMhsAgBABoJQBWAtQSmA1MK0662mvXHZiWD+ewhAseHNHBUAP6lpWOK+KZblMjhq1BJQhzHPHZatquZz3KLIqQNnm2E49IyipgYy1nR+S4hYuNFcu8dO6dAL+FFIi8UwZwxRgRd8R8OtNIdnHQ9MATquY+Tsq20QDa1JFj+E3VkcwxldRZRnu53VijyZcoCwLzt+ZruiIjgr3Yioy/UWkOqrSYhe5QUGWa71W5HWApbmEAdoF0o2odap5n8jIb+iFpjm4/stsm7uhLjDiZMVHZ14qAdGdyUGfjRh90ciB+eY8oDTLzjl+PvTCVSxSAA";
+const FACE = { x: 45, y: 24.5, w: 11, h: 25 }; // the speaker's face in the sample frame
+const CROP_W = (9 / 16) * (9 / 16) * 100; // a 9:16 window in a 16:9 frame covers 31.64% of its width
+const ZOOM = 1.06; // headroom so the sway never reveals an edge
+const SWAY = 2.2; // how far the speaker drifts either way
+const SWAY_PERIOD = 7000;
+const FACE_X = 50 + (FACE.x - 50) * ZOOM;
+const CENTRED_LEFT = 50 - CROP_W / 2;
+const FACE_LEFT = FACE_X - CROP_W / 2;
+const pct = (v: number) => `${v}%`;
+const FRAMING_LABEL = {
+  face: "Sample interview frame. A 9:16 crop window follows the speaker's face, so the vertical output keeps her in frame.",
+  fit: "Sample interview frame. Fit framing keeps the whole 16:9 frame inside the vertical output, with bars above and below.",
+} as const;
+
+/** The sample frame, swaying as one layer. `children` ride along with it (the face brackets in the source view). */
+function FrameScene({ sway, children }: { sway: MotionValue<string> | string; children?: ReactNode }) {
+  return (
+    <motion.div
+      className="absolute inset-0 bg-cover bg-center"
+      style={{ scale: ZOOM, x: sway, backgroundImage: `url("${FRAME_LQIP}")` }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={FRAME_SRC}
+        alt=""
+        width={1280}
+        height={720}
+        decoding="async"
+        draggable={false}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      {children}
+    </motion.div>
+  );
+}
+
+/** Face-detection brackets around the speaker's face. */
+function FaceMarker({ opacity, className }: { opacity: MotionValue<number> | number; className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("absolute", className)}
+      style={{
+        left: pct(FACE.x - FACE.w / 2),
+        top: pct(FACE.y - FACE.h / 2),
+        width: pct(FACE.w),
+        height: pct(FACE.h),
+      }}
+    >
+      <motion.svg
+        viewBox="0 0 10 10"
+        preserveAspectRatio="none"
+        className="absolute inset-0 size-full text-white/90"
+        style={{ opacity }}
+      >
+        <path
+          d="M0 3V0h3M7 0h3v3M10 7v3H7M3 10H0V7"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
+        />
+      </motion.svg>
+    </span>
+  );
+}
+
 function FramingCard() {
   const [mode, setMode] = useState<"face" | "fit">("face");
-  const src = mode === "face" ? "/product/stills/interview.webp" : "/product/screens/library-16x9.webp";
+  const face = mode === "face";
+  const reduce = usePrefersReducedMotion();
+  const frame = useRef<HTMLDivElement>(null);
+  const inView = useInView(frame, { amount: 0.2 });
+
+  // The speaker's drift: a slow sine, run only while the frame is on screen.
+  const sway = useMotionValue(0);
+  const phase = useRef(0);
+  useEffect(() => {
+    if (reduce || !inView) {
+      if (reduce) sway.set(0);
+      return;
+    }
+    let raf = 0;
+    const start = performance.now() - phase.current;
+    const tick = (now: number) => {
+      phase.current = now - start;
+      sway.set(Math.sin((phase.current / SWAY_PERIOD) * Math.PI * 2) * SWAY);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, reduce, sway]);
+
+  // Scroll-scrubbed lock-on, and a crop path that trails the face slightly, like the app's smoothed tracking.
+  const lock = useScrub(frame, ["start 0.95", "start 0.5"]);
+  const follow = useSpring(sway, { stiffness: 70, damping: 16, mass: 0.6 });
+  const cropLeft = useTransform([lock, follow], ([l, s]: number[]) =>
+    Math.min(100 - CROP_W, Math.max(0, CENTRED_LEFT + l * (FACE_LEFT + s - CENTRED_LEFT))),
+  );
+  const swayX = useTransform(sway, pct);
+  const cropX = useTransform(cropLeft, (v) => pct((v / CROP_W) * 100));
+  const stageX = useTransform(cropLeft, (v) => pct(-v));
+  const markerOpacity = useTransform(lock, [0.55, 1], [0, 1]);
+
+  const still = {
+    sway: "0%",
+    cropX: pct((FACE_LEFT / CROP_W) * 100),
+    stageX: pct(-FACE_LEFT),
+    marker: 1,
+  };
+  const live = reduce ? still : { sway: swayX, cropX, stageX, marker: markerOpacity };
+  const fade = "transition-opacity duration-300 ease-brand motion-reduce:transition-none";
 
   return (
     <Card className="lg:col-span-6">
@@ -405,44 +532,60 @@ function FramingCard() {
             ))}
           </div>
 
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4">
+          <div
+            role="img"
+            aria-label={FRAMING_LABEL[mode]}
+            className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4"
+          >
             <ScrubIn y={20}>
-              <div className="relative aspect-video overflow-hidden rounded-lg bg-white">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  key={mode}
-                  src={src}
-                  alt=""
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover motion-safe:animate-[fade-in_400ms_ease-out]"
+              <div ref={frame} className="relative aspect-video overflow-hidden rounded-lg bg-deep">
+                <FrameScene sway={live.sway}>
+                  <FaceMarker opacity={live.marker} className={cn(fade, face ? "opacity-100" : "opacity-0")} />
+                </FrameScene>
+                {/* Face tracking: the 9:16 window, everything outside it dimmed. */}
+                <motion.div
+                  className={cn("absolute inset-y-0 left-0", fade, face ? "opacity-100" : "opacity-0")}
+                  style={{ width: pct(CROP_W), x: live.cropX }}
+                >
+                  <div className="absolute inset-0 rounded-[3px] border-[3px] border-maroon shadow-[0_0_0_999px_rgba(41,38,40,0.5)]" />
+                  <span className="absolute -top-px left-1/2 -translate-x-1/2 rounded-b-md bg-maroon px-1.5 py-px font-mono text-[0.625rem] text-white">
+                    9:16
+                  </span>
+                </motion.div>
+                {/* Fit: the whole frame is kept. */}
+                <div
+                  className={cn(
+                    "absolute inset-0 rounded-lg border-[3px] border-maroon",
+                    fade,
+                    face ? "opacity-0" : "opacity-100",
+                  )}
                 />
-                {mode === "face" ? (
-                  <div className="absolute inset-y-0 left-[48%] w-[31.6%] -translate-x-1/2 motion-safe:animate-[track_5s_ease-in-out_infinite]">
-                    <div className="absolute inset-0 rounded-[3px] border-[3px] border-maroon shadow-[0_0_0_999px_rgba(41,38,40,0.45)]" />
-                    <span className="absolute -top-px left-1/2 -translate-x-1/2 rounded-b-md bg-maroon px-1.5 py-px font-mono text-[0.625rem] text-white">
-                      9:16
-                    </span>
-                  </div>
-                ) : (
-                  <div className="absolute inset-0 rounded-[3px] border-[3px] border-maroon" />
-                )}
+                <span className="absolute right-2 top-2 rounded-md bg-white/90 px-1.5 py-px font-mono text-[0.625rem] text-ink">
+                  Sample
+                </span>
               </div>
             </ScrubIn>
             <ScrubIn x={24} y={0} from={0.94} to={0.68} className="w-[64px] sm:w-[84px]">
               <div className="relative aspect-[9/16] overflow-hidden rounded-md bg-deep ring-1 ring-pebble">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  key={mode}
-                  src={src}
-                  alt=""
-                  loading="lazy"
+                {/* Face tracking output: exactly what is inside the crop window. */}
+                <div className={cn("absolute inset-0", fade, face ? "opacity-100" : "opacity-0")}>
+                  <motion.div
+                    className="absolute inset-y-0 left-0"
+                    style={{ width: pct(10000 / CROP_W), x: live.stageX }}
+                  >
+                    <FrameScene sway={live.sway} />
+                  </motion.div>
+                </div>
+                {/* Fit output: the whole frame, letterboxed. */}
+                <div
                   className={cn(
-                    "absolute motion-safe:animate-[fade-in_400ms_ease-out]",
-                    mode === "face"
-                      ? "inset-0 h-full w-full object-cover object-[48%_center]"
-                      : "inset-x-0 top-1/2 aspect-video w-full -translate-y-1/2 object-cover",
+                    "absolute inset-x-0 top-1/2 aspect-video -translate-y-1/2 overflow-hidden",
+                    fade,
+                    face ? "opacity-0" : "opacity-100",
                   )}
-                />
+                >
+                  <FrameScene sway={live.sway} />
+                </div>
               </div>
               <p className="mt-1.5 text-center font-mono text-[0.625rem] text-mute">Output</p>
             </ScrubIn>
