@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { memo, useLayoutEffect, useRef } from "react";
 import { AnimatePresence, motion, useMotionValue, useTransform, type MotionValue } from "motion/react";
 import { cn } from "@/lib/utils";
 import {
@@ -21,13 +21,22 @@ import {
  * points are mapped through the camera (x0, y0, k).
  */
 
+const EASE = [0.2, 0.8, 0.2, 1] as const;
+
 type Shared = { t: MotionValue<number>; cam: MotionValue<Cam> };
 
-export function Cursor({ t, cam, small }: Shared & { small: boolean }) {
-  const x = useTransform(() => (cursorAt(t.get())[0] - cam.get().x0) * cam.get().k);
-  const y = useTransform(() => (cursorAt(t.get())[1] - cam.get().y0) * cam.get().k);
-  const scale = useTransform(t, cursorScaleAt);
-  const opacity = useTransform(t, cursorOpacityAt);
+export const Cursor = memo(function Cursor({ t, cam, small }: Shared & { small: boolean }) {
+  // One derived value per frame from the clock and the camera (it also refreshes once the frame is measured).
+  const p = useTransform(() => {
+    const v = t.get();
+    const c = cam.get();
+    const [cx, cy] = cursorAt(v);
+    return { x: (cx - c.x0) * c.k, y: (cy - c.y0) * c.k, s: cursorScaleAt(v), o: cursorOpacityAt(v) };
+  });
+  const x = useTransform(p, (v) => v.x);
+  const y = useTransform(p, (v) => v.y);
+  const scale = useTransform(p, (v) => v.s);
+  const opacity = useTransform(p, (v) => v.o);
   const w = small ? 16 : 18;
   const h = small ? 21 : 24;
   return (
@@ -49,9 +58,9 @@ export function Cursor({ t, cam, small }: Shared & { small: boolean }) {
       </motion.svg>
     </motion.div>
   );
-}
+});
 
-export function Ripple({ t, cam }: Shared) {
+export const Ripple = memo(function Ripple({ t, cam }: Shared) {
   const r = useTransform(() => {
     const hit = rippleAt(t.get());
     const c = cam.get();
@@ -69,7 +78,7 @@ export function Ripple({ t, cam }: Shared) {
       style={{ x, y, width: size, height: size, opacity }}
     />
   );
-}
+});
 
 const BY_ID = Object.fromEntries(BUBBLES.map((b) => [b.id, b])) as Record<string, Bubble>;
 
@@ -91,9 +100,12 @@ export function Bubbles({
 }: Shared & Fit & { ids: string[]; still: boolean; fw: MotionValue<number>; fh: MotionValue<number> }) {
   return (
     <AnimatePresence>
-      {ids.map((id) => (
-        <BubbleView key={id} b={BY_ID[id]} compact={compact} dense={dense} still={still} fw={fw} fh={fh} {...shared} />
-      ))}
+      {ids
+        .map((id) => BY_ID[id])
+        .filter((b) => !(compact && b.compact === false))
+        .map((b) => (
+          <BubbleView key={b.id} b={b} compact={compact} dense={dense} still={still} fw={fw} fh={fh} {...shared} />
+        ))}
     </AnimatePresence>
   );
 }
@@ -147,7 +159,7 @@ function layoutBubble(ax: number, ay: number, w: number, h: number, place: Place
   return { left, top, tx, ty, w, h };
 }
 
-function BubbleView({
+const BubbleView = memo(function BubbleView({
   b,
   t,
   cam,
@@ -176,6 +188,7 @@ function BubbleView({
 
   const anchor = compact && b.anchorCompact ? b.anchorCompact : b.anchor;
   const place = compact && b.placeCompact ? b.placeCompact : b.place;
+  const note = compact && b.noteCompact ? b.noteCompact : b.note;
 
   const box = useTransform(() => {
     const c = cam.get();
@@ -200,39 +213,53 @@ function BubbleView({
     qualifier: "text-[0.75rem] font-medium",
     aha: compact ? "text-[0.875rem] font-semibold" : dense ? "text-[0.8125rem] font-semibold" : "text-[0.9375rem] font-semibold",
   }[b.kind];
+  const maxW = compact
+    ? b.wideCompact
+      ? "max-w-[min(17rem,calc(100vw-3rem))]"
+      : "max-w-[min(11.5rem,56vw)]"
+    : dense
+      ? "max-w-[15rem]"
+      : note
+        ? "max-w-[16rem]"
+        : "max-w-[18rem]";
   const lift = place === "bottom" ? -6 : 6;
 
   return (
     <motion.div className="absolute left-0 top-0 z-10" style={{ x, y }}>
       <motion.div
         ref={ref}
-        className={cn(
-          "relative w-max rounded-[12px] shadow-[0_10px_24px_-12px_rgba(41,38,40,0.55)]",
-          compact ? "max-w-[12.5rem]" : dense ? "max-w-[15rem]" : "max-w-[18rem]",
-          tone,
-        )}
+        className={cn("relative w-max rounded-[12px] shadow-[0_10px_24px_-12px_rgba(41,38,40,0.55)]", maxW, tone)}
         style={{ originX, originY }}
-        initial={still ? false : { opacity: 0, scale: 0.88, y: lift }}
+        initial={still ? false : { opacity: 0, scale: 0.92, y: lift }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.16 } }}
-        transition={{ type: "spring", bounce: 0.3, visualDuration: 0.32 }}
+        exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.16, ease: EASE } }}
+        transition={{
+          opacity: { duration: 0.2, ease: EASE },
+          default: { type: "spring", bounce: 0, visualDuration: 0.28 },
+        }}
       >
-        <motion.span
-          className={cn("absolute size-[10px] rotate-45", tone)}
-          style={{ left: tailX, top: tailY }}
-        />
+        <motion.span className={cn("absolute size-[10px] rotate-45", tone)} style={{ left: tailX, top: tailY }} />
         <span
           className={cn(
             "relative block text-balance rounded-[12px] leading-[1.25]",
             dense ? "px-2.5 py-1.5" : "px-3 py-2",
             tone,
             "border-0",
-            text,
           )}
         >
-          {b.text}
+          <span className={cn("block", text)}>{b.text}</span>
+          {note && (
+            <span
+              className={cn(
+                "mt-1.5 block border-t border-white/25 pt-1.5 font-medium leading-[1.3] text-white/90",
+                dense ? "text-[0.6875rem]" : "text-[0.75rem]",
+              )}
+            >
+              {note}
+            </span>
+          )}
         </span>
       </motion.div>
     </motion.div>
   );
-}
+});

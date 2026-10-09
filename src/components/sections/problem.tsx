@@ -78,7 +78,7 @@ function ScrubIn({
   );
 }
 
-/** Card that rises, un-tilts and settles as it scrolls in. `lag` lets a right-hand card trail its neighbour. */
+/** Card that rises, un-tilts and settles as it scrolls in. `lag` lets a right-hand card trail its neighbor. */
 function Card({ className, children, lag = 0 }: { className?: string; children: ReactNode; lag?: number }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = usePrefersReducedMotion();
@@ -298,7 +298,7 @@ function ShortzyCard() {
         ))}
       </ul>
       <Closing className="text-[0.875rem] font-normal text-rose sm:text-[0.875rem] md:col-start-1 md:row-start-3 lg:row-start-4">
-        You see the AI estimate before anything runs.
+        Your AI gets a prepared copy to find the moments. You see the estimate first.
       </Closing>
     </Card>
   );

@@ -47,8 +47,15 @@ export const LIBRARY: { title: string; length: string; status: "source" | "clips
   { title: "Bootstrapping a business that fits your life", length: "50:12", status: "clips", date: "10 Jul", still: "interview" },
 ];
 
+/**
+ * A tighter 9:16 framing of the sample podcast still, for a clip whose
+ * moment is a close-up. `crop` is [x, y, width, height] in the 1280 x 720
+ * still; `caption` is the clip's burned-in caption, drawn in its style.
+ */
+export type CloseUp = { src: string; crop: readonly [number, number, number, number]; caption: readonly string[] };
+
 /** Results in rank order, with the fixture's own reason sentences. */
-export const CLIPS: { title: string; score: number; reason: string; poster: string }[] = [
+export const CLIPS: { title: string; score: number; reason: string; poster: string; closeUp?: CloseUp }[] = [
   {
     title: "Trust is the growth strategy nobody can copy",
     score: 94,
@@ -62,10 +69,13 @@ export const CLIPS: { title: string; score: number; reason: string; poster: stri
     poster: "/product/clips/podcast-clip-2.webp",
   },
   {
+    // Same speaker as clip 1, so the grid shows it as a close-up: the first
+    // row reads as three different moments, not a repeated tile.
     title: "Stop turning every post into a pitch",
     score: 88,
     reason: "A relatable mistake followed by a useful alternative.",
-    poster: "/product/clips/podcast-clip-3.webp",
+    poster: "/product/clips/podcast-clip-3-late.webp",
+    closeUp: { src: PROJECT.still, crop: [186, 44, 279, 496], caption: ["A small audience.", "A big opportunity."] },
   },
   {
     title: "The smallest audience can be your best one",

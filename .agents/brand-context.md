@@ -16,6 +16,7 @@
 ## Pricing model
 - **Shortzy**: a one-time purchase. No subscription, no credits, no allowance that resets. The amount is not set, so no price is shown anywhere. "Pay once" and "Pay once, it's yours" are fine; never call Shortzy free.
 - **AI usage**: billed by the user's own provider (Google for Gemini, Alibaba Cloud for Qwen), at their rates, with no markup from Shortzy. Shortzy shows an estimated range before each run; checking it makes no paid AI call.
+- **Sample costs on the page** (real app fixtures, always with the model named and the estimate and provider-bill qualifiers): $0.43 to $1.33 for a 44:48 video on Gemini Flash 3.8 (recommended; recorded usage $0.43), and $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash.
 - **To confirm with the founder**: whether the purchase includes updates, covers both Mac and Windows, and how many computers.
 
 ## Audience
@@ -50,12 +51,13 @@
 
 ## Hard rules (from the owner)
 - Never imply a clip score guarantees views.
-- "Local" is not "offline": a prepared copy of the audio and video goes to the user's chosen AI provider for analysis, and YouTube imports and AI analysis need an internet connection.
+- "Local" is not "offline": a prepared copy of the audio and video goes to the user's chosen AI provider for analysis, and YouTube imports and AI analysis need an internet connection. Never imply that nothing leaves the computer; where the page explains how it works or what stays private, say so.
 - Never call Shortzy free; it is paid once. "Costs nothing" only for the estimate or for no Shortzy fees after the purchase.
 - Do not promise savings versus competitors, and do not name competitors on the page.
 - No price amount until the founder sets one.
 - Do not call the product production-ready.
 - Do not use em dashes or en dashes in product copy.
+- Page copy uses American spelling (color, centered, favorite, customize), matching the app UI.
 
 ## Goals
 - **Primary Goal**: Wishlist signups ahead of launch, from creators who want to own their clipping tool (no trial and no price amount shown yet)

@@ -69,12 +69,28 @@ const jsonLd = {
   description: site.description,
 };
 
+/*
+ * Runs while the HTML is parsed, before first paint and long before React hydrates.
+ * 1. Adds html.js, which is what lets scroll reveals start hidden (see globals.css). With
+ *    JavaScript off, or without IntersectionObserver, the class never appears and every block
+ *    simply shows.
+ * 2. Reveals [data-reveal] blocks as they scroll into view, so on a slow connection a visitor who
+ *    scrolls before hydration still sees them. Reveal (components/ui/reveal.tsx) does the same
+ *    after hydration for anything mounted later.
+ */
+const revealScript = `(function(){if(!("IntersectionObserver" in window))return;var d=document;d.documentElement.classList.add("js");function run(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.setAttribute("data-shown","");io.unobserve(e.target)}})},{rootMargin:"0px 0px -8% 0px"});d.querySelectorAll("[data-reveal]:not([data-shown])").forEach(function(el){io.observe(el)})}if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",run);else run()})()`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
+    // The inline script adds a class before hydration, so React is told the class may differ.
     <html
       lang="en"
       className={`${display.variable} ${body.variable} ${mono.variable} antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: revealScript }} />
+      </head>
       <body className="min-h-dvh">
         <script
           type="application/ld+json"

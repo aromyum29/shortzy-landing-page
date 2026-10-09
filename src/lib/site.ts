@@ -33,6 +33,7 @@ export const site = {
    * Where wishlist emails are POSTed (field name "email"), e.g. a Formspree,
    * Tally, Loops or ConvertKit form endpoint. Null until a provider is chosen:
    * the form then says signups aren't connected yet instead of faking success.
+   * Set this before the page goes public, or no "Join the wishlist" button collects anything.
    */
   wishlistFormAction: null as string | null,
 
@@ -50,7 +51,7 @@ export const site = {
 /** Section links, in page order. */
 export const nav = [
   { label: "How it works", href: "#how-it-works" },
+  { label: "What's inside", href: "#features" },
   { label: "Your AI", href: "#your-ai" },
-  { label: "Features", href: "#features" },
   { label: "FAQ", href: "#faq" },
 ] as const;

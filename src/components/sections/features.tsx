@@ -16,6 +16,7 @@ import { Captions, CAPTION_PRESETS, type CaptionPreset } from "@/components/mock
 import { LoopVideo } from "@/components/mockups/loop-video";
 import { useWordTicker } from "@/hooks/use-word-ticker";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { appFont } from "@/components/mockups/app-demo/font";
 import { cn } from "@/lib/utils";
 
 /*
@@ -115,7 +116,7 @@ function Word({
   );
 }
 
-/** Card that rises, un-tilts and settles as it scrolls in. `lag` lets a right-hand card trail its neighbour. */
+/** Card that rises, un-tilts and settles as it scrolls in. `lag` lets a right-hand card trail its neighbor. */
 function Card({ className, children, lag = 0 }: { className?: string; children: ReactNode; lag?: number }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = usePrefersReducedMotion();
@@ -154,6 +155,15 @@ function CardVisual({ children, className }: { children: ReactNode; className?: 
   return <div className={cn("mt-8 lg:mt-auto lg:pt-8", className)}>{children}</div>;
 }
 
+/** The label every fictional sample (frame, clip, estimate) carries. */
+function SampleChip({ className }: { className?: string }) {
+  return (
+    <span className={cn("rounded-md bg-white/90 px-1.5 py-px font-mono text-[0.625rem] leading-[1.5] text-ink", className)}>
+      Sample
+    </span>
+  );
+}
+
 /* ---------------------------------------------------------------- Captions */
 
 const LINE = "the one pricing lesson I wish I learned on day one".split(" ");
@@ -170,7 +180,7 @@ function CaptionsCard() {
     <Card className="lg:col-span-7 lg:row-span-2">
       <CardTitle>Captions people actually read.</CardTitle>
       <CardBody>
-        Word-timed captions in four presets. Change fonts, colours and placement if you like, or keep the defaults and
+        Word-timed captions in four presets. Change fonts, colors and placement if you like, or keep the defaults and
         move on.
       </CardBody>
 
@@ -188,9 +198,7 @@ function CaptionsCard() {
             </motion.div>
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/45 to-transparent" />
             <Captions preset={preset} words={LINE} active={active} />
-            <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 font-mono text-[0.6875rem] text-ink">
-              Preview
-            </span>
+            <SampleChip className="absolute left-3 top-3 px-2 py-0.5 text-[0.6875rem]" />
           </div>
         </div>
 
@@ -238,7 +246,7 @@ function CaptionsCard() {
           <ScrubIn y={14} from={0.96} to={0.8}>
             <div className="mt-4 flex flex-wrap items-center gap-1.5 text-[0.75rem]">
               <span className="mr-1 font-medium text-mute">Fine-tune:</span>
-              {["Font", "Colour", "Placement", "Size", "Language"].map((t) => (
+              {["Font", "Color", "Placement", "Size", "Language"].map((t) => (
                 <span key={t} className="rounded-full border border-pebble bg-white px-2.5 py-1 font-medium text-ink/80">
                   {t}
                 </span>
@@ -282,30 +290,39 @@ function RankedCard() {
     <Card className="lg:col-span-5" lag={0.06}>
       <CardTitle>Ranked, with reasons.</CardTitle>
       <CardBody>
-        Every clip arrives titled and scored on six things, so you know what to post first and why it was picked.
+        Every clip arrives titled and scored on 6 things, so you know what to post first and why it was picked.
       </CardBody>
 
       <CardVisual>
-        <div className="flex gap-4 rounded-2xl bg-paper p-4">
-          <div className="relative w-[76px] shrink-0 self-start overflow-hidden rounded-lg bg-deep">
-            <LoopVideo
-              src="/product/clips/podcast-clip-1"
-              poster="/product/clips/podcast-clip-1.webp"
-              className="block aspect-[9/16] w-full object-cover"
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="flex items-baseline justify-between gap-2">
-              <span className="truncate text-[0.875rem] font-semibold">Trust is the growth strategy nobody can copy</span>
-              <span className="font-mono text-[0.75rem] text-maroon tabular">#1</span>
+        {/*
+          The panel is a size container. Normally the thumbnail sits beside the title and the scores. When the panel is
+          narrower than 11rem (small phones with larger text), the scores move under the thumbnail and
+          title, so every label keeps a readable line beside its bar.
+        */}
+        <div className="@container rounded-2xl bg-paper p-4">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] grid-rows-[auto_1fr] gap-x-3 [grid-template-areas:'thumb_title'_'list_list'] sm:gap-x-4 @min-[11rem]:[grid-template-areas:'thumb_title'_'thumb_list']">
+            {/* Sized in rem so the thumbnail (and its chip) grows with the text. */}
+            <div className="relative w-[3.5rem] self-start overflow-hidden rounded-lg bg-deep [grid-area:thumb] sm:w-[4.75rem]">
+              <LoopVideo
+                src="/product/clips/podcast-clip-1"
+                poster="/product/clips/podcast-clip-1.webp"
+                className="block aspect-[9/16] w-full object-cover"
+              />
+              <SampleChip className="absolute left-1 top-1 px-1 sm:left-1.5 sm:top-1.5 sm:px-1.5" />
+            </div>
+            <p className="flex min-w-0 items-start justify-between gap-2 [grid-area:title]">
+              <span className="line-clamp-3 text-[0.875rem] font-semibold leading-snug @min-[11rem]:line-clamp-2">
+                Trust is the growth strategy nobody can copy
+              </span>
+              <span className="font-mono text-[0.75rem] leading-[1.6] text-maroon tabular">#1</span>
             </p>
-            <ul className="mt-2.5 space-y-1.5" aria-label="Score breakdown">
+            <ul className="mt-2.5 min-w-0 space-y-1.5 [grid-area:list]" aria-label="Score breakdown">
               {DIMENSIONS.map((d, i) => (
                 <li
                   key={d.name}
-                  className="grid grid-cols-[minmax(0,1fr)_88px] items-center gap-2 text-[0.75rem] text-mute"
+                  className="grid grid-cols-[minmax(0,1fr)_minmax(2.5rem,30%)] items-center gap-x-2 text-[0.75rem] leading-tight text-mute"
                 >
-                  <span className="truncate">{d.name}</span>
+                  <span>{d.name}</span>
                   <ScoreBar v={d.v} i={i} />
                 </li>
               ))}
@@ -372,7 +389,7 @@ function FewerCard() {
 /*
  * One real 16:9 sample frame drives both views, so the output is always exactly what sits inside the crop
  * window. The speaker sways a little (a still frame cannot move on its own), the crop follows her face on a
- * smoothed path, and as the card scrolls in the crop glides from a plain centred crop onto the face.
+ * smoothed path, and as the card scrolls in the crop glides from a plain centered crop onto the face.
  * Every position below is a percentage of the frame.
  */
 const FRAME_SRC = "/product/stills/interview.webp";
@@ -385,7 +402,7 @@ const ZOOM = 1.06; // headroom so the sway never reveals an edge
 const SWAY = 2.2; // how far the speaker drifts either way
 const SWAY_PERIOD = 7000;
 const FACE_X = 50 + (FACE.x - 50) * ZOOM;
-const CENTRED_LEFT = 50 - CROP_W / 2;
+const CENTERED_LEFT = 50 - CROP_W / 2;
 const FACE_LEFT = FACE_X - CROP_W / 2;
 const pct = (v: number) => `${v}%`;
 const FRAMING_LABEL = {
@@ -476,7 +493,7 @@ function FramingCard() {
   const lock = useScrub(frame, ["start 0.95", "start 0.5"]);
   const follow = useSpring(sway, { stiffness: 70, damping: 16, mass: 0.6 });
   const cropLeft = useTransform([lock, follow], ([l, s]: number[]) =>
-    Math.min(100 - CROP_W, Math.max(0, CENTRED_LEFT + l * (FACE_LEFT + s - CENTRED_LEFT))),
+    Math.min(100 - CROP_W, Math.max(0, CENTERED_LEFT + l * (FACE_LEFT + s - CENTERED_LEFT))),
   );
   const swayX = useTransform(sway, pct);
   const cropX = useTransform(cropLeft, (v) => pct((v / CROP_W) * 100));
@@ -497,7 +514,7 @@ function FramingCard() {
       <CardTitle>Framing that follows the face.</CardTitle>
       <CardBody>
         Face tracking on your computer keeps people in frame as they move. Slides and screen recordings get fit
-        framing. No face found? Shortzy uses a centred crop and tells you.
+        framing. No face found? Shortzy uses a centered crop and tells you.
       </CardBody>
 
       <CardVisual>
@@ -560,9 +577,7 @@ function FramingCard() {
                     face ? "opacity-0" : "opacity-100",
                   )}
                 />
-                <span className="absolute right-2 top-2 rounded-md bg-white/90 px-1.5 py-px font-mono text-[0.625rem] text-ink">
-                  Sample
-                </span>
+                <SampleChip className="absolute right-2 top-2" />
               </div>
             </ScrubIn>
             <ScrubIn x={24} y={0} from={0.94} to={0.68} className="w-[64px] sm:w-[84px]">
@@ -598,6 +613,81 @@ function FramingCard() {
 
 /* ------------------------------------------------------------------- Cost */
 
+/*
+ * A coded copy of the app's estimate step (its own tokens and Inter), at a readable size. The figures are
+ * the app's 24-minute sample on Qwen 3.8 Omni Flash, so the model always sits next to the price.
+ */
+const ESTIMATE = {
+  provider: "Qwen",
+  model: "Qwen 3.8 Omni Flash",
+  logo: "/brand/providers/qwen.png",
+  from: "$0.03",
+  to: "$0.06",
+  recap: [
+    { value: "24:00", label: "Selected video" },
+    { value: "Up to 6", label: "Finished shorts" },
+    { value: "On your computer", label: "Editing and export" },
+  ],
+} as const;
+
+/*
+ * The frame around the panel is a size container, so the panel adapts to its own width rather than the
+ * viewport (it also reflows with larger text):
+ *  - header: logo, model and Sample chip on one line from 21rem; below that the model drops under them;
+ *  - recap: value over label, stacked, below 16rem; label and value on one line from 16rem; the app's three
+ *    columns from 24rem.
+ */
+const RECAP_ROW = "@min-[16rem]:flex-row @min-[16rem]:items-baseline @min-[16rem]:justify-between @min-[16rem]:gap-3";
+const RECAP_COLS = "@min-[24rem]:flex-col-reverse @min-[24rem]:items-start @min-[24rem]:justify-end @min-[24rem]:gap-0.5";
+
+function EstimatePanel() {
+  return (
+    <>
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 [grid-template-areas:'logo_chip'_'model_model'] @min-[21rem]:grid-cols-[auto_minmax(0,1fr)_auto] @min-[21rem]:[grid-template-areas:'logo_model_chip']">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={ESTIMATE.logo}
+          alt=""
+          width={28}
+          height={28}
+          loading="lazy"
+          className="size-7 object-contain [grid-area:logo]"
+        />
+        <p className="min-w-0 text-[0.75rem] font-semibold leading-snug tracking-[0.035em] text-[#69656b] [grid-area:model]">
+          {ESTIMATE.provider} · {ESTIMATE.model}
+        </p>
+        <SampleChip className="justify-self-end bg-[#f7f6f5] ring-1 ring-[#e8e6e8] [grid-area:chip]" />
+      </div>
+
+      <div className="mt-4 rounded-xl bg-[#f7f6f5] px-4 py-4 sm:px-5 sm:py-5">
+        <p className="text-[0.8125rem] leading-5 text-[#69656b]">Estimated AI cost for your selected video</p>
+        {/* Sized to the panel; if even the smallest size cannot fit, it wraps after "to", never inside an amount. */}
+        <p className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5">
+          <span className="text-[clamp(1.375rem,9cqw,2.125rem)] font-[650] leading-tight tracking-[-0.025em] tabular-nums">
+            <span className="whitespace-nowrap">{ESTIMATE.from} to</span> <span className="whitespace-nowrap">{ESTIMATE.to}</span>
+          </span>
+          <span className="text-[0.8125rem] text-[#69656b]">USD</span>
+        </p>
+      </div>
+
+      <dl className="mt-4 grid gap-3 border-b border-[#e8e6e8] pb-4 @min-[16rem]:gap-2 @min-[24rem]:grid-cols-3 @min-[24rem]:gap-4">
+        {ESTIMATE.recap.map((r) => (
+          <div key={r.label} className={cn("flex flex-col-reverse gap-0.5", RECAP_ROW, RECAP_COLS)}>
+            <dt className="text-[0.75rem] leading-normal text-[#69656b]">{r.label}</dt>
+            <dd className="text-[0.875rem] font-[550] leading-snug @min-[16rem]:text-right @min-[24rem]:text-left">
+              {r.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <p className="mt-4 text-[0.8125rem] leading-relaxed text-[#69656b]">
+        Your provider bills the AI usage; actual cost may vary.
+      </p>
+    </>
+  );
+}
+
 function CostCard() {
   const frame = useRef<HTMLDivElement>(null);
   const reduce = usePrefersReducedMotion();
@@ -610,25 +700,22 @@ function CostCard() {
       <CardTitle>Know the cost before you click.</CardTitle>
       <CardBody>
         Shortzy works out your AI cost from the video&apos;s length and your model, and shows it as a range. Checking
-        it costs nothing, and nothing runs until you press start.
+        it costs nothing, and nothing runs until you press Find my clips.
       </CardBody>
 
       <CardVisual>
         <figure>
-          <div ref={frame} className="overflow-hidden rounded-2xl border border-pebble bg-white">
-            <motion.img
-              src="/product/screens/estimate-card.webp"
-              alt="Shortzy cost estimate step for a sample 24-minute video on Qwen 3.8 Omni Flash: estimated AI cost of $0.03 to $0.06, shown before you continue"
-              width={800}
-              height={480}
-              loading="lazy"
+          <div ref={frame} className="@container overflow-hidden rounded-2xl border border-pebble bg-white">
+            <motion.div
               style={reduce ? { scale: 1, y: "0%" } : { scale, y }}
-              className="block h-auto w-full origin-top"
-            />
+              className={cn(appFont.className, "origin-top p-4 text-[#252327] antialiased sm:p-6")}
+            >
+              <EstimatePanel />
+            </motion.div>
           </div>
           <figcaption className="mt-3 text-[0.75rem] leading-snug text-mute">
-            Sample estimate from the app: $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Your cost
-            depends on length and model, and your provider&apos;s bill is final.
+            Sample estimate from the app. Your cost depends on the video&apos;s length and your model, and your
+            provider&apos;s bill is final.
           </figcaption>
         </figure>
       </CardVisual>

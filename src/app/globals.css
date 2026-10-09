@@ -3,7 +3,7 @@
 
 /*
  * Shortzy v3.2 brand tokens (source: docs/brand/shortzy-brand-v3.2/tokens.json).
- * Palette values are exact. Do not sample colours from the mascot raster.
+ * Palette values are exact. Do not sample colors from the mascot raster.
  * shadcn semantic variables are mapped onto the brand so any added
  * shadcn / 21st.dev component inherits Shortzy styling.
  */
@@ -31,6 +31,9 @@
 
   --radius: 12px;
   --radius-card: 24px;
+
+  /* The brand ease, for CSS animations outside Tailwind utilities. */
+  --sz-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   /* shadcn semantic mapping */
   --background: var(--sz-paper);
@@ -147,6 +150,108 @@
   }
 }
 
+/*
+ * Hero entrance. Pure CSS, so it plays from the first paint and never waits for JavaScript
+ * (or needs it at all). Each element sets its start time with --d; fill mode "both" holds the
+ * start frame through the delay and the end frame afterwards.
+ */
+@keyframes hero-word {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rise, 16px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* The path carries pathLength="1"; it stays hidden until the pen starts, so no cap dots show early. */
+@keyframes hero-draw {
+  from {
+    stroke-dashoffset: 1.02;
+    visibility: hidden;
+  }
+  to {
+    stroke-dashoffset: 0;
+    visibility: visible;
+  }
+}
+.hero-word {
+  animation: hero-word 0.55s var(--sz-ease) var(--d, 0s) both;
+}
+.hero-rise {
+  animation: hero-rise 0.45s var(--sz-ease) var(--d, 0s) both;
+}
+.hero-stage {
+  --rise: 60px;
+  animation: hero-rise 0.8s var(--sz-ease) var(--d, 0.3s) both;
+}
+.hero-draw {
+  stroke-dasharray: 1 2;
+  animation: hero-draw 0.7s var(--sz-ease) var(--d, 0.5s) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-word,
+  .hero-rise,
+  .hero-stage {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .hero-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+    visibility: visible;
+  }
+}
+
+/*
+ * Scroll reveal (components/ui/reveal.tsx). Content is hidden only when html has the "js" class,
+ * which the inline script in layout.tsx sets before first paint, and that same script (or the
+ * component once hydrated) marks each block data-shown as it scrolls into view. Without
+ * JavaScript, nothing is ever hidden.
+ */
+html.js [data-reveal] {
+  transition:
+    opacity 0.5s var(--sz-ease) var(--reveal-delay, 0s),
+    transform 0.5s var(--sz-ease) var(--reveal-delay, 0s);
+}
+html.js [data-reveal]:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 16px));
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] {
+    transition: none;
+  }
+  html.js [data-reveal]:not([data-shown]) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Without JavaScript, the scroll-scrubbed sections never get past their first frame, which motion
+ * renders inline as opacity 0. Show their at-rest state instead.
+ */
+html:not(.js) :is(section[aria-labelledby="problem-title"], #features) [style*="opacity:0"] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* FAQ answers open and close continuously instead of jumping. */
 @supports (interpolate-size: allow-keywords) {
   :root {
@@ -200,7 +305,7 @@
     mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.15 0 0 0 0 0.16 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  /* Film perforations used as a decorative rail (colour from currentColor). */
+  /* Film perforations used as a decorative rail (color from currentColor). */
   .perf-rail {
     background-image: repeating-linear-gradient(
       90deg,

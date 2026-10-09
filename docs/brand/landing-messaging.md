@@ -2,7 +2,8 @@
 
 Built with the installed brand-building skills (`brand-positioning`, `brand-voice`, `brand-messaging`)
 on top of `.agents/brand-context.md`, and updated on 9 Oct 2026 for the founder's ownership positioning
-(sourced copy deck: `founder/landing-page.md`; competitor facts: `founder/competitor-matrix.md`).
+(sourced copy deck: `founder/landing-page.md`; competitor facts: `founder/competitor-matrix.md`). Revised after the
+final review: both sample costs, American spelling, and the new section order (What's inside before Your AI).
 The landing page copy in `src/` is written from this file. Update this first when the message changes, then update the page.
 
 ## 1. Positioning (brand-positioning)
@@ -34,8 +35,12 @@ does the editing on your own computer.
 - One-time purchase, no subscription and no credits (founder decision, `founder/facts.md`; amount not set).
 - Bring your own Gemini or Qwen key, stored in the system credential store (macOS Keychain, Windows Credential
   Manager). Kimi shows as coming soon.
-- Estimated AI cost shown as a range before generation. The estimate makes no paid AI call. Sample in the app:
-  $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash (always name the model; the provider's bill is final).
+- Estimated AI cost shown as a range before generation. The estimate makes no paid AI call. Two samples, both real
+  app fixtures (always name the model next to the cost, call it an estimate and say the provider's bill is final):
+  - $0.43 to $1.33 for a 44:48 video on Gemini Flash 3.8, the recommended model (recorded usage $0.43). Used by the
+    hero demo and How it works.
+  - $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Used by the What's inside cost panel.
+  - The FAQ answer to "How much will the AI part cost me?" names both.
 - Local workspace folder for projects, previews and exports. Bundled video tools, on-device face tracking.
 - 1 to 10 clips per video, usually 30 to 60 seconds, 9:16 vertical.
 - Four caption presets (Bold pop, Word highlight, Condensed, Clean box) plus no captions.
@@ -44,6 +49,8 @@ does the editing on your own computer.
 
 **The honest catch, said plainly:** to find the moments, a prepared copy of the audio and video goes to the AI
 provider the user chose, under that provider's terms. YouTube imports and AI analysis need an internet connection.
+Never imply that nothing leaves the computer. Where the page explains how it works or what stays private, say that a
+prepared copy goes to the user's AI.
 
 **What Shortzy refuses to be**
 - Not a subscription and not a credit-pack reseller.
@@ -60,8 +67,8 @@ about what the software can and cannot do.
 | --- | --- | --- |
 | Formality | Casual, never sloppy | "Paste a link. Pick how many clips. Go make coffee." |
 | Energy | Calm confidence | "Six strong moments found. You asked for eight, so here's why we stopped." |
-| Humour | Light, from the mascot and the situation | "Your next short is already recorded." |
-| Expertise | Accessible first, detail on request | "Your AI account" above the fold (then: "the field is labelled API key") |
+| Humor | Light, from the mascot and the situation | "Your next short is already recorded." |
+| Expertise | Accessible first, detail on request | "Your AI account" above the fold (then: "the field is labeled API key") |
 
 **Words we use:** find, cut, clip, short, moment, hook, payoff, review, export, your computer, your account, pay once,
 pay as you go, estimate, folder, captions, framing.
@@ -73,9 +80,10 @@ go viral, in seconds, AI-powered (as filler), cutting-edge, leverage, delve, uti
 **Style rules**
 - Short sentences. One idea per sentence.
 - Sentence case for headings. No title case.
-- No em dashes or en dashes. Use a full stop, a comma or a middle dot. Ranges use "to" (30 to 60 seconds).
-- Contractions are fine. Exclamation marks almost never.
-- Numbers as numerals (1 to 10 clips, 30 to 60 seconds).
+- No em dashes or en dashes. Use a period, a comma or a middle dot. Ranges use "to" (30 to 60 seconds, $0.43 to $1.33).
+- Contractions are fine. Exclamation points almost never.
+- Numbers as numerals (1 to 10 clips, 30 to 60 seconds, "If only 6 hold up, you get 6", "scored on 6 things").
+- American spelling in page copy (color, centered, favorite, customize, analyze), matching the app UI the page shows.
 - Every claim must be true of the current build or the founder's stated plan. If it is planned, say "coming".
 - Whenever "pay once" appears, keep "pay your AI as you go" (or the provider billing) in the same view, so it never
   reads as no running cost.
@@ -108,25 +116,34 @@ moments. Your computer edits them. Pay your AI as you go.
 
 ## 4. Conversion structure
 
-The new hooks land in the first sections; the feature tour comes after them.
+The new hooks land in the first sections, then the feature tour. The pay-once and your-bill story comes last, right
+before the objections and the ask, so the money message sits next to the form.
 
 1. **Hero:** headline, supporting line, three hook chips, primary CTA "Join the wishlist", secondary CTA "See how
-   Shortzy works". The product shot is an auto-looping click-through of the real app with a sample workspace.
+   Shortzy works". The product shot is an auto-looping click-through of the real app with a sample workspace (its
+   cost sample: $0.43 to $1.33 on Gemini Flash 3.8).
 2. **Problem ("The choice today"):** hours of editing by hand, or another monthly bill with a credit meter. Shortzy is
-   the third card: pay once, your own AI as you go, your computer does the editing. The honest note (a prepared copy
-   goes to the AI provider you chose) is carried by How it works step 3, Your AI and the FAQ.
-3. **How it works:** the pinned five-step scroll (add a video, pick and see the cost, Shortzy and your AI find the
-   moments, your computer makes the shorts, review and export). The only section with the mascot.
-4. **Spec strip:** the output at a glance (1 to 10 clips, 9:16, 4 caption styles, MP4 or ZIP), plus "your own video
-   or a YouTube link". Honest facts in place of logos or testimonials (none exist yet).
-5. **Your AI, your bill:** your own account, billed by your provider with no markup, estimate first, and exactly what
-   goes where. This is the "pay once" block; there is no pricing section because there is no amount.
-6. **Features ("What's inside"):** captions, ranked with reasons, fewer but better, framing that follows the face,
-   cost before you click.
-7. **FAQ:** cost first (how much it costs, what the AI part costs, do I need an AI account), then privacy, app or
-   website, Windows, views, YouTube rights, the wishlist. Nine questions at most.
+   the third card: pay once, your own AI as you go, your computer does the editing. It closes on "Your AI gets a
+   prepared copy to find the moments. You see the estimate first.", so the local claim carries its caveat.
+3. **How it works:** the pinned five-step scroll on the hero demo's coded app screens (add a video, pick and see the
+   cost, Shortzy and your AI find the moments, your computer makes the shorts, review and export). The only section
+   with the mascot.
+4. **Spec strip:** the output at a glance (1 to 10 clips, 9:16, 4 caption styles, MP4 or ZIP), plus "From your own
+   video or a YouTube link. Made for podcasts, interviews, tutorials and business or AI explainers." Honest facts in
+   place of logos or testimonials (none exist yet).
+5. **What's inside (nav: "What's inside"):** captions, ranked with reasons (scored on 6 things), fewer clips beat
+   filler, framing that follows the face, and know the cost before you click (a coded copy of the app's estimate
+   card: $0.03 to $0.06 for a 24-minute sample on Qwen 3.8 Omni Flash). Every fictional frame, clip and estimate
+   carries a "Sample" label.
+6. **Your AI, your bill:** your own account, billed by your provider with no markup, estimate first, and exactly what
+   goes where. This is the "pay once" block; there is no pricing section because there is no amount. It ends on the
+   "How you pay" receipt and its "Join the wishlist to hear first." link.
+7. **FAQ:** cost first (how much it costs, what the AI part costs with both samples, do I need an AI account), then
+   privacy, app or website, "Is it coming to Windows?", views, YouTube rights, the wishlist. Nine questions at most.
 8. **Final CTA:** "Your next short is already recorded." Sub: "Shortzy is coming to Mac and Windows. Pay once, then
    pay your AI as you go." Under the form: "Only your email. No payment to join. Leave any time."
+
+Nav, in page order: How it works, What's inside, Your AI, FAQ.
 
 ## 5. Things we never say
 - "Go viral", "guaranteed views", or any score presented as a prediction.

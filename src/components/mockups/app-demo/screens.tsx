@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- decorative, fixed-size art inside an aria-hidden canvas */
 
-import type { CSSProperties, ReactNode } from "react";
+import { memo, type CSSProperties, type ReactNode } from "react";
 import { AnimatePresence, motion, useTransform, type MotionValue } from "motion/react";
 import {
   ArrowLeft,
@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDemoClock } from "./context";
-import { AI, CLIPS, COST, LIBRARY, OUTPUT, PROJECT, STEPS } from "./data";
+import { AI, CLIPS, COST, LIBRARY, OUTPUT, PROJECT, STEPS, type CloseUp } from "./data";
 import { importProgressAt, PLAY_AT, processProgressAt, scrollAt, type Frame, type View } from "./timeline";
 
 /*
@@ -40,12 +40,17 @@ import { importProgressAt, PLAY_AT, processProgressAt, scrollAt, type Frame, typ
  * primary #432b36, warm paper #f7f6f5, line #e8e6e8, input border #918b93.
  * Positions follow the measured QA screenshots. Everything here is
  * presentational and lives inside an aria-hidden, inert canvas.
+ *
+ * Performance: each view reads only its own slice of the frame (viewSlice),
+ * interned so equal slices are the same object, and every view and static
+ * block is memoized. A beat therefore re-renders only the view that changed.
  */
 
 const EASE = [0.2, 0.8, 0.2, 1] as const;
 const QUICK = { duration: 0.2, ease: EASE } as const;
+/** Critically damped springs: no overshoot. */
 const SPRING = { type: "spring", bounce: 0, visualDuration: 0.24 } as const;
-const POP = { type: "spring", bounce: 0.35, visualDuration: 0.3 } as const;
+const POP = { type: "spring", bounce: 0, visualDuration: 0.28 } as const;
 
 const abs = (left: number, top: number, width?: number, height?: number): CSSProperties => ({
   position: "absolute",
@@ -56,12 +61,84 @@ const abs = (left: number, top: number, width?: number, height?: number): CSSPro
 });
 
 /* ------------------------------------------------------------------ */
+/* Per-view state slices                                                */
+/* ------------------------------------------------------------------ */
+
+type Pointer = { hover: string | null; press: string | null };
+export type UploadState = Pointer & Pick<Frame, "seg" | "drop" | "nameFilled" | "nameFlash" | "create">;
+export type CustomizeState = Pointer & Pick<Frame, "importing" | "tab" | "preset" | "presetPulse">;
+export type ReviewState = Pointer &
+  Pick<Frame, "stage" | "checks" | "calculating" | "estimateReady" | "consent" | "find">;
+export type FinishState = Pick<Frame, "results" | "framing" | "cardsIn" | "playing">;
+export type ViewSlice = Record<string, never> | UploadState | CustomizeState | ReviewState | FinishState;
+
+/** The pointer targets each view draws, so a hover elsewhere does not re-render it. */
+const TARGETS: Record<View, readonly string[]> = {
+  library: [],
+  upload: ["segYoutube", "segUpload", "create"],
+  customize: ["tabShorts", "tabStyle", "select1", "presetBold", "presetWord", "analyze"],
+  review: ["seeCost", "reviewConfirm", "consent", "find"],
+  finish: [],
+};
+
+const INTERNED = new Map<string, ViewSlice>();
+function intern(view: View, s: ViewSlice): ViewSlice {
+  const key = view + JSON.stringify(s);
+  const hit = INTERNED.get(key);
+  if (hit) return hit;
+  INTERNED.set(key, s);
+  return s;
+}
+
+/** The part of a frame one view reads. Equal slices are the same object. */
+export function viewSlice(view: View, f: Frame): ViewSlice {
+  const ids = TARGETS[view];
+  const pointer: Pointer = {
+    hover: f.hover && ids.includes(f.hover) ? f.hover : null,
+    press: f.press && ids.includes(f.press) ? f.press : null,
+  };
+  switch (view) {
+    case "library":
+      return intern(view, {});
+    case "upload":
+      return intern(view, {
+        ...pointer,
+        seg: f.seg,
+        drop: f.drop,
+        nameFilled: f.nameFilled,
+        nameFlash: f.nameFlash,
+        create: f.create,
+      });
+    case "customize":
+      return intern(view, {
+        ...pointer,
+        importing: f.importing,
+        tab: f.tab,
+        preset: f.preset,
+        presetPulse: f.presetPulse,
+      });
+    case "review":
+      return intern(view, {
+        ...pointer,
+        stage: f.stage,
+        checks: f.checks,
+        calculating: f.calculating,
+        estimateReady: f.estimateReady,
+        consent: f.consent,
+        find: f.find,
+      });
+    default:
+      return intern(view, { results: f.results, framing: f.framing, cardsIn: f.cardsIn, playing: f.playing });
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* Primitives                                                           */
 /* ------------------------------------------------------------------ */
 
 type BtnState = "idle" | "hover" | "press" | "disabled" | "loading";
 
-function stateOf(f: Frame, id: string, opts: { disabled?: boolean; loading?: boolean } = {}): BtnState {
+function stateOf(f: Pointer, id: string, opts: { disabled?: boolean; loading?: boolean } = {}): BtnState {
   if (opts.loading) return "loading";
   if (opts.disabled) return "disabled";
   if (f.press === id) return "press";
@@ -168,7 +245,7 @@ function Divider({ top, left = 0, width = "100%" }: { top: number; left?: number
 /* Shell                                                                */
 /* ------------------------------------------------------------------ */
 
-export function Sidebar({ f }: { f: Frame }) {
+const SidebarBody = memo(function SidebarBody({ btn }: { btn: BtnState }) {
   return (
     <div className="absolute inset-y-0 left-0 z-10 w-[208px] border-r border-[#e8e6e8] bg-[#f7f6f5]">
       <div style={abs(24, 32)} className="flex items-center gap-[9px]">
@@ -180,7 +257,7 @@ export function Sidebar({ f }: { f: Frame }) {
       <p style={abs(22, 101)} className="text-[11px] leading-[16px] text-[#69656b]">
         Your workspace
       </p>
-      <Btn state={stateOf(f, "newProject")} style={abs(12, 143, 183, 40)} className="h-[40px]">
+      <Btn state={btn} style={abs(12, 143, 183, 40)} className="h-[40px]">
         <Plus />
         New project
       </Btn>
@@ -206,9 +283,14 @@ export function Sidebar({ f }: { f: Frame }) {
       </p>
     </div>
   );
+});
+
+/** The persistent sidebar. It re-renders only when the New project button's state changes. */
+export function Sidebar({ f }: { f: Pointer }) {
+  return <SidebarBody btn={stateOf(f, "newProject")} />;
 }
 
-function Topbar() {
+const Topbar = memo(function Topbar() {
   return (
     <div style={abs(208, 0, 1072, 56)} className="border-b border-[#e8e6e8] bg-white">
       <span style={abs(32, 18)} className="text-[11px] leading-[16px] text-[#69656b]">
@@ -220,7 +302,7 @@ function Topbar() {
       </span>
     </div>
   );
-}
+});
 
 /** A view: topbar plus content, scrolled by its own scroll function of the clock. */
 function ViewScroll({ view, children }: { view: View; children: ReactNode }) {
@@ -234,7 +316,7 @@ function ViewScroll({ view, children }: { view: View; children: ReactNode }) {
   );
 }
 
-function ProjectHeader({ title, sub, pill }: { title: string; sub: string; pill?: ReactNode }) {
+const ProjectTitle = memo(function ProjectTitle({ title, sub }: { title: string; sub: string }) {
   return (
     <>
       <div style={abs(240, 93)} className="flex items-center gap-[10px] text-[12px] leading-[16px] text-[#69656b]">
@@ -247,6 +329,14 @@ function ProjectHeader({ title, sub, pill }: { title: string; sub: string; pill?
       <p style={abs(240, 173)} className="whitespace-nowrap text-[13px] leading-[20px] text-[#69656b]">
         {sub}
       </p>
+    </>
+  );
+});
+
+function ProjectHeader({ title, sub, pill }: { title: string; sub: string; pill?: ReactNode }) {
+  return (
+    <>
+      <ProjectTitle title={title} sub={sub} />
       {pill && <div style={{ position: "absolute", right: 32, top: 152 }}>{pill}</div>}
     </>
   );
@@ -254,7 +344,11 @@ function ProjectHeader({ title, sub, pill }: { title: string; sub: string; pill?
 
 type StepMark = "current" | "done" | "upcoming" | "busy";
 
-function Stepper({ marks }: { marks: StepMark[] }) {
+const marksFor = (current: number, busyUpload = false): StepMark[] =>
+  STEPS.map((_, i) => (i === current ? "current" : i < current ? (i === 0 && busyUpload ? "busy" : "done") : "upcoming"));
+
+const Stepper = memo(function Stepper({ current, busyUpload = false }: { current: number; busyUpload?: boolean }) {
+  const marks = marksFor(current, busyUpload);
   return (
     <div className="relative h-[26px]">
       {STEPS.map((label, i) => {
@@ -292,19 +386,18 @@ function Stepper({ marks }: { marks: StepMark[] }) {
       })}
     </div>
   );
-}
-
-const marksFor = (current: number, busyUpload = false): StepMark[] =>
-  STEPS.map((_, i) => (i === current ? "current" : i < current ? (i === 0 && busyUpload ? "busy" : "done") : "upcoming"));
+});
 
 /** Header block under the project title: optional import strip, stepper, divider, then the stage. */
 function ProjectFlow({
-  marks,
+  current,
+  busyUpload,
   strip,
   stageHeight = 1500,
   children,
 }: {
-  marks: StepMark[];
+  current: number;
+  busyUpload?: boolean;
   strip?: ReactNode;
   stageHeight?: number;
   children: ReactNode;
@@ -312,7 +405,7 @@ function ProjectFlow({
   return (
     <div style={abs(240, 219, 1008)}>
       {strip}
-      <Stepper marks={marks} />
+      <Stepper current={current} busyUpload={busyUpload} />
       <div className="mt-[24px] h-px bg-[#e8e6e8]" />
       <div className="relative mt-[32px]" style={{ height: stageHeight }}>
         {children}
@@ -325,7 +418,7 @@ function ProjectFlow({
 /* S1 Library                                                           */
 /* ------------------------------------------------------------------ */
 
-function LibraryView({ f }: { f: Frame }) {
+const LibraryView = memo(function LibraryView() {
   return (
     <ViewScroll view="library">
       <p style={abs(240, 86)} className="text-[26px] font-[600] leading-[34px] tracking-[-0.025em]">
@@ -334,7 +427,7 @@ function LibraryView({ f }: { f: Frame }) {
       <p style={abs(240, 128)} className="text-[13px] leading-[20px] text-[#69656b]">
         A home for your videos. A starting point for your next clip.
       </p>
-      <Btn state={stateOf(f, "libraryNew")} style={abs(1115, 98, 133, 39)} className="h-[39px]">
+      <Btn style={abs(1115, 98, 133, 39)} className="h-[39px]">
         <Plus />
         New project
       </Btn>
@@ -375,7 +468,7 @@ function LibraryView({ f }: { f: Frame }) {
       })}
     </ViewScroll>
   );
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* S2 Upload                                                            */
@@ -387,14 +480,191 @@ function Caret() {
   return <motion.span className="ml-px inline-block h-[17px] w-px translate-y-[3px] bg-[#252327]" style={{ opacity: still ? 1 : opacity }} />;
 }
 
-function UploadView({ f }: { f: Frame }) {
+const UploadAside = memo(function UploadAside() {
+  return (
+    <div style={abs(643, 16, 365)}>
+      <Illus name="workspace" width={170} />
+      <p className="mt-[20px] text-[16px] font-[600] leading-[24px]">A space for every source.</p>
+      <p className="mt-[6px] w-[310px] text-[13px] leading-[21px] text-[#69656b]">
+        Keep each video and its work together, ready to pick up where you left off.
+      </p>
+      <div className="mt-[24px] space-y-[18px]">
+        {[
+          ["Choose your source", "Paste a link or upload a video."],
+          ["Make it yours", "Choose your AI, captions, and clip length while the video imports."],
+          ["Find your shorts", "Check the estimate, then let Shortzy find and edit the moments."],
+        ].map(([title, body], i) => (
+          <div key={title} className="flex gap-[13px]">
+            <span className="grid size-[24px] shrink-0 place-items-center rounded-full border border-[#e3e0e3] text-[11px] text-[#69656b]">
+              {i + 1}
+            </span>
+            <span>
+              <span className="block text-[14px] font-[550] leading-[22px]">{title}</span>
+              <span className="block text-[12px] leading-[18px] text-[#69656b]">{body}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+/* The form card's parts, each memoized so a hover or a press re-renders only its own part. */
+const NameField = memo(function NameField({ filled, flash }: { filled: boolean; flash: boolean }) {
+  return (
+    <motion.div
+      style={abs(24, 52, 553, 42)}
+      className="flex items-center rounded-[8px] border border-[#918b93] px-[12px] text-[14px] outline outline-2 outline-offset-2 outline-[#702f42]"
+      initial={false}
+      animate={{ backgroundColor: flash ? "#ede9ec" : "#ffffff" }}
+      transition={{ duration: flash ? 0.05 : 0.3 }}
+    >
+      {filled ? (
+        <span className="truncate">{PROJECT.title}</span>
+      ) : (
+        <span className="text-[#69656b]">e.g. A conversation worth sharing</span>
+      )}
+      {filled && <Caret />}
+    </motion.div>
+  );
+});
+
+const SourceSwitch = memo(function SourceSwitch({ upload, hover, press }: Pointer & { upload: boolean }) {
+  return (
+    <div style={abs(24, 141, 553, 44)} className="rounded-[8px] bg-[#f7f6f5]">
+      <motion.div
+        className="absolute top-[3px] h-[38px] w-[273px] rounded-[6px] bg-white shadow-[0_1px_3px_rgba(37,35,39,0.09)]"
+        initial={false}
+        animate={{ x: upload ? 277 : 3 }}
+        transition={{ type: "spring", bounce: 0, visualDuration: 0.18 }}
+      />
+      {(
+        [
+          ["segYoutube", "YouTube link", Link, !upload, 3],
+          ["segUpload", "Upload video", Upload, upload, 277],
+        ] as const
+      ).map(([id, label, Icon, on, x]) => (
+        <div
+          key={id}
+          style={abs(x, 3, 273, 38)}
+          className={cn(
+            "flex items-center justify-center gap-[8px] text-[13px] transition-colors duration-150",
+            on || hover === id ? "text-[#252327]" : "text-[#69656b]",
+            press === id && "scale-[0.985]",
+          )}
+        >
+          <Icon className="size-[15px]" strokeWidth={1.75} />
+          {label}
+        </div>
+      ))}
+    </div>
+  );
+});
+
+const SourcePanel = memo(function SourcePanel({ upload, drop }: { upload: boolean; drop: UploadState["drop"] }) {
+  const selected = drop === "selected";
+  return (
+    <AnimatePresence initial={false} mode="popLayout">
+      {!upload ? (
+        <motion.div key="yt" className="absolute inset-x-0 top-[205px]" exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
+          <p style={abs(24, 0)} className="text-[13px] font-[550] leading-[20px]">
+            YouTube video URL
+          </p>
+          <div style={abs(24, 28, 553, 42)} className="flex items-center rounded-[8px] border border-[#918b93] px-[12px] text-[14px] text-[#69656b]">
+            https://www.youtube.com/watch?v=…
+          </div>
+          <p style={abs(24, 81, 520)} className="text-[12px] leading-[20px] text-[#69656b]">
+            We’ll download an available public video and prepare a local preview. No separate upload needed. Private,
+            restricted, or unavailable videos may not import.
+          </p>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="up"
+          style={abs(24, 205, 553)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.18, delay: 0.05 }}
+        >
+          <motion.div
+            className={cn(
+              "flex flex-col items-center justify-center rounded-[8px] border text-center transition-colors duration-150",
+              drop === "idle" && "border-dashed border-[#918b93] bg-white",
+              drop === "dragging" && "border-solid border-[#432b36] bg-[#ede9ec]",
+              selected && "border-dashed border-[#918b93] bg-[#f7f6f5]",
+            )}
+            initial={false}
+            animate={{ height: selected ? 150 : 182 }}
+            transition={QUICK}
+          >
+            {selected ? (
+              <motion.div
+                className="flex flex-col items-center"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={SPRING}
+              >
+                <FileVideo className="size-[32px] text-[#432b36]" strokeWidth={1.5} />
+                <span className="mt-[10px] text-[16px] font-[550] leading-[22px]">{PROJECT.file}</span>
+                <span className="mt-[4px] text-[13px] leading-[20px] text-[#69656b]">
+                  {PROJECT.size} · Click to choose a different video
+                </span>
+              </motion.div>
+            ) : (
+              <>
+                <Upload className="size-[29px] text-[#252327]" strokeWidth={1.5} />
+                <span className="mt-[10px] text-[16px] font-[550] leading-[22px]">Choose a video</span>
+                <span className="mt-[11px] text-[13px] leading-[20px] text-[#69656b]">or drop it here</span>
+                <span className="mt-[16px] text-[11px] leading-[16px] text-[#69656b]">MP4, MOV, MKV, WebM, M4V, AVI</span>
+              </>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+});
+
+/** Footer, pinned to the card bottom. */
+const CardFooter = memo(function CardFooter({ upload, create }: { upload: boolean; create: BtnState }) {
+  return (
+    <div className="absolute inset-x-[24px] bottom-[24px] flex items-end justify-between">
+      <div className="flex items-start gap-[8px] pb-[6px] text-[11px] leading-[17px] text-[#69656b]">
+        <ShieldCheck className="mt-[2px] size-[14px]" strokeWidth={1.75} />
+        <span className="w-[100px]">{upload ? "Your original stays untouched" : "Prepared on your computer"}</span>
+      </div>
+      {upload ? (
+        <Btn state={create} style={{ width: create === "loading" ? 172 : 147 }}>
+          {create === "loading" ? (
+            <>
+              <Spinner size={15} />
+              Starting import…
+            </>
+          ) : (
+            <>
+              <ArrowRight />
+              Create project
+            </>
+          )}
+        </Btn>
+      ) : (
+        <Btn state="disabled" style={{ width: 190 }}>
+          <ArrowRight />
+          Import from YouTube
+        </Btn>
+      )}
+    </div>
+  );
+});
+
+const UploadView = memo(function UploadView({ s: f }: { s: UploadState }) {
   const upload = f.seg === "upload";
   const selected = f.drop === "selected";
   const cardH = !upload ? 415 : selected ? 447 : 479;
   return (
     <ViewScroll view="upload">
       <ProjectHeader title="Start with a video." sub="Paste a YouTube link or choose a video from your device." />
-      <ProjectFlow marks={marksFor(0)}>
+      <ProjectFlow current={0}>
         {/* Form card */}
         <motion.div
           className="absolute left-0 top-0 w-[602px] overflow-hidden rounded-[12px] border border-[#e8e6e8] bg-white"
@@ -405,177 +675,29 @@ function UploadView({ f }: { f: Frame }) {
           <p style={abs(24, 24)} className="text-[13px] font-[550] leading-[20px]">
             Project name
           </p>
-          <motion.div
-            style={abs(24, 52, 553, 42)}
-            className="flex items-center rounded-[8px] border border-[#918b93] px-[12px] text-[14px] outline outline-2 outline-offset-2 outline-[#702f42]"
-            initial={false}
-            animate={{ backgroundColor: f.nameFlash ? "#ede9ec" : "#ffffff" }}
-            transition={{ duration: f.nameFlash ? 0.05 : 0.3 }}
-          >
-            {f.nameFilled ? (
-              <span className="truncate">{PROJECT.title}</span>
-            ) : (
-              <span className="text-[#69656b]">e.g. A conversation worth sharing</span>
-            )}
-            {f.nameFilled && <Caret />}
-          </motion.div>
+          <NameField filled={f.nameFilled} flash={f.nameFlash} />
           <p style={abs(24, 114)} className="text-[13px] font-[550] leading-[20px]">
             Video source
           </p>
-          <div style={abs(24, 141, 553, 44)} className="rounded-[8px] bg-[#f7f6f5]">
-            <motion.div
-              className="absolute top-[3px] h-[38px] w-[273px] rounded-[6px] bg-white shadow-[0_1px_3px_rgba(37,35,39,0.09)]"
-              initial={false}
-              animate={{ x: upload ? 277 : 3 }}
-              transition={{ type: "spring", bounce: 0, visualDuration: 0.18 }}
-            />
-            {(
-              [
-                ["segYoutube", "YouTube link", Link, !upload, 3],
-                ["segUpload", "Upload video", Upload, upload, 277],
-              ] as const
-            ).map(([id, label, Icon, on, x]) => (
-              <div
-                key={id}
-                style={abs(x, 3, 273, 38)}
-                className={cn(
-                  "flex items-center justify-center gap-[8px] text-[13px] transition-colors duration-150",
-                  on || f.hover === id ? "text-[#252327]" : "text-[#69656b]",
-                  f.press === id && "scale-[0.985]",
-                )}
-              >
-                <Icon className="size-[15px]" strokeWidth={1.75} />
-                {label}
-              </div>
-            ))}
-          </div>
-
-          <AnimatePresence initial={false} mode="popLayout">
-            {!upload ? (
-              <motion.div key="yt" className="absolute inset-x-0 top-[205px]" exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
-                <p style={abs(24, 0)} className="text-[13px] font-[550] leading-[20px]">
-                  YouTube video URL
-                </p>
-                <div style={abs(24, 28, 553, 42)} className="flex items-center rounded-[8px] border border-[#918b93] px-[12px] text-[14px] text-[#69656b]">
-                  https://www.youtube.com/watch?v=…
-                </div>
-                <p style={abs(24, 81, 520)} className="text-[12px] leading-[20px] text-[#69656b]">
-                  We’ll download an available public video and prepare a local preview. No separate upload needed. Private,
-                  restricted, or unavailable videos may not import.
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="up"
-                style={abs(24, 205, 553)}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.18, delay: 0.05 }}
-              >
-                <motion.div
-                  className={cn(
-                    "flex flex-col items-center justify-center rounded-[8px] border text-center transition-colors duration-150",
-                    f.drop === "idle" && "border-dashed border-[#918b93] bg-white",
-                    f.drop === "dragging" && "border-solid border-[#432b36] bg-[#ede9ec]",
-                    selected && "border-dashed border-[#918b93] bg-[#f7f6f5]",
-                  )}
-                  initial={false}
-                  animate={{ height: selected ? 150 : 182 }}
-                  transition={QUICK}
-                >
-                  {selected ? (
-                    <motion.div
-                      className="flex flex-col items-center"
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={SPRING}
-                    >
-                      <FileVideo className="size-[32px] text-[#432b36]" strokeWidth={1.5} />
-                      <span className="mt-[10px] text-[16px] font-[550] leading-[22px]">{PROJECT.file}</span>
-                      <span className="mt-[4px] text-[13px] leading-[20px] text-[#69656b]">
-                        {PROJECT.size} · Click to choose a different video
-                      </span>
-                    </motion.div>
-                  ) : (
-                    <>
-                      <Upload className="size-[29px] text-[#252327]" strokeWidth={1.5} />
-                      <span className="mt-[10px] text-[16px] font-[550] leading-[22px]">Choose a video</span>
-                      <span className="mt-[11px] text-[13px] leading-[20px] text-[#69656b]">or drop it here</span>
-                      <span className="mt-[16px] text-[11px] leading-[16px] text-[#69656b]">MP4, MOV, MKV, WebM, M4V, AVI</span>
-                    </>
-                  )}
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Footer, pinned to the card bottom */}
-          <div className="absolute inset-x-[24px] bottom-[24px] flex items-end justify-between">
-            <div className="flex items-start gap-[8px] pb-[6px] text-[11px] leading-[17px] text-[#69656b]">
-              <ShieldCheck className="mt-[2px] size-[14px]" strokeWidth={1.75} />
-              <span className="w-[100px]">{upload ? "Your original stays untouched" : "Prepared on your computer"}</span>
-            </div>
-            {upload ? (
-              <Btn
-                state={stateOf(f, "create", { disabled: f.create === "disabled", loading: f.create === "loading" })}
-                style={{ width: f.create === "loading" ? 172 : 147 }}
-              >
-                {f.create === "loading" ? (
-                  <>
-                    <Spinner size={15} />
-                    Starting import…
-                  </>
-                ) : (
-                  <>
-                    <ArrowRight />
-                    Create project
-                  </>
-                )}
-              </Btn>
-            ) : (
-              <Btn state="disabled" style={{ width: 190 }}>
-                <ArrowRight />
-                Import from YouTube
-              </Btn>
-            )}
-          </div>
+          <SourceSwitch upload={upload} hover={f.hover} press={f.press} />
+          <SourcePanel upload={upload} drop={f.drop} />
+          <CardFooter
+            upload={upload}
+            create={stateOf(f, "create", { disabled: f.create === "disabled", loading: f.create === "loading" })}
+          />
         </motion.div>
 
-        {/* Right column */}
-        <div style={abs(643, 16, 365)}>
-          <Illus name="workspace" width={170} />
-          <p className="mt-[20px] text-[16px] font-[600] leading-[24px]">A space for every source.</p>
-          <p className="mt-[6px] w-[310px] text-[13px] leading-[21px] text-[#69656b]">
-            Keep each video and its work together, ready to pick up where you left off.
-          </p>
-          <div className="mt-[24px] space-y-[18px]">
-            {[
-              ["Choose your source", "Paste a link or upload a video."],
-              ["Make it yours", "Choose your AI, captions, and clip length while the video imports."],
-              ["Find your shorts", "Check the estimate, then let Shortzy find and edit the moments."],
-            ].map(([title, body], i) => (
-              <div key={title} className="flex gap-[13px]">
-                <span className="grid size-[24px] shrink-0 place-items-center rounded-full border border-[#e3e0e3] text-[11px] text-[#69656b]">
-                  {i + 1}
-                </span>
-                <span>
-                  <span className="block text-[14px] font-[550] leading-[22px]">{title}</span>
-                  <span className="block text-[12px] leading-[18px] text-[#69656b]">{body}</span>
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <UploadAside />
       </ProjectFlow>
     </ViewScroll>
   );
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* S3 + S4 Customize                                                    */
 /* ------------------------------------------------------------------ */
 
-function ImportStrip({ open }: { open: boolean }) {
+const ImportStrip = memo(function ImportStrip({ open }: { open: boolean }) {
   const { t } = useDemoClock();
   const scaleX = useTransform(t, importProgressAt);
   return (
@@ -597,9 +719,9 @@ function ImportStrip({ open }: { open: boolean }) {
       </div>
     </motion.div>
   );
-}
+});
 
-function SourcePreview() {
+const SourcePreview = memo(function SourcePreview() {
   return (
     <div style={abs(728, 0, 280, 301)} className="overflow-hidden rounded-[12px] border border-[#e8e6e8] bg-[#f7f6f5]">
       <div className="relative h-[175px] bg-[#29262a]">
@@ -631,7 +753,7 @@ function SourcePreview() {
       </div>
     </div>
   );
-}
+});
 
 const TABS = [
   { id: "ai", label: "Your AI", x: 0, w: 42 },
@@ -645,67 +767,76 @@ const HEADINGS = {
   style: { h: "Give your shorts a signature.", p: "Choose a caption style, then refine only what you need.", art: "captions", top: -4 },
 } as const;
 
-function CustomizeView({ f }: { f: Frame }) {
-  const tab = TABS.find((x) => x.id === f.tab)!;
-  const head = HEADINGS[f.tab];
+const ImportPill = memo(function ImportPill({ importing }: { importing: boolean }) {
+  return (
+    <AnimatePresence initial={false} mode="wait">
+      <motion.span key={String(importing)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+        {importing ? <Pill tone="neutral">Preparing video</Pill> : <Pill tone="success">Source ready</Pill>}
+      </motion.span>
+    </AnimatePresence>
+  );
+});
+
+const TabHeading = memo(function TabHeading({ tab }: { tab: CustomizeState["tab"] }) {
+  const head = HEADINGS[tab];
+  return (
+    <AnimatePresence initial={false} mode="popLayout">
+      <motion.div
+        key={tab}
+        className="absolute inset-x-0 top-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.16 }}
+      >
+        <p style={abs(0, 29)} className="whitespace-nowrap text-[24px] font-[600] leading-[30px] tracking-[-0.65px]">
+          {head.h}
+        </p>
+        <p style={abs(0, 68)} className="whitespace-nowrap text-[14px] leading-[22px] text-[#69656b]">
+          {head.p}
+        </p>
+        <Illus name={head.art} width={96} style={abs(592, head.top)} />
+      </motion.div>
+    </AnimatePresence>
+  );
+});
+
+const TabBar = memo(function TabBar({ tab, hover }: { tab: CustomizeState["tab"]; hover: string | null }) {
+  const current = TABS.find((x) => x.id === tab)!;
+  return (
+    <div style={abs(0, 124, 688, 34)} className="border-b border-[#e8e6e8]">
+      {TABS.map((x) => (
+        <span
+          key={x.id}
+          style={abs(x.x, 0, x.w)}
+          className={cn(
+            "whitespace-nowrap text-center text-[12px] leading-[16px] transition-colors duration-150",
+            x.id === tab ? "font-[650] text-[#252327]" : "text-[#69656b]",
+            hover === `tab${x.id === "shorts" ? "Shorts" : x.id === "style" ? "Style" : "Ai"}` && "text-[#252327]",
+          )}
+        >
+          {x.label}
+        </span>
+      ))}
+      <motion.span
+        className="absolute bottom-[-1px] h-[2px] rounded-full bg-[#432b36]"
+        initial={false}
+        animate={{ left: current.x, width: current.w }}
+        transition={{ type: "spring", bounce: 0, visualDuration: 0.2 }}
+      />
+    </div>
+  );
+});
+
+const CustomizeView = memo(function CustomizeView({ s: f }: { s: CustomizeState }) {
   return (
     <ViewScroll view="customize">
-      <ProjectHeader
-        title={PROJECT.title}
-        sub={PROJECT.file}
-        pill={
-          <AnimatePresence initial={false} mode="wait">
-            <motion.span key={String(f.importing)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
-              {f.importing ? <Pill tone="neutral">Preparing video</Pill> : <Pill tone="success">Source ready</Pill>}
-            </motion.span>
-          </AnimatePresence>
-        }
-      />
-      <ProjectFlow marks={marksFor(1, f.importing)} strip={<ImportStrip open={f.importing} />}>
+      <ProjectHeader title={PROJECT.title} sub={PROJECT.file} pill={<ImportPill importing={f.importing} />} />
+      <ProjectFlow current={1} busyUpload={f.importing} strip={<ImportStrip open={f.importing} />}>
         <div style={abs(0, 0, 688)}>
           <p className="text-[11px] font-[600] leading-[16px] tracking-[0.035em] text-[#69656b]">Make it yours</p>
-          <AnimatePresence initial={false} mode="popLayout">
-            <motion.div
-              key={f.tab}
-              className="absolute inset-x-0 top-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.16 }}
-            >
-              <p style={abs(0, 29)} className="whitespace-nowrap text-[24px] font-[600] leading-[30px] tracking-[-0.65px]">
-                {head.h}
-              </p>
-              <p style={abs(0, 68)} className="whitespace-nowrap text-[14px] leading-[22px] text-[#69656b]">
-                {head.p}
-              </p>
-              <Illus name={head.art} width={96} style={abs(592, head.top)} />
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Tabs */}
-          <div style={abs(0, 124, 688, 34)} className="border-b border-[#e8e6e8]">
-            {TABS.map((x) => (
-              <span
-                key={x.id}
-                style={abs(x.x, 0, x.w)}
-                className={cn(
-                  "whitespace-nowrap text-center text-[12px] leading-[16px] transition-colors duration-150",
-                  x.id === f.tab ? "font-[650] text-[#252327]" : "text-[#69656b]",
-                  f.hover === `tab${x.id === "shorts" ? "Shorts" : x.id === "style" ? "Style" : "Ai"}` && "text-[#252327]",
-                )}
-              >
-                {x.label}
-              </span>
-            ))}
-            <motion.span
-              className="absolute bottom-[-1px] h-[2px] rounded-full bg-[#432b36]"
-              initial={false}
-              animate={{ left: tab.x, width: tab.w }}
-              transition={{ type: "spring", bounce: 0, visualDuration: 0.2 }}
-            />
-          </div>
-
+          <TabHeading tab={f.tab} />
+          <TabBar tab={f.tab} hover={f.hover} />
           <AnimatePresence initial={false} mode="popLayout">
             <motion.div
               key={f.tab}
@@ -716,7 +847,7 @@ function CustomizeView({ f }: { f: Frame }) {
               transition={{ duration: 0.16 }}
             >
               {f.tab === "ai" && <YourAiTab />}
-              {f.tab === "shorts" && <YourShortsTab f={f} />}
+              {f.tab === "shorts" && <YourShortsTab hover={f.hover} />}
               {f.tab === "style" && <StyleTab f={f} />}
             </motion.div>
           </AnimatePresence>
@@ -725,9 +856,9 @@ function CustomizeView({ f }: { f: Frame }) {
       </ProjectFlow>
     </ViewScroll>
   );
-}
+});
 
-function YourAiTab() {
+const YourAiTab = memo(function YourAiTab() {
   return (
     <>
       <img src={AI.logo} alt="" width={32} height={32} draggable={false} style={abs(4, 236, 32, 32)} />
@@ -753,7 +884,7 @@ function YourAiTab() {
       </Btn>
     </>
   );
-}
+});
 
 function SelectBox({ top, h, label, value, hover }: { top: number; h: number; label: string; value: string; hover?: boolean }) {
   return (
@@ -771,10 +902,10 @@ function SelectBox({ top, h, label, value, hover }: { top: number; h: number; la
   );
 }
 
-function YourShortsTab({ f }: { f: Frame }) {
+const YourShortsTab = memo(function YourShortsTab({ hover }: { hover: string | null }) {
   return (
     <>
-      <SelectBox top={186} h={60} label="Number of clips" value={OUTPUT.clips} hover={f.hover === "select1"} />
+      <SelectBox top={186} h={60} label="Number of clips" value={OUTPUT.clips} hover={hover === "select1"} />
       <SelectBox top={266} h={59} label="Video shape" value={OUTPUT.shape} />
       <SelectBox top={345} h={60} label="Clip length" value={OUTPUT.length} />
       <Divider top={465} />
@@ -784,7 +915,7 @@ function YourShortsTab({ f }: { f: Frame }) {
       </Btn>
     </>
   );
-}
+});
 
 const PRESETS = [
   { id: "presetBold", name: "Bold pop", x: 0, y: 247, w: 222, h: 149 },
@@ -821,7 +952,47 @@ function PresetSample({ id }: { id: string }) {
   }
 }
 
-function StyleTab({ f }: { f: Frame }) {
+const StyleRest = memo(function StyleRest({ analyze }: { analyze: BtnState }) {
+  return (
+    <>
+      <Divider top={576} />
+      <p style={abs(0, 599)} className="flex items-center gap-[10px] text-[14px] leading-[22px]">
+        <SlidersHorizontal className="size-[16px]" strokeWidth={1.75} />
+        Fine-tune captions &amp; framing
+      </p>
+      <Divider top={645} />
+      <p style={abs(0, 664)} className="text-[14px] font-[550] leading-[22px]">
+        Find a moment <span className="ml-[6px] text-[12px] font-[400] text-[#69656b]">Optional</span>
+      </p>
+      <p style={abs(0, 704)} className="text-[14px] leading-[22px] text-[#69656b]">
+        For example: the advice about starting a small business
+      </p>
+      <Divider top={756} />
+      <p style={abs(0, 775)} className="flex items-center gap-[10px] text-[14px] leading-[22px]">
+        <Scissors className="size-[16px]" strokeWidth={1.75} />
+        Trim the source video
+      </p>
+      <span style={{ position: "absolute", right: 0, top: 777 }} className="text-[12px] leading-[18px] text-[#69656b]">
+        Optional
+      </span>
+      <Divider top={817} />
+      <Divider top={865} />
+      <p style={abs(0, 896)} className="text-[12px] leading-[18px] text-[#69656b]">
+        Choices saved
+      </p>
+      <Btn variant="text" style={abs(482, 896)} className="h-[22px]">
+        <ArrowLeft />
+        Back
+      </Btn>
+      <Btn state={analyze} style={abs(544, 886, 144)}>
+        Analyze video
+        <ArrowRight />
+      </Btn>
+    </>
+  );
+});
+
+function StyleTab({ f }: { f: CustomizeState }) {
   return (
     <>
       <p style={abs(0, 211)} className="text-[13px] font-[600] leading-[20px]">
@@ -868,39 +1039,7 @@ function StyleTab({ f }: { f: Frame }) {
           </motion.div>
         );
       })}
-      <Divider top={576} />
-      <p style={abs(0, 599)} className="flex items-center gap-[10px] text-[14px] leading-[22px]">
-        <SlidersHorizontal className="size-[16px]" strokeWidth={1.75} />
-        Fine-tune captions &amp; framing
-      </p>
-      <Divider top={645} />
-      <p style={abs(0, 664)} className="text-[14px] font-[550] leading-[22px]">
-        Find a moment <span className="ml-[6px] text-[12px] font-[400] text-[#69656b]">Optional</span>
-      </p>
-      <p style={abs(0, 704)} className="text-[14px] leading-[22px] text-[#69656b]">
-        For example: the advice about starting a small business
-      </p>
-      <Divider top={756} />
-      <p style={abs(0, 775)} className="flex items-center gap-[10px] text-[14px] leading-[22px]">
-        <Scissors className="size-[16px]" strokeWidth={1.75} />
-        Trim the source video
-      </p>
-      <span style={{ position: "absolute", right: 0, top: 777 }} className="text-[12px] leading-[18px] text-[#69656b]">
-        Optional
-      </span>
-      <Divider top={817} />
-      <Divider top={865} />
-      <p style={abs(0, 896)} className="text-[12px] leading-[18px] text-[#69656b]">
-        Choices saved
-      </p>
-      <Btn variant="text" style={abs(482, 896)} className="h-[22px]">
-        <ArrowLeft />
-        Back
-      </Btn>
-      <Btn state={stateOf(f, "analyze")} style={abs(544, 886, 144)}>
-        Analyze video
-        <ArrowRight />
-      </Btn>
+      <StyleRest analyze={stateOf(f, "analyze")} />
     </>
   );
 }
@@ -909,12 +1048,12 @@ function StyleTab({ f }: { f: Frame }) {
 /* S5 to S7 Review: analyze, estimate, confirm                         */
 /* ------------------------------------------------------------------ */
 
-function ReviewView({ f }: { f: Frame }) {
+const ReviewView = memo(function ReviewView({ s: f }: { s: ReviewState }) {
   const current = f.stage === "analyze" ? 2 : f.stage === "estimate" ? 3 : 4;
   return (
     <ViewScroll view="review">
       <ProjectHeader title={PROJECT.title} sub={PROJECT.file} pill={<Pill tone="success">Source ready</Pill>} />
-      <ProjectFlow marks={marksFor(current)} stageHeight={700}>
+      <ProjectFlow current={current} stageHeight={700}>
         <AnimatePresence initial={false}>
           <motion.div
             key={f.stage}
@@ -932,9 +1071,23 @@ function ReviewView({ f }: { f: Frame }) {
       </ProjectFlow>
     </ViewScroll>
   );
-}
+});
 
-function StageHeading({ eyebrow, title, art, artWidth, artTop, logo }: { eyebrow: string; title: string; art: string; artWidth: number; artTop: number; logo?: boolean }) {
+const StageHeading = memo(function StageHeading({
+  eyebrow,
+  title,
+  art,
+  artWidth,
+  artTop,
+  logo,
+}: {
+  eyebrow: string;
+  title: string;
+  art: string;
+  artWidth: number;
+  artTop: number;
+  logo?: boolean;
+}) {
   const x = logo ? 176 : 124;
   return (
     <>
@@ -948,7 +1101,7 @@ function StageHeading({ eyebrow, title, art, artWidth, artTop, logo }: { eyebrow
       <Illus name={art} width={artWidth} style={abs(1124 - 240 - artWidth, artTop)} />
     </>
   );
-}
+});
 
 function CheckMark({ state }: { state: "pending" | "busy" | "done" }) {
   if (state === "busy") return <Spinner size={18} className="text-[#432b36]" />;
@@ -960,7 +1113,7 @@ function CheckMark({ state }: { state: "pending" | "busy" | "done" }) {
   );
 }
 
-function AnalyzeStage({ f }: { f: Frame }) {
+function AnalyzeStage({ f }: { f: ReviewState }) {
   const rows = [
     { title: "Video ready", sub: `${PROJECT.length} selected`, state: f.checks >= 1 ? "done" : "pending" },
     { title: "Output choices reviewed", sub: "Up to 6 clips · 9:16", state: f.checks >= 2 ? "done" : "pending" },
@@ -1001,7 +1154,7 @@ function AnalyzeStage({ f }: { f: Frame }) {
   );
 }
 
-function CostCard({ label, ready, top }: { label: string; ready: boolean; top: number }) {
+const CostCard = memo(function CostCard({ label, ready, top }: { label: string; ready: boolean; top: number }) {
   return (
     <div style={abs(124, top, 760, 142)} className="rounded-[12px] bg-[#f7f6f5] px-[28px] pt-[28px]">
       <p className="text-[13px] leading-[20px] text-[#69656b]">{label}</p>
@@ -1033,9 +1186,9 @@ function CostCard({ label, ready, top }: { label: string; ready: boolean; top: n
       </div>
     </div>
   );
-}
+});
 
-function Recap({ top }: { top: number }) {
+const Recap = memo(function Recap({ top }: { top: number }) {
   return (
     <>
       {[
@@ -1050,9 +1203,9 @@ function Recap({ top }: { top: number }) {
       ))}
     </>
   );
-}
+});
 
-function EstimateStage({ f }: { f: Frame }) {
+function EstimateStage({ f }: { f: ReviewState }) {
   return (
     <>
       <StageHeading eyebrow={`${AI.provider} · ${AI.model}`} title="Know the cost before you create." art="cost" artWidth={100} artTop={33} logo />
@@ -1078,7 +1231,7 @@ function EstimateStage({ f }: { f: Frame }) {
   );
 }
 
-function ConfirmStage({ f }: { f: Frame }) {
+function ConfirmStage({ f }: { f: ReviewState }) {
   return (
     <>
       <StageHeading eyebrow={`${AI.provider} · ${AI.model}`} title="Ready to make your shorts?" art="trim" artWidth={100} artTop={37} logo />
@@ -1139,7 +1292,7 @@ function ProcessBar() {
   );
 }
 
-function FinishView({ f }: { f: Frame }) {
+const FinishView = memo(function FinishView({ s: f }: { s: FinishState }) {
   const { still } = useDemoClock();
   return (
     <ViewScroll view="finish">
@@ -1148,7 +1301,7 @@ function FinishView({ f }: { f: Frame }) {
         sub={PROJECT.file}
         pill={f.results ? <Pill tone="neutral">Clips ready</Pill> : <Pill tone="success">Making clips</Pill>}
       />
-      <ProjectFlow marks={marksFor(5)} stageHeight={1500}>
+      <ProjectFlow current={5} stageHeight={1500}>
         <motion.div
           className="absolute inset-x-0 top-0 overflow-hidden rounded-[12px] bg-[#f7f6f5]"
           initial={false}
@@ -1211,15 +1364,15 @@ function FinishView({ f }: { f: Frame }) {
           </AnimatePresence>
         </motion.div>
 
-        {f.results && <Results f={f} />}
+        {f.results && <Results shown={f.cardsIn} playing={f.playing} />}
       </ProjectFlow>
     </ViewScroll>
   );
-}
+});
 
-function Results({ f }: { f: Frame }) {
+const Results = memo(function Results({ shown: cardsIn, playing }: { shown: boolean; playing: boolean }) {
   const { still } = useDemoClock();
-  const shown = f.cardsIn || still;
+  const shown = cardsIn || still;
   return (
     <>
       <motion.div
@@ -1250,7 +1403,7 @@ function Results({ f }: { f: Frame }) {
             animate={shown ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
             transition={{ duration: 0.3, ease: EASE, delay: still ? 0 : i * 0.06 }}
           >
-            <ClipBox poster={c.poster} hideBar={i === 0 && f.playing && !still} />
+            <ClipBox poster={c.poster} closeUp={c.closeUp} hideBar={i === 0 && playing && !still} />
             <p className="mt-[14px] text-[11px] leading-[16px] text-[#69656b]">Clip {i + 1} · 0:42</p>
             <p className="mt-[8px] text-[15px] font-[600] leading-[21px]">{c.title}</p>
             <span className="mt-[9px] inline-flex h-[22px] items-center gap-[6px] rounded-full bg-[#f4f2f4] px-[8px] text-[11px] font-[600] text-[#432b36]">
@@ -1267,7 +1420,7 @@ function Results({ f }: { f: Frame }) {
       })}
     </>
   );
-}
+});
 
 const PLAYER_BAR =
   "h-[80px] bg-[linear-gradient(to_bottom,transparent,rgba(20,18,20,0.45))] px-[16px] pt-[34px] text-white";
@@ -1294,11 +1447,39 @@ function PlayerBar({ playing, time, progress }: { playing?: boolean; time: React
   );
 }
 
+/** A 9:16 close-up cut from the sample still, with the clip's burned-in caption in the posters' style. */
+function CloseUpFrame({ c }: { c: CloseUp }) {
+  const [x, y, , h] = c.crop;
+  const k = 400 / h;
+  return (
+    <div className="absolute left-1/2 top-0 h-[400px] w-[225px] -translate-x-1/2 overflow-hidden">
+      <img
+        src={c.src}
+        alt=""
+        draggable={false}
+        className="absolute max-w-none"
+        style={{ left: -x * k, top: -y * k, width: 1280 * k, height: 720 * k }}
+      />
+      <p className="absolute inset-x-0 top-[282px] text-center text-[10px] font-[600] uppercase leading-[15px] tracking-[0.01em] text-white [text-shadow:0_0_1px_rgba(20,18,20,0.95),0_0_2px_rgba(20,18,20,0.7)]">
+        {c.caption.map((line) => (
+          <span key={line} className="block">
+            {line}
+          </span>
+        ))}
+      </p>
+    </div>
+  );
+}
+
 /** A clip player at rest: 0:00, so the scrubber shows only its track. */
-function ClipBox({ poster, hideBar }: { poster: string; hideBar: boolean }) {
+const ClipBox = memo(function ClipBox({ poster, closeUp, hideBar }: { poster: string; closeUp?: CloseUp; hideBar: boolean }) {
   return (
     <div className="relative h-[400px] overflow-hidden rounded-[10px] bg-[#252327]">
-      <img src={poster} alt="" draggable={false} className="absolute left-1/2 top-0 h-[400px] w-[225px] -translate-x-1/2 object-cover" />
+      {closeUp ? (
+        <CloseUpFrame c={closeUp} />
+      ) : (
+        <img src={poster} alt="" draggable={false} className="absolute left-1/2 top-0 h-[400px] w-[225px] -translate-x-1/2 object-cover" />
+      )}
       <motion.div
         className={cn("absolute inset-x-0 bottom-0", PLAYER_BAR)}
         initial={false}
@@ -1309,7 +1490,7 @@ function ClipBox({ poster, hideBar }: { poster: string; hideBar: boolean }) {
       </motion.div>
     </div>
   );
-}
+});
 
 /** Clip 1's controls while it plays: pause icon, running time and scrubber, all from the clock. */
 export function PlayingControls() {
@@ -1328,27 +1509,32 @@ export function PlayingControls() {
 /* View switch                                                          */
 /* ------------------------------------------------------------------ */
 
-export function AppView({ f }: { f: Frame }) {
-  switch (f.view) {
+/** One view drawn from its slice. Memoized views skip beats that do not touch them. */
+export function ViewBody({ view, s }: { view: View; s: ViewSlice }) {
+  switch (view) {
     case "library":
-      return <LibraryView f={f} />;
+      return <LibraryView />;
     case "upload":
-      return <UploadView f={f} />;
+      return <UploadView s={s as UploadState} />;
     case "customize":
-      return <CustomizeView f={f} />;
+      return <CustomizeView s={s as CustomizeState} />;
     case "review":
-      return <ReviewView f={f} />;
+      return <ReviewView s={s as ReviewState} />;
     default:
-      return <FinishView f={f} />;
+      return <FinishView s={s as FinishState} />;
   }
 }
 
+export function AppView({ f }: { f: Frame }) {
+  return <ViewBody view={f.view} s={viewSlice(f.view, f)} />;
+}
+
 /** The dragged file, drawn on the canvas next to the cursor hotspot. */
-export function FileGhost() {
+export const FileGhost = memo(function FileGhost() {
   return (
     <div className="flex h-[40px] w-[260px] items-center gap-[9px] rounded-[8px] bg-white/[0.92] px-[12px] text-[12px] font-[500] shadow-[0_8px_24px_rgba(37,35,39,0.25)]">
       <FileVideo className="size-[18px] shrink-0 text-[#432b36]" strokeWidth={1.75} />
       <span className="truncate">{PROJECT.file}</span>
     </div>
   );
-}
+});

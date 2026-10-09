@@ -21,7 +21,7 @@ All of these live in [`src/lib/site.ts`](src/lib/site.ts). Every button on the p
 | --- | --- | --- |
 | `cta.wishlist.href` | `#wishlist` (the signup form) | Leave as is, or point at an external signup page |
 | `cta.howItWorks.href` | `#how-it-works` (the scroll demo) | Final destination for "See how Shortzy works", e.g. a demo video |
-| `wishlistFormAction` | `null` (form says signups aren't connected yet) | POST endpoint that accepts an `email` field (Formspree, Tally, Loops, ConvertKit...) |
+| `wishlistFormAction` | `null` (form says signups aren't connected yet) | POST endpoint that accepts an `email` field (Formspree, Tally, Loops, ConvertKit...). Set it before the page goes public: until then no "Join the wishlist" button collects anything |
 | `url` | `https://shortzy.app` | Real domain (used for share-card URLs) |
 | `headline`, `description` | Positioning line and meta description | Change with the copy deck; page title and share text follow. The hero (`hero.tsx`) and `public/og.png` carry the headline too |
 
@@ -30,17 +30,19 @@ Shortzy is a one-time purchase, but the amount is not set, so the page shows no 
 ## Page structure
 
 The positioning hooks (pay once, your own AI paid as you go, editing on your computer, your video or a YouTube link)
-land in the first sections; the feature tour follows.
+land in the first sections, then the feature tour. Your AI and your bill comes last, ending on "How you pay" and its
+wishlist link, so the pay-once story sits right before the FAQ and the ask. Nav links, in page order: How it works,
+What's inside, Your AI, FAQ.
 
 | # | Section | File | Job |
 | --- | --- | --- | --- |
 |  | Nav | `src/components/sections/nav.tsx` | Sticky, primary CTA always visible, links in page order |
 | 1 | Hero | `hero.tsx`, `mockups/app-demo/` | Headline, the three hook chips, both CTAs, and the auto-looping app demo |
 | 2 | Problem | `problem.tsx` | The choice today: hours of editing, or another monthly bill. Shortzy as the third way |
-| 3 | How it works | `how-it-works.tsx` | Pinned five-step scroll on real UI, with a lane showing what runs on your computer and what goes to your AI |
+| 3 | How it works | `how-it-works.tsx` | Pinned five-step scroll that renders the hero demo's coded app screens (same sample workspace), with a lane showing what runs on your computer and what goes to your AI |
 | 4 | Spec strip | `specs.tsx` | The output at a glance. Honest facts in place of logos or testimonials (none exist yet) |
-| 5 | Your AI | `your-ai.tsx` | Your own Gemini or Qwen account: a flow diagram of what goes where and a "How you pay" receipt (Shortzy once, AI billed by your provider, no markup) |
-| 6 | Features | `features.tsx` | Interactive caption presets, scoring, fewer but better, framing that follows the face, cost upfront |
+| 5 | What's inside | `features.tsx` (`#features`) | Interactive caption presets, ranked with reasons, fewer but better, framing that follows the face, and a coded cost estimate panel |
+| 6 | Your AI | `your-ai.tsx` | Your own Gemini or Qwen account: a flow diagram of what goes where and a "How you pay" receipt (Shortzy once, AI billed by your provider, no markup) ending on the wishlist link |
 | 7 | FAQ | `faq.tsx` | Objections, cost first. Nine questions at most |
 | 8 | Wishlist signup | `final-cta.tsx` | Email form (`#wishlist`) with the risk reversal under it |
 |  | Footer | `footer.tsx` | Brand tagline, links, trademarks |
@@ -50,25 +52,36 @@ land in the first sections; the feature tour follows.
 `src/components/mockups/app-demo/` is an auto-looping click-through recreation of the real Shortzy app with a fictional
 sample workspace: adding a video, choosing the clip settings, checking the AI cost estimate, processing, then ranked,
 captioned clips. One master clock drives a pure, seekable frame model (`timeline.ts`), so the demo is deterministic.
-It pauses on click or tap (and through a visually hidden button for keyboard users), when less than a quarter is on
-screen and when the tab is hidden. Reduced motion shows a still frame. Add `?demo=<ms>` to the URL to freeze it at a
+It pauses on click or tap (and through a visually hidden button for keyboard users), when it scrolls out of view and
+when the tab is hidden. Reduced motion shows a still frame. Add `?demo=<ms>` to the URL to freeze it at a
 given time, which is handy for screenshots and reviews.
 
 ## Product visuals
 
-Product visuals come from the Shortzy Landing Page UI Kit (real frontend screens captured from the QA build,
-9 Oct 2026), optimised into `public/product/`:
+The app's screens are recreated in code from the Shortzy Landing Page UI Kit (real frontend screens captured from the
+QA build, 9 Oct 2026), with the app's own tokens and its Inter typeface:
 
-- `screens/`: Library, Customize, Ranked clips, plus crops of the results grid and cost estimate.
-- `how/`: crops used by the How it works stage.
-- `illustrations/`: spot illustrations for the step visuals.
+- `src/components/mockups/app-demo/`: the hero demo's screens. How it works renders the same coded screens through a
+  camera that frames one part of the app per step.
+- The What's inside cost card is a small coded copy of the app's estimate card at a readable size.
+
+Assets in `public/product/`, optimized to WebP:
+
+- `screens/`: the original UI kit captures (Library, Customize, Ranked clips, results grid, cost estimate). Kept for
+  reference; the page no longer renders them.
+- `illustrations/`: spot illustrations used by the app screens.
 - `clips/`: real 9:16 rendered shorts (WebM + MP4) and poster frames.
 - `stills/`: source-video stills used in the caption and framing demos.
 
-The workspace, people, titles, scores and costs in these assets are fictional QA fixtures. The page labels them as a
-sample workspace and keeps the qualifiers (scores are AI estimates, costs are samples, your provider bills). Any sample
-cost names its model: "$0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash". Do not present them as customer
-results or a price promise.
+The workspace, people, titles, scores and costs are fictional QA fixtures. The page labels them "Sample" and keeps the
+qualifiers (scores are AI estimates, costs are estimates, your provider bills). Two sample costs appear, both real app
+fixtures, and each names its model:
+
+- "$0.43 to $1.33" for the 44:48 sample on Gemini Flash 3.8 (recommended; recorded usage $0.43): hero demo and How it
+  works.
+- "$0.03 to $0.06" for a 24-minute sample on Qwen 3.8 Omni Flash: the What's inside cost panel.
+
+The FAQ names both. Do not present them as customer results or a price promise.
 
 ## Motion
 
@@ -96,14 +109,15 @@ results or a price promise.
 - Typography: Bricolage Grotesque (display), Instrument Sans (body), DM Mono (labels and timecodes). The desktop app keeps
   the brand's system sans stack; these are web-only marketing faces, swappable in `src/app/layout.tsx`.
 - Copy rules: no em or en dashes, no views guarantees, local editing never presented as "offline", never call Shortzy
-  free (it is paid once), no savings claims and no competitor names. Marketed for Mac and Windows.
+  free (it is paid once), no savings claims and no competitor names. American spelling (color, centered, customize),
+  matching the app UI. Marketed for Mac and Windows.
 
 ## Skills and credits
 
 - Brand-building skills in `.claude/skills/` from
   [arnabbagxd/Brand-building-skills](https://github.com/arnabbagxd/Brand-building-skills).
 - Founder skills (landing-page, competitor-matrix, pricing-strategy, go-to-market and others) in `.claude/skills/` from
-  [emotixco/claude-skills-founder](https://github.com/emotixco/claude-skills-founder) (v2.1.4, MIT licence in
+  [emotixco/claude-skills-founder](https://github.com/emotixco/claude-skills-founder) (v2.1.4, MIT license in
   `.claude/skills/FOUNDER_SKILLS_LICENSE`). Their outputs live in `founder/`: `facts.md`, `landing-page.md` (copy deck)
   and `competitor-matrix.md`.
 

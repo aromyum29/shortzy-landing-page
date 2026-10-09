@@ -11,7 +11,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "How much will the AI part cost me?",
-    a: "It depends on the video's length and your model, and Shortzy shows an estimated range before anything runs. One sample in the app: $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Your provider's bill is final.",
+    a: "It depends on the video's length and your model, and Shortzy shows an estimated range before anything runs. Two samples from the app: $0.43 to $1.33 for a 44:48 video on Gemini Flash 3.8 (recommended), and $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Your provider's bill is final.",
   },
   {
     q: "Do I need an AI account?",
@@ -26,8 +26,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: `An app for your Mac (Apple Silicon, macOS 14 or later) or Windows PC, with everything it needs bundled in. Set aside ${site.storageHint} for your workspace to start. You'll need an internet connection for YouTube imports and AI analysis.`,
   },
   {
-    q: "Does it work on Windows?",
-    a: "Yes. Shortzy is coming to both Mac and Windows.",
+    q: "Is it coming to Windows?",
+    a: "Yes. Shortzy is coming to both Mac and Windows. Join the wishlist and we'll tell you when each version is ready.",
   },
   {
     q: "Will these clips get me views?",
@@ -45,7 +45,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
 
 export function FAQ() {
   return (
-    <section id="faq" aria-labelledby="faq-title" className="border-t border-pebble py-24 sm:py-32">
+    <section id="faq" aria-labelledby="faq-title" className="py-24 sm:py-32">
       <Container className="grid gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-20">
         <Reveal className="lg:sticky lg:top-28 lg:self-start">
           <Eyebrow>FAQ</Eyebrow>

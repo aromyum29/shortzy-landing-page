@@ -11,7 +11,7 @@ const SPECS = [
 /** The output at a glance, right after How it works shows how it is made. */
 export function Specs() {
   return (
-    <section aria-label="Shortzy at a glance" className="border-t border-pebble bg-paper">
+    <section aria-label="Shortzy at a glance" className="border-y border-pebble bg-paper">
       <Container>
         <dl className="grid grid-cols-2 lg:grid-cols-4">
           {SPECS.map((s, i) => (
@@ -35,7 +35,7 @@ export function Specs() {
           ))}
         </dl>
         <p className="text-balance border-t border-pebble py-5 text-center text-[0.875rem] text-mute sm:text-[0.9375rem]">
-          From your own video or a YouTube link. Works best with{" "}
+          From your own video or a YouTube link. Made for{" "}
           <span className="font-semibold text-ink">podcasts</span>,{" "}
           <span className="font-semibold text-ink">interviews</span>,{" "}
           <span className="font-semibold text-ink">tutorials</span> and{" "}

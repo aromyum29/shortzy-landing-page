@@ -93,9 +93,11 @@ function Arrowhead({ upY, leftX }: { upY: boolean; leftX: boolean }) {
 }
 
 /**
- * A labelled connector. `side` hangs the label before the line (left on phones, above on md+)
- * or after it (right / below), outside the line's box so the line itself stays centred on its node.
+ * A labeled connector. `side` hangs the label before the line (left on phones, above on md+)
+ * or after it (right / below), outside the line's box so the line itself stays centered on its node.
  * `leftX` and `upY` set the travel direction for each axis.
+ * On phones the label is as wide as the space beside the wires allows (its row is a size container:
+ * half the row, less the wires and the gap), so it wraps instead of spilling past the diagram.
  */
 function Wire({
   label,
@@ -122,7 +124,7 @@ function Wire({
     <div className="relative h-full w-4 md:h-4 md:w-full">
       <span
         className={cn(
-          "absolute top-1/2 w-[6.5rem] -translate-y-1/2 font-mono text-[0.75rem] leading-[1.35] text-white/70",
+          "absolute top-1/2 w-[min(6.5rem,calc(50cqw_-_2.5rem))] -translate-y-1/2 font-mono text-[0.75rem] leading-[1.35] text-white/70",
           side === "start" ? "right-full mr-2 text-right" : "left-full ml-2 text-left",
           "md:inset-x-0 md:m-0 md:w-auto md:translate-y-0 md:px-3 md:text-center md:text-balance",
           side === "start" ? "md:bottom-full md:top-auto md:mb-1" : "md:top-full md:mt-1",
@@ -159,22 +161,32 @@ function NodeTitle({ icon: Icon, title, sub }: { icon: ComponentType<{ className
   );
 }
 
+/**
+ * One provider row: logo, name, status. The list is a size container: when a row is narrower than
+ * 14.75rem (phones under about 360px, or larger text), the status drops under the name.
+ */
 function ProviderTile({ name, logo, status, tone }: (typeof PROVIDERS)[number]) {
   const soon = tone === "soon";
   return (
     <span
       className={cn(
-        "flex items-center gap-2.5 rounded-xl border p-2 pr-2.5",
+        "grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2.5 gap-y-1 rounded-xl border p-2 pr-2.5",
+        "@max-[14.75rem]:grid-cols-[auto_minmax(0,1fr)]",
         soon ? "border-dashed border-white/20" : "border-white/15 bg-white/[0.07]",
       )}
     >
-      <span className={cn("grid size-8 shrink-0 place-items-center rounded-lg bg-white", soon && "opacity-55")}>
+      <span
+        className={cn(
+          "grid size-8 shrink-0 place-items-center rounded-lg bg-white @max-[14.75rem]:row-span-2",
+          soon && "opacity-55",
+        )}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={logo} alt="" width={20} height={20} className="size-5 object-contain" />
       </span>
       <span
         className={cn(
-          "font-display text-[1.0625rem] font-bold tracking-[-0.015em]",
+          "min-w-0 flex-1 truncate font-display text-[1.0625rem] font-bold tracking-[-0.015em]",
           soon ? "text-white/60" : "text-white",
         )}
       >
@@ -182,7 +194,8 @@ function ProviderTile({ name, logo, status, tone }: (typeof PROVIDERS)[number]) 
       </span>
       <span
         className={cn(
-          "ml-auto whitespace-nowrap rounded-full px-2 py-0.5 text-[0.75rem] font-semibold leading-[1.4]",
+          "justify-self-end whitespace-nowrap rounded-full px-2 py-0.5 text-[0.75rem] font-semibold leading-[1.4]",
+          "@max-[14.75rem]:col-start-2 @max-[14.75rem]:justify-self-start",
           tone === "pick" && "bg-oat text-ink",
           tone === "on" && "border border-white/25 text-white/80",
           soon && "border border-dashed border-white/30 text-white/70",
@@ -214,36 +227,37 @@ function Diagram() {
       aria-label={DIAGRAM_LABEL}
       className={cn(
         "grid w-full grid-cols-1",
-        "md:grid-cols-[13.5rem_minmax(0,1fr)_16rem] md:gap-y-5",
-        "lg:grid-cols-[15rem_minmax(0,1fr)_17.5rem] xl:grid-cols-[13.5rem_minmax(0,1fr)_16rem]",
+        // The AI account column is wide enough (17rem) for each provider row to stay on one line.
+        "md:grid-cols-[13.5rem_minmax(0,1fr)_17rem] md:gap-y-5",
+        "lg:grid-cols-[15rem_minmax(0,1fr)_17.5rem] xl:grid-cols-[13.5rem_minmax(0,1fr)_17rem]",
       )}
     >
       <Node className="border-white/15 bg-maroon md:col-start-1 md:row-start-1">
         <NodeTitle icon={Laptop} title="Shortzy" sub="on your computer" />
-        <span className="mt-3 self-start whitespace-nowrap rounded-full border border-oat/55 px-2 py-0.5 font-mono text-[0.75rem] leading-[1.45] text-oat">
+        <span className="mt-3 max-w-full self-start rounded-full border border-oat/55 px-2 py-0.5 font-mono text-[0.75rem] leading-[1.45] text-oat">
           Edits and exports here
         </span>
       </Node>
 
-      <div className="flex h-28 justify-center gap-8 md:col-start-2 md:row-start-1 md:h-auto md:flex-col md:gap-1.5 md:self-center">
+      <div className="@container flex h-28 justify-center gap-8 md:col-start-2 md:row-start-1 md:h-auto md:flex-col md:gap-1.5 md:self-center">
         <Wire label="Prepared audio and video" side="start" run={run} axis={axis} leg={OUT} tint="bg-coral" />
         <Wire label="Editing plan" side="end" leftX upY run={run} axis={axis} leg={BACK} tint="bg-rose" />
       </div>
 
       <Node className="justify-start border-white/15 bg-white/[0.05] md:col-start-3 md:row-span-2 md:row-start-1">
         <NodeTitle icon={KeyRound} title="Your AI account" sub="your API key" />
-        <span className="mt-4 grid gap-2">
+        <span className="@container mt-4 grid gap-2">
           {PROVIDERS.map((p) => (
             <ProviderTile key={p.name} {...p} />
           ))}
         </span>
       </Node>
 
-      <div className="flex h-24 justify-center md:col-start-2 md:row-start-2 md:h-auto md:self-center">
+      <div className="@container flex h-24 justify-center md:col-start-2 md:row-start-2 md:h-auto md:self-center">
         <Wire label="Billed at their rates" side="end" leftX dashed run={run} axis={axis} leg={BILL} tint="bg-oat" />
       </div>
 
-      <Node className="w-[12rem] justify-self-center border-white/20 bg-white/[0.04] md:col-start-1 md:row-start-2 md:w-auto md:justify-self-stretch">
+      <Node className="w-[12rem] max-w-full justify-self-center border-white/20 bg-white/[0.04] md:col-start-1 md:row-start-2 md:w-auto md:justify-self-stretch">
         <NodeTitle icon={UserRound} title="You" sub="pay as you go" />
       </Node>
     </div>
@@ -304,7 +318,9 @@ function Receipt() {
 export function YourAI() {
   return (
     <section id="your-ai" aria-labelledby="ai-title" className="on-dark grain relative bg-deep py-24 text-white sm:py-32">
+      {/* Film perforation rails open and close the dark band, like the hero stage and the wishlist card. */}
       <div aria-hidden="true" className="perf-rail absolute inset-x-0 top-5 h-3 text-paper/10" />
+      <div aria-hidden="true" className="perf-rail absolute inset-x-0 bottom-5 h-3 text-paper/10" />
       <Container>
         <Reveal className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
           <div className="lg:col-span-7">
@@ -333,7 +349,7 @@ export function YourAI() {
             delay={0.08}
             className="flex flex-col rounded-[24px] border border-white/12 bg-white/[0.03] p-5 sm:p-7 xl:col-span-8 xl:p-8"
           >
-            {/* Diagram and footnote share one centred column, so their edges line up at every width. */}
+            {/* Diagram and footnote share one centered column, so their edges line up at every width. */}
             <div className="mx-auto flex w-full max-w-[52rem] flex-1 flex-col">
               <div className="flex flex-1 items-center">
                 <Diagram />

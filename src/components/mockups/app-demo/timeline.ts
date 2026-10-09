@@ -7,7 +7,13 @@
  *
  * Coordinates are on a fixed 1280 x 800 app canvas. "Full" y values are page
  * coordinates inside a view before its scroll is applied.
+ *
+ * Pacing: one bubble at a time, each fully readable for at least 1.8 s after
+ * its entrance (main bubbles hold 2.1 s or more, the closing aha bubble 2.7 s),
+ * and no bubble outlives the view or stage it points at.
  */
+
+import { AI, PROJECT } from "./data";
 
 export const CANVAS_W = 1280;
 export const CANVAS_H = 800;
@@ -16,20 +22,20 @@ export type Pt = readonly [number, number];
 export type View = "library" | "upload" | "customize" | "review" | "finish";
 
 /** Loop length and the moment the last scene crossfades back to the library. */
-export const LOOP = 19400;
-export const LOOP_BACK = 19200;
+export const LOOP = 24560;
+export const LOOP_BACK = 24160;
 
 /** View and stage switches (each crossfades in over about 200 ms). */
 export const SCENE = {
   library: 0,
-  upload: 1120,
-  customize: 3740,
-  shorts: 5730,
-  analyze: 7700,
-  estimate: 8840,
-  confirm: 10740,
-  processing: 11900,
-  results: 14380,
+  upload: 2150,
+  customize: 4600,
+  shorts: 7230,
+  analyze: 9175,
+  estimate: 10370,
+  confirm: 13680,
+  processing: 15900,
+  results: 18280,
 } as const;
 
 /** Scene starts in order, for resuming from the start of the current scene. */
@@ -42,42 +48,42 @@ export function sceneStart(t: number) {
 
 /** Named moments that are not clicks. */
 export const T = {
-  hoverYoutube: [1745, 1860],
-  ghostIn: 2450,
-  dragOver: 2700,
-  drop: 2945,
-  collapse: 5170,
-  hoverSelect: [5960, 6110],
-  hoverWord: [6520, 6650],
-  hoverBold: [6650, 6730],
-  scrollStyle: [7055, 7470],
-  check1: 7785,
-  check2: 7885,
-  check3: 8240,
-  estimateReady: 9045,
-  framing: 13200,
-  cardsIn: 14505,
-  scrollResults: [15810, 16310],
-  cursorOut: [16980, 17230],
-  importDone: 5145,
-  processHalf: 13200,
-  processDone: 14280,
+  hoverYoutube: [2630, 2745],
+  ghostIn: 3340,
+  dragOver: 3590,
+  drop: 3835,
+  importDone: 6855,
+  collapse: 6880,
+  hoverSelect: [7460, 7610],
+  hoverWord: [8020, 8150],
+  hoverBold: [8150, 8230],
+  scrollStyle: [8530, 8945],
+  check1: 9275,
+  check2: 9425,
+  check3: 9625,
+  estimateReady: 10520,
+  framing: 17050,
+  processHalf: 17050,
+  processDone: 18150,
+  cardsIn: 18405,
+  scrollResults: [20600, 21100],
+  cursorOut: [21580, 21830],
 } as const;
 
 /** Every click: when, where (canvas coords at that moment) and what it presses. */
 export const CLICKS = [
-  { at: 1040, at2: [104, 163], id: "newProject" },
-  { at: 2075, at2: [679, 466], id: "segUpload" },
-  { at: 3485, at2: [744, 702], id: "create" },
-  { at: 5730, at2: [332, 434], id: "tabShorts" },
-  { at: 6310, at2: [415, 434], id: "tabStyle" },
-  { at: 6850, at2: [351, 610], id: "presetBold" },
-  { at: 7595, at2: [856, 769], id: "analyze" },
-  { at: 8640, at2: [1040, 619], id: "seeCost" },
-  { at: 10540, at2: [1041, 659], id: "reviewConfirm" },
-  { at: 11240, at2: [373, 548], id: "consent" },
-  { at: 11695, at2: [1054, 715], id: "find" },
-  { at: 16420, at2: [401, 303], id: "clip1" },
+  { at: 2010, at2: [104, 163], id: "newProject" },
+  { at: 2960, at2: [679, 466], id: "segUpload" },
+  { at: 4350, at2: [744, 702], id: "create" },
+  { at: SCENE.shorts, at2: [332, 434], id: "tabShorts" },
+  { at: 7810, at2: [415, 434], id: "tabStyle" },
+  { at: 8350, at2: [351, 610], id: "presetBold" },
+  { at: 9070, at2: [856, 769], id: "analyze" },
+  { at: 10170, at2: [1040, 619], id: "seeCost" },
+  { at: 13480, at2: [1041, 659], id: "reviewConfirm" },
+  { at: 14250, at2: [373, 548], id: "consent" },
+  { at: 15650, at2: [1054, 715], id: "find" },
+  { at: 21200, at2: [401, 303], id: "clip1" },
 ] as const;
 
 export type ClickId = (typeof CLICKS)[number]["id"];
@@ -90,26 +96,26 @@ const PRESS_MS = 110;
 /** Cursor path: each move runs from `start` to `end` and lands on `to` (canvas coords). */
 const CURSOR_START: Pt = [700, 520];
 const MOVES_IN: { start: number; end: number; to: Pt }[] = [
-  { start: 415, end: 910, to: [104, 163] },
-  { start: 1320, end: 1745, to: [430, 466] },
-  { start: 1860, end: 2035, to: [679, 466] },
-  { start: 2120, end: 2410, to: [1180, 700] },
-  { start: 2450, end: 2905, to: [541, 598] },
-  { start: 3000, end: 3360, to: [744, 702] },
-  { start: 4060, end: 4400, to: [600, 650] },
-  { start: 5330, end: 5685, to: [332, 434] },
-  { start: 5790, end: 6000, to: [480, 518] },
-  { start: 6110, end: 6265, to: [415, 434] },
-  { start: 6370, end: 6555, to: [584, 610] },
-  { start: 6630, end: 6800, to: [351, 610] },
-  { start: 7100, end: 7510, to: [856, 769] },
-  { start: 7810, end: 8160, to: [1040, 619] },
-  { start: 8920, end: 9250, to: [655, 390] },
-  { start: 10050, end: 10415, to: [1041, 659] },
-  { start: 10800, end: 11155, to: [373, 548] },
-  { start: 11280, end: 11610, to: [1054, 715] },
-  { start: 11900, end: 12300, to: [760, 600] },
-  { start: 15900, end: 16320, to: [401, 303] },
+  { start: 1400, end: 1840, to: [104, 163] },
+  { start: 2270, end: 2630, to: [430, 466] },
+  { start: 2745, end: 2920, to: [679, 466] },
+  { start: 3010, end: 3300, to: [1180, 700] },
+  { start: 3340, end: 3795, to: [541, 598] },
+  { start: 3890, end: 4250, to: [744, 702] },
+  { start: 4660, end: 5000, to: [600, 650] },
+  { start: 6830, end: 7180, to: [332, 434] },
+  { start: 7290, end: 7500, to: [480, 518] },
+  { start: 7610, end: 7765, to: [415, 434] },
+  { start: 7870, end: 8055, to: [584, 610] },
+  { start: 8130, end: 8300, to: [351, 610] },
+  { start: 8575, end: 8985, to: [856, 769] },
+  { start: 9675, end: 10025, to: [1040, 619] },
+  { start: 10450, end: 10780, to: [880, 240] },
+  { start: 12950, end: 13315, to: [1041, 659] },
+  { start: 13740, end: 14095, to: [373, 548] },
+  { start: 14900, end: 15230, to: [1054, 715] },
+  { start: 15950, end: 16350, to: [760, 600] },
+  { start: 20690, end: 21110, to: [401, 303] },
 ];
 
 export type Placement = "top" | "top-start" | "right" | "left" | "bottom";
@@ -117,6 +123,10 @@ export type BubbleKind = "main" | "qualifier" | "aha";
 export type Bubble = {
   id: string;
   text: string;
+  /** A smaller second line in the same bubble (the cost qualifier). */
+  note?: string;
+  /** Phones: the note names the sample, since the app text is too small to read there. */
+  noteCompact?: string;
   in: number;
   out: number;
   view: View;
@@ -125,77 +135,101 @@ export type Bubble = {
   place: Placement;
   anchorCompact?: Pt;
   placeCompact?: Placement;
+  /** false: not shown on phones (the UI line it explains is already readable there). */
+  compact?: boolean;
+  /** Phones: allow a wider bubble so it stays on one line and clear of nearby text. */
+  wideCompact?: boolean;
   kind: BubbleKind;
 };
 
 export const BUBBLES: Bubble[] = [
   {
-    id: "B1", text: "Your projects live on your computer", in: 60, out: 1180, view: "library",
+    // Anchored to the sidebar's "On your computer" row; ends as the library leaves.
+    id: "B1", text: "Your projects live on your computer", in: 50, out: SCENE.upload, view: "library",
     anchor: [158, 763], place: "right", anchorCompact: [96, 240], placeCompact: "bottom", kind: "main",
   },
   {
-    id: "B2", text: "A YouTube link or your own file", in: 1410, out: 2520, view: "upload",
-    anchor: [818, 458], place: "right", anchorCompact: [541, 444], placeCompact: "top", kind: "main",
+    id: "B2", text: "A YouTube link or your own file", in: 2300, out: 4400, view: "upload",
+    anchor: [818, 458], place: "right", anchorCompact: [541, 443], placeCompact: "top", kind: "main",
   },
   {
-    id: "B3", text: "Your own AI. Gemini or Qwen.", in: 4040, out: 5150, view: "customize",
-    anchor: [370, 622], place: "right", kind: "main",
-  },
-  { id: "B4", text: "Pick how your captions look", in: 6350, out: 7460, view: "customize", anchor: [476, 549], place: "top", kind: "main" },
-  {
-    id: "B5", text: "Checked locally. Nothing sent yet.", in: 7740, out: 8840, view: "review",
-    anchor: [492, 534], place: "right", kind: "main",
+    // Ends before the import strip collapses and the tab content moves.
+    id: "B3", text: "Your own AI. Gemini or Qwen.", in: 4780, out: T.collapse, view: "customize",
+    anchor: [370, 622], place: "right", anchorCompact: [362, 612], placeCompact: "right", kind: "main",
   },
   {
-    id: "B6", text: "See the cost before it runs", in: 9130, out: 10580, view: "review",
-    anchor: [760, 547], place: "right", kind: "main",
+    // The cost and its qualifier in one bubble. It ends before the cursor
+    // heads to Review & confirm, so the phone camera never crops the price.
+    id: "B6", text: "See the cost before it runs", note: "Estimate. Your provider bills you.",
+    noteCompact: `Sample: ${PROJECT.length} video on ${AI.provider} ${AI.model}. Your provider bills you.`,
+    in: 10600, out: 13200, view: "review",
+    anchor: [710, 542], place: "right", anchorCompact: [686, 557], placeCompact: "bottom", kind: "main",
   },
   {
-    id: "B6b", text: "Estimate. Your provider bills you.", in: 9375, out: 10580, view: "review",
-    anchor: [852, 719], place: "right", anchorCompact: [520, 743], placeCompact: "bottom", kind: "qualifier",
+    id: "B7", text: "Nothing runs until you say so", in: 13800, out: SCENE.processing, view: "review",
+    anchor: [1054, 889], place: "top", anchorCompact: [724, 751], placeCompact: "bottom", kind: "main",
   },
   {
-    id: "B7", text: "Nothing runs until you say so", in: 10780, out: 11880, view: "review",
-    anchor: [1070, 885], place: "top", anchorCompact: [540, 768], placeCompact: "bottom", kind: "main",
+    // Points at the progress bar from below, in the card's empty lower half on every size.
+    id: "B8", text: "Shortzy and your AI find the moments. Your computer edits.", in: 16050, out: 18250, view: "finish",
+    anchor: [700, 424], place: "bottom", anchorCompact: [600, 426], placeCompact: "bottom", kind: "main",
   },
   {
-    id: "B8a", text: "Your AI finds the moments", in: 12040, out: 13150, view: "finish",
-    anchor: [586, 326], place: "right", anchorCompact: [600, 426], placeCompact: "bottom", kind: "main",
+    // Phones: one line in the gap under the usage line, clear of the results
+    // heading and the "Scores are AI estimates" line.
+    id: "B9c", text: "Just your AI usage. No credits.", in: 18480, out: 20580, view: "finish",
+    anchor: [678, 407], place: "right", anchorCompact: [402, 416], placeCompact: "bottom", wideCompact: true, kind: "main",
   },
   {
-    id: "B8b", text: "Your computer does the editing", in: 13280, out: 14380, view: "finish",
-    anchor: [613, 326], place: "right", anchorCompact: [600, 426], placeCompact: "bottom", kind: "main",
+    id: "B9a", text: "Ranked by AI estimate, with reasons", in: 21260, out: 23360, view: "finish",
+    anchor: [744, 525], place: "right", compact: false, kind: "main",
   },
   {
-    id: "B9c", text: "Just your AI usage. No credits.", in: 14700, out: 15810, view: "finish",
-    anchor: [676, 407], place: "right", anchorCompact: [420, 419], placeCompact: "bottom", kind: "main",
-  },
-  {
-    id: "B9a", text: "Ranked by AI estimate, with reasons", in: 16480, out: 17970, view: "finish",
-    anchor: [744, 525], place: "right", anchorCompact: [389, 1055], placeCompact: "right", kind: "main",
-  },
-  {
-    id: "B9b", text: "Framed, captioned, ready to post", in: 16980, out: 18970, view: "finish",
-    anchor: [563, 590], place: "right", kind: "aha",
+    id: "B9b", text: "Framed, captioned, ready to post", in: 21560, out: LOOP_BACK, view: "finish",
+    anchor: [563, 590], place: "right", anchorCompact: [401, 950], placeCompact: "bottom", kind: "aha",
   },
 ];
 
 /**
- * Compact (phone) camera focus points, panned with the brand ease. p is
- * [centre x, top y] in canvas px: pinning the top edge (not the centre) keeps
- * headings whole at every phone width. `w` widens the visible region where a
- * centred layout needs more room.
+ * Compact (phone) camera. Each beat names a preferred center `c` and a `must`
+ * box [x0, y0, x1, y1] (the clicked element and the bubble anchor) that stays
+ * whole in the shot; the camera pans between beats with the brand ease. The
+ * visible region is about `s` canvas px square (470 by default: 0.76x on a
+ * 390 px phone, 0.72x at 375 px).
  */
-const FOCUS: { at: number; p: Pt; w?: number }[] = [
-  { at: 0, p: [330, 64] },
-  { at: SCENE.upload, p: [540, 120] },
-  { at: SCENE.customize, p: [560, 120] },
-  { at: T.scrollStyle[0], p: [640, 150] },
-  { at: SCENE.analyze, p: [744, 0], w: 800 },
-  { at: SCENE.processing, p: [560, 64] },
-  { at: T.scrollResults[0], p: [547, 16] },
+type Box = readonly [number, number, number, number];
+type Focus = { at: number; c: Pt; must: Box; s?: number };
+const S_COMPACT = 470;
+const PAN_MS = 420;
+const F_LIBRARY: Omit<Focus, "at"> = { c: [235, 255], must: [0, 24, 260, 300] };
+const F_RESULTS: Omit<Focus, "at"> = { c: [489, 365], must: [240, 115, 738, 615], s: 500 };
+const FOCUS: Focus[] = [
+  { at: 0, ...F_LIBRARY },
+  // Upload: the segmented control, then the dropped file and Create.
+  { at: SCENE.upload, c: [500, 525], must: [370, 354, 735, 487] },
+  { at: 3890, c: [575, 525], must: [330, 354, 820, 725], s: 490 },
+  // Customize: Your AI (import strip open), then the tabs, then Analyze.
+  { at: SCENE.customize, c: [470, 455], must: [235, 221, 640, 690] },
+  { at: 6830, c: [470, 480], must: [235, 303, 705, 715] },
+  { at: T.scrollStyle[0], c: [700, 560], must: [700, 700, 928, 790] },
+  // Review: the local checks, then See cost estimate.
+  { at: SCENE.analyze, c: [595, 330], must: [360, 140, 640, 530] },
+  { at: 9675, c: [890, 450], must: [957, 598, 1124, 640] },
+  // Estimate: the price, then Review & confirm once the cost bubble has gone. The
+  // right-hand shots start past the price, so it is never cropped to a misleading number.
+  { at: SCENE.estimate, c: [595, 330], must: [360, 140, 830, 470] },
+  { at: 13200, c: [947, 450], must: [712, 638, 1124, 680] },
+  // Confirm: the consent line, then Find my clips.
+  { at: SCENE.confirm, c: [560, 450], must: [364, 309, 700, 574] },
+  { at: 14900, c: [936, 500], must: [701, 694, 1124, 736] },
+  { at: SCENE.processing, c: [470, 400], must: [240, 302, 610, 470] },
+  // Results: the usage line with the score qualifier line, then clip 1 playing.
+  { at: SCENE.results, c: [488, 400], must: [238, 302, 738, 533], s: 500 },
+  { at: T.scrollResults[0], ...F_RESULTS },
+  { at: LOOP_BACK, ...F_LIBRARY },
 ];
-export const STILL_FOCUS: Pt = [547, 16];
+/** Reduced-motion still on phones: center of the final results shot. */
+export const STILL_FOCUS: Pt = F_RESULTS.c;
 
 /**
  * Desktop punch-ins: push in from `from` to `to`, hold until `hold`, then
@@ -203,12 +237,12 @@ export const STILL_FOCUS: Pt = [547, 16];
  * so the crop edges fall in margins and never cut a label or a line of text.
  */
 const ZOOMS = [
-  { from: T.estimateReady, to: 9800, hold: 9980, back: 10480, zoom: 1.25, center: [744, 400] as Pt },
-  { from: 16480, to: 17380, hold: 18970, back: 19300, zoom: 1.2, center: [744, 334] as Pt },
+  { from: T.estimateReady, to: 11275, hold: 13900, back: 14400, zoom: 1.25, center: [744, 400] as Pt },
+  { from: 21260, to: 22160, hold: 24060, back: 24510, zoom: 1.2, center: [744, 334] as Pt },
 ];
 
-/** Reduced motion: one static frame with the ranked results and both closing bubbles. */
-export const STILL_T = 17500;
+/** Reduced motion: one static frame with the ranked results and the closing bubbles. */
+export const STILL_T = 22300;
 
 /* ------------------------------------------------------------------ */
 /* Easing                                                               */
@@ -289,6 +323,23 @@ function viewAt(t: number): View {
   if (t < SCENE.processing) return "review";
   return "finish";
 }
+
+/** When each view first appears in the loop. */
+export const VIEW_START: Record<View, number> = {
+  library: 0,
+  upload: SCENE.upload,
+  customize: SCENE.customize,
+  review: SCENE.analyze,
+  finish: SCENE.processing,
+};
+/** When each view hands over to the next one. */
+export const VIEW_END: Record<View, number> = {
+  library: SCENE.upload,
+  upload: SCENE.customize,
+  customize: SCENE.analyze,
+  review: SCENE.processing,
+  finish: LOOP_BACK,
+};
 
 export function frameAt(time: number): Frame {
   const t = time >= LOOP_BACK ? 0 : time;
@@ -475,16 +526,46 @@ export function processProgressAt(t: number) {
 /* Camera                                                               */
 /* ------------------------------------------------------------------ */
 
-function focusAt(t: number): { p: Pt; w: number } {
-  let i = 0;
-  for (let j = 0; j < FOCUS.length; j++) if (FOCUS[j].at <= t) i = j;
-  const cur = FOCUS[i];
-  const prev = FOCUS[(i - 1 + FOCUS.length) % FOCUS.length];
-  const u = easeBrand(clamp01((t - cur.at) / 400));
-  return {
-    p: [lerp(prev.p[0], cur.p[0], u), lerp(prev.p[1], cur.p[1], u)],
-    w: lerp(prev.w ?? 0, cur.w ?? 0, u),
+type Region = { x0: number; y0: number; rw: number; rh: number };
+
+/** The shot for one focus beat in a frame of fw x fh px. */
+function regionFor(f: Omit<Focus, "at">, fw: number, fh: number): Region {
+  const k = clamp(fw / (f.s ?? S_COMPACT), 0.5, 0.9);
+  const rw = Math.min(CANVAS_W, fw / k);
+  const rh = Math.min(CANVAS_H, fh / k);
+  const fit = (c: number, lo: number, hi: number, size: number, max: number) => {
+    let v = c - size / 2;
+    // Keep the must box whole; if it is wider than the shot, keep its start.
+    v = hi - lo <= size ? Math.min(Math.max(v, hi - size), lo) : lo;
+    return clamp(v, 0, max - size);
   };
+  return {
+    x0: fit(f.c[0], f.must[0], f.must[2], rw, CANVAS_W),
+    y0: fit(f.c[1], f.must[1], f.must[3], rh, CANVAS_H),
+    rw,
+    rh,
+  };
+}
+
+const mixRegion = (a: Region, b: Region, u: number): Region => ({
+  x0: lerp(a.x0, b.x0, u),
+  y0: lerp(a.y0, b.y0, u),
+  rw: lerp(a.rw, b.rw, u),
+  rh: lerp(a.rh, b.rh, u),
+});
+
+/** Compact camera at t: each pan starts from wherever the previous one had got to. */
+function focusAt(t: number, fw: number, fh: number): Region {
+  let from = regionFor(FOCUS[0], fw, fh);
+  let to = from;
+  let t0 = 0;
+  for (const f of FOCUS) {
+    if (f.at > t) break;
+    from = mixRegion(from, to, easeBrand(clamp01((f.at - t0) / PAN_MS)));
+    to = regionFor(f, fw, fh);
+    t0 = f.at;
+  }
+  return mixRegion(from, to, easeBrand(clamp01((t - t0) / PAN_MS)));
 }
 
 function zoomAt(t: number): { z: number; c: Pt } {
@@ -503,32 +584,27 @@ export type Cam = { x0: number; y0: number; k: number };
 
 /**
  * Visible canvas region for a frame of fw x fh px. Desktop shows the whole
- * canvas with two slow punch-ins (centred); compact frames follow focus points
- * (centre x, top y) with a region about fw / 0.55 canvas px wide, so the key
- * UI stays readable.
+ * canvas with two slow punch-ins (centered); compact frames follow focus beats
+ * at about 0.76x on a 390 px phone, so the active card, field or button and
+ * the bubble's anchor stay whole and app text stays close to legible.
  */
 export function cameraAt(t: number, fw: number, fh: number, desktop: boolean, still: boolean): Cam {
   if (fw <= 0 || fh <= 0) return { x0: 0, y0: 0, k: 1 };
-  const aspect = fh / fw;
-  let rw: number;
-  let c: Pt;
-  if (desktop) {
-    const z = still ? { z: 1, c: [CANVAS_W / 2, CANVAS_H / 2] as Pt } : zoomAt(t);
-    rw = CANVAS_W / z.z;
-    c = z.c;
-  } else {
-    const focus = still ? { p: STILL_FOCUS, w: 0 } : focusAt(t);
-    rw = Math.min(CANVAS_W, Math.max(fw / 0.55, focus.w));
-    c = focus.p;
+  if (!desktop) {
+    const r = still ? regionFor(F_RESULTS, fw, fh) : focusAt(t, fw, fh);
+    return { x0: r.x0, y0: r.y0, k: fw / r.rw };
   }
+  const aspect = fh / fw;
+  const z = still ? { z: 1, c: [CANVAS_W / 2, CANVAS_H / 2] as Pt } : zoomAt(t);
+  let rw = CANVAS_W / z.z;
   let rh = rw * aspect;
   if (rh > CANVAS_H) {
     rh = CANVAS_H;
     rw = rh / aspect;
   }
   return {
-    x0: clamp(c[0] - rw / 2, 0, CANVAS_W - rw),
-    y0: clamp(desktop ? c[1] - rh / 2 : c[1], 0, CANVAS_H - rh),
+    x0: clamp(z.c[0] - rw / 2, 0, CANVAS_W - rw),
+    y0: clamp(z.c[1] - rh / 2, 0, CANVAS_H - rh),
     k: fw / rw,
   };
 }
