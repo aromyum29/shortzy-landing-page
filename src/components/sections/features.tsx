@@ -280,7 +280,7 @@ function CostCard() {
           </span>
         </div>
         <div className="mt-3 flex items-center justify-between text-[12px] text-mute">
-          <span>Up to 10 shorts, edited on your Mac</span>
+          <span>Up to 10 shorts, edited on your computer</span>
           <span className="rounded-lg bg-maroon px-3 py-1.5 font-semibold text-white">Start</span>
         </div>
       </div>

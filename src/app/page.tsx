@@ -5,7 +5,6 @@ import { Problem } from "@/components/sections/problem";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Features } from "@/components/sections/features";
 import { YourAI } from "@/components/sections/your-ai";
-import { Pricing } from "@/components/sections/pricing";
 import { FAQ } from "@/components/sections/faq";
 import { FinalCTA } from "@/components/sections/final-cta";
 import { Footer } from "@/components/sections/footer";
@@ -22,7 +21,6 @@ export default function Home() {
         <HowItWorks />
         <Features />
         <YourAI />
-        <Pricing />
         <FAQ />
         <FinalCTA />
       </main>

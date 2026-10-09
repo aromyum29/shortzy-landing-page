@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 const STEPS: { title: string; body: string; pose: MascotPose; status: string }[] = [
   {
     title: "Add a video",
-    body: "Paste a YouTube link or drop in a file from your Mac. Podcasts, interviews and tutorials work best.",
+    body: "Paste a YouTube link or drop in a file from your computer. Podcasts, interviews and tutorials work best.",
     pose: "welcome",
     status: "Link added",
   },
@@ -40,10 +40,10 @@ const STEPS: { title: string; body: string; pose: MascotPose; status: string }[]
     status: "Finding moments",
   },
   {
-    title: "Your Mac does the editing",
+    title: "Your computer does the editing",
     body: "Each moment is trimmed, reframed to 9:16 and captioned on your computer. Your original file is never changed.",
     pose: "clipping",
-    status: "Editing on your Mac",
+    status: "Editing on your computer",
   },
   {
     title: "Review and export",
@@ -254,7 +254,7 @@ function Stage({ p, step, layout }: { p: MotionValue<number>; step: number; layo
           <span className="min-w-0 flex-1 truncate text-[12px] text-ink sm:text-[13px]">youtube.com/watch?v=founders-ep42</span>
           <span className="rounded-lg bg-maroon px-3 py-1.5 text-[12px] font-semibold text-white">Import</span>
         </div>
-        <p className="mt-2 text-[12px] text-mute">or choose a file from your Mac</p>
+        <p className="mt-2 text-[12px] text-mute">or choose a file from your computer</p>
       </motion.div>
 
       {SEGMENTS.map((_, i) => (

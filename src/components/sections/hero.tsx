@@ -4,7 +4,6 @@ import { motion, type Variants } from "motion/react";
 import { ArrowRight, Check, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Mascot } from "@/components/brand/mascot";
 import { AppWindow, APP_H, APP_W } from "@/components/mockups/app-window";
 import { Phone } from "@/components/mockups/phone";
 import { ScaledFrame } from "@/components/mockups/scaled-frame";
@@ -48,9 +47,9 @@ export function Hero() {
             className="inline-flex items-center gap-2 rounded-full border border-maroon/25 bg-white px-3.5 py-1.5 text-[13px] font-semibold text-maroon"
           >
             <span className="rounded-full bg-maroon px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-white">
-              Mac
+              Mac · Windows
             </span>
-            A desktop app for creators. Bring your own AI.
+            Coming soon. A desktop app for creators.
           </motion.p>
 
           <h1
@@ -87,7 +86,7 @@ export function Hero() {
             custom={0.5}
             className="mt-7 max-w-[640px] text-pretty text-[17px] leading-relaxed text-mute sm:text-[19px]"
           >
-            Shortzy is a Mac app that finds the strongest moments in your podcasts, interviews and tutorials,
+            Shortzy is a desktop app for Mac and Windows that finds the strongest moments in your podcasts, interviews and tutorials,
             then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI
             key stays yours.
           </motion.p>
@@ -98,8 +97,8 @@ export function Hero() {
             className="mt-9 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center"
           >
             <Button asChild size="lg" className="group">
-              <a href={site.cta.trial.href}>
-                {site.cta.trial.label}
+              <a href={site.cta.wishlist.href}>
+                {site.cta.wishlist.label}
                 <ArrowRight className="transition-transform duration-200 group-hover:translate-x-0.5" />
               </a>
             </Button>
@@ -118,7 +117,7 @@ export function Hero() {
             custom={0.72}
             className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] text-mute"
           >
-            {["macOS 14+ on Apple Silicon", "Works with Gemini or Qwen", "Your originals are never touched"].map(
+            {["For Mac and Windows", "Works with Gemini or Qwen", "Your originals are never touched"].map(
               (t) => (
                 <li key={t} className="flex items-center gap-1.5">
                   <Check className="size-4 text-maroon" strokeWidth={2.5} aria-hidden="true" />
@@ -145,15 +144,6 @@ export function Hero() {
             style={{ transformPerspective: 1600 }}
             className="relative mx-auto max-w-[1120px]"
           >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.25, ease: EASE }}
-              className="absolute -top-[52px] left-[3%] z-10 w-[76px] sm:-top-[92px] sm:w-[128px] lg:-top-[118px] lg:w-[160px]"
-            >
-              <Mascot pose="clipping" fluid priority className="h-auto w-full" />
-            </motion.div>
-
             <div className="relative rounded-[22px] bg-white/0 shadow-[0_40px_80px_-30px_rgba(41,38,40,0.55)]">
               <ScaledFrame width={APP_W} height={APP_H}>
                 <AppWindow />

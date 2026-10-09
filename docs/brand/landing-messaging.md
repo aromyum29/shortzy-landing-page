@@ -8,15 +8,15 @@ Update this first when the message changes, then update the page.
 
 **Stated category:** AI clip generator.
 **Actual category (what buyers compare against):** cloud clipping tools and doing it by hand in an editor.
-**Opportunity category:** *the shorts editor that lives on your Mac.* Most of the category is cloud
+**Opportunity category:** *the shorts editor that lives on your computer.* Most of the category is cloud
 software with credit packs. Shortzy is a desktop app, edits locally and uses the creator's own AI account.
 
 **Positioning statement**
-For creators who already publish long videos, Shortzy is the Mac app that turns them into captioned
+For creators who already publish long videos, Shortzy is the desktop app for Mac and Windows that turns them into captioned
 shorts on your own computer with your own AI, because editing runs locally and you pay your AI provider
 directly, with the estimate shown before anything runs.
 
-**Public version:** Shortzy finds the best moments in your long videos and turns them into shorts, right on your Mac.
+**Public version:** Shortzy finds the best moments in your long videos and turns them into shorts, right on your computer.
 
 **Proof points**
 - Local workspace folder for projects, previews and exports. Originals are never modified.
@@ -64,7 +64,7 @@ directly, with the estimate shown before anything runs.
 Alternatives considered: "Your best moments, already cut." · "Clips from your Mac, not someone's cloud." · "The hour you recorded. The shorts you'll post." The existing line wins: it is the whole product in five words, and it is already in the brand pack.
 
 **Level 1 · Hero headline:** Long video in. Shorts out.
-**Level 2 · Supporting line:** Shortzy is a Mac app that finds the strongest moments in your podcasts, interviews and tutorials, then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI key stays yours.
+**Level 2 · Supporting line:** Shortzy is a desktop app for Mac and Windows that finds the strongest moments in your podcasts, interviews and tutorials, then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI key stays yours.
 
 **Level 3 · Key messages**
 1. **It finds the moments worth posting.** The AI reads the whole video and looks for a clear hook and a complete payoff. Every clip arrives titled, with the reasons it was picked.
@@ -74,13 +74,12 @@ Alternatives considered: "Your best moments, already cut." · "Clips from your M
 
 ## 4. Conversion structure
 
-1. Hero: promise, primary CTA "Try Shortzy free for 7 days", secondary CTA "See how Shortzy works".
+1. Hero: promise, primary CTA "Join the wishlist", secondary CTA "See how Shortzy works".
 2. Spec strip: honest facts instead of invented logos or testimonials (none exist yet).
 3. Problem: the by-hand routine every creator recognises.
 4. How it works: the signature "long video becomes shorts" scroll moment (secondary CTA target).
 5. Features: captions demo, ranked with reasons, framing, fewer-but-better, cost upfront, your files.
 6. Your AI, your bill: the BYO-key model and exactly what leaves the Mac.
-7. Pricing: 7-day trial card.
 8. FAQ: objections (API keys, privacy, Windows, views, rights).
 9. Final CTA.
 
@@ -88,5 +87,4 @@ Alternatives considered: "Your best moments, already cut." · "Clips from your M
 - "Go viral", "guaranteed views", or any score presented as a prediction.
 - "Fully offline" or "nothing leaves your computer".
 - "Cheaper than X" or any universal savings claim.
-- "Windows" as available. It is planned.
 - Invented testimonials, user counts, logos or ratings.

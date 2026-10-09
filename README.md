@@ -18,9 +18,9 @@ All of these live in [`src/lib/site.ts`](src/lib/site.ts). Every button on the p
 
 | Setting | Now | Needs |
 | --- | --- | --- |
-| `cta.trial.href` | `#pricing` | Download or checkout URL for the 7-day trial |
+| `cta.wishlist.href` | `#wishlist` (the signup form) | Leave as is, or point at an external signup page |
 | `cta.howItWorks.href` | `#how-it-works` (the scroll demo) | Final destination for "See how Shortzy works", e.g. a demo video |
-| `priceAfterTrial` | `null` (no price is quoted) | Price text once decided, e.g. `"$29 one time"` |
+| `wishlistFormAction` | `null` (form says signups aren't connected yet) | POST endpoint that accepts an `email` field (Formspree, Tally, Loops, ConvertKit...) |
 | `url` | `https://shortzy.app` | Real domain (used for share-card URLs) |
 
 ## Page structure
@@ -34,9 +34,8 @@ All of these live in [`src/lib/site.ts`](src/lib/site.ts). Every button on the p
 | How it works | `how-it-works.tsx` | Scroll-driven demo: a long timeline's moments become ranked 9:16 shorts |
 | Features | `features.tsx` | Interactive caption presets, scoring, framing, fewer-but-better, cost upfront |
 | Your AI | `your-ai.tsx` | Bring-your-own-key model and exactly what leaves the Mac |
-| Pricing | `pricing.tsx` | 7-day trial card + AI usage explainer |
 | FAQ | `faq.tsx` | Objection handling |
-| Final CTA, footer | `final-cta.tsx`, `footer.tsx` | |
+| Wishlist signup, footer | `final-cta.tsx`, `footer.tsx` | Email form (`#wishlist`) |
 
 ## Product visuals
 
@@ -54,7 +53,7 @@ content proportional.
   in `.claude/skills/` on top of `.agents/brand-context.md`.
 - Typography: Bricolage Grotesque (display), Instrument Sans (body), DM Mono (labels and timecodes). The desktop app keeps
   the brand's system sans stack; these are web-only marketing faces, swappable in `src/app/layout.tsx`.
-- Copy rules: no em dashes, no views guarantees, "local-first" never presented as "offline", Windows only as planned.
+- Copy rules: no em dashes, no views guarantees, "local-first" never presented as "offline". Marketed for Mac and Windows. Mascot only in How it works.
 
 ## Stack
 

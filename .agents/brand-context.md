@@ -7,9 +7,9 @@
 ## Brand
 - **Name**: Shortzy (always with a z; the wordmark artwork is lowercase)
 - **Category**: Desktop video-repurposing app (long-form video to short-form clips)
-- **Description**: A Mac app that finds the strongest moments in a long video and turns them into titled, captioned 9:16 shorts, using the creator's own AI key.
+- **Description**: A desktop app for Mac and Windows that finds the strongest moments in a long video and turns them into titled, captioned 9:16 shorts, using the creator's own AI key.
 - **Tagline**: Long video in. Shorts out.
-- **Stage**: Pre-launch. Private QA build on macOS (Apple Silicon, macOS 14+). Windows is a target, not shipping.
+- **Stage**: Pre-launch. Marketed for Mac (Apple Silicon, macOS 14+) and Windows (owner decision, 9 Oct 2026).
 - **Website**: This landing page (domain to be confirmed)
 
 ## Audience
@@ -20,7 +20,7 @@
 
 ## Positioning
 - **Differentiation**:
-  1. Runs on your Mac. Editing, framing, captions and export happen locally; projects and originals stay in a folder you choose.
+  1. Runs on your computer (Mac or Windows). Editing, framing, captions and export happen locally; projects and originals stay in a folder you choose.
   2. Bring your own AI. Users connect their own Gemini or Qwen key and pay the provider directly. No credit packs, no markup.
   3. Honest output. Asks for 10, finds 6 strong moments, returns 6 and says why. Scores are editorial estimates with visible reasons, never a views guarantee.
   4. Cost shown before anything runs.
@@ -46,9 +46,9 @@
 - Never imply a clip score guarantees views.
 - "Local-first" is not "offline": selected audio, video, frames or transcript go to the user's chosen AI provider for analysis.
 - Do not promise universal savings versus competitors.
-- Do not call the product production-ready or claim Windows support.
+- Do not call the product production-ready.
 - Do not use em dashes in product copy.
 
 ## Goals
-- **Primary Goal**: 7-day free trial starts from the landing page *(assumption: trial requires the download)*
-- **Key Metrics** *(assumption)*: trial starts, "See how it works" engagement, trial-to-paid conversion
+- **Primary Goal**: Wishlist signups ahead of launch (no trial or pricing shown yet)
+- **Key Metrics** *(assumption)*: wishlist signups, "See how it works" engagement

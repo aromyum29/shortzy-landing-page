@@ -6,15 +6,14 @@ export const site = {
   name: "Shortzy",
   tagline: "Long video in. Shorts out.",
   description:
-    "Shortzy is a Mac app that finds the strongest moments in your podcasts, interviews and tutorials, then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI key stays yours.",
+    "Shortzy is a desktop app for Mac and Windows that finds the strongest moments in your podcasts, interviews and tutorials, then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI key stays yours.",
   url: "https://shortzy.app", // TODO: replace with the real domain
 
   cta: {
-    trial: {
-      label: "Try Shortzy free for 7 days",
-      shortLabel: "Try free for 7 days",
-      // TODO: point at the download / checkout flow once it exists.
-      href: "#pricing",
+    wishlist: {
+      label: "Join the wishlist",
+      shortLabel: "Join the wishlist",
+      href: "#wishlist",
     },
     howItWorks: {
       label: "See how Shortzy works",
@@ -23,15 +22,14 @@ export const site = {
     },
   },
 
-  trialDays: 7,
-
   /**
-   * Price shown after the trial. Leave null until pricing is final;
-   * the page then avoids quoting a number.
+   * Where wishlist emails are POSTed (field name "email"), e.g. a Formspree,
+   * Tally, Loops or ConvertKit form endpoint. Null until a provider is chosen:
+   * the form then says signups aren't connected yet instead of faking success.
    */
-  priceAfterTrial: null as string | null,
+  wishlistFormAction: null as string | null,
 
-  requirements: "macOS 14 or later on Apple Silicon",
+  requirements: "Mac (macOS 14+, Apple Silicon) or Windows",
   storageHint: "about 20 GB free to start",
 } as const;
 
@@ -39,6 +37,5 @@ export const nav = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Features", href: "#features" },
   { label: "Your AI", href: "#your-ai" },
-  { label: "Pricing", href: "#pricing" },
   { label: "FAQ", href: "#faq" },
 ] as const;

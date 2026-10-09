@@ -61,7 +61,7 @@ export function Nav() {
 
         <div className="ml-auto flex items-center gap-2">
           <Button asChild size="sm" className="hidden sm:inline-flex">
-            <a href={site.cta.trial.href}>{site.cta.trial.shortLabel}</a>
+            <a href={site.cta.wishlist.href}>{site.cta.wishlist.shortLabel}</a>
           </Button>
           <button
             type="button"
@@ -92,8 +92,8 @@ export function Nav() {
             ))}
           </ul>
           <Button asChild className="mt-4 w-full">
-            <a href={site.cta.trial.href} onClick={() => setOpen(false)}>
-              {site.cta.trial.label}
+            <a href={site.cta.wishlist.href} onClick={() => setOpen(false)}>
+              {site.cta.wishlist.label}
             </a>
           </Button>
         </nav>

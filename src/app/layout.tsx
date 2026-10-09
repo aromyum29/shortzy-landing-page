@@ -25,7 +25,7 @@ const mono = DM_Mono({
   display: "swap",
 });
 
-const title = "Shortzy · Turn long videos into shorts, on your Mac";
+const title = "Shortzy · Turn long videos into shorts, on your computer";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -56,7 +56,7 @@ const jsonLd = {
   "@type": "SoftwareApplication",
   name: site.name,
   applicationCategory: "MultimediaApplication",
-  operatingSystem: "macOS 14 or later (Apple Silicon)",
+  operatingSystem: "macOS 14 or later (Apple Silicon), Windows",
   description: site.description,
 };
 

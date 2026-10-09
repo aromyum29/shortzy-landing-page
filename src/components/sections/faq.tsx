@@ -5,7 +5,7 @@ import { site } from "@/lib/site";
 const FAQS: { q: string; a: React.ReactNode }[] = [
   {
     q: "Is Shortzy a website or an app?",
-    a: "An app. You download it and it runs on your Mac. Projects, previews and exports live in a folder you choose, and you don't need to install anything else to make it work.",
+    a: "An app. You download it and it runs on your Mac or Windows PC. Projects, previews and exports live in a folder you choose, and you don't need to install anything else to make it work.",
   },
   {
     q: "I've never used an API key. Is that a problem?",
@@ -13,7 +13,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "Does my video get uploaded anywhere?",
-    a: "Only what the AI needs. To find moments, Shortzy sends the relevant audio, frames or transcript to the provider you connected. Trimming, framing, captions and export happen on your Mac, and your original file is never changed.",
+    a: "Only what the AI needs. To find moments, Shortzy sends the relevant audio, frames or transcript to the provider you connected. Trimming, framing, captions and export happen on your computer, and your original file is never changed.",
   },
   {
     q: "How much does the AI part cost?",
@@ -29,15 +29,15 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "What do I need to run it?",
-    a: `A Mac with Apple Silicon running ${site.requirements.replace(" on Apple Silicon", "")}, and ${site.storageHint}. Everything else Shortzy needs is bundled with the app.`,
+    a: `A Mac with Apple Silicon running macOS 14 or later, or a Windows PC, plus ${site.storageHint}. Everything else Shortzy needs is bundled with the app.`,
   },
   {
-    q: "Is there a Windows version?",
-    a: "Not yet. Windows is planned, but today Shortzy is Mac only.",
+    q: "Does it work on Windows?",
+    a: "Yes. Shortzy runs on both Mac and Windows, with the same features on each.",
   },
   {
-    q: `What happens after the ${site.trialDays}-day trial?`,
-    a: "To keep making clips, you'll move to a paid plan. Anything you've already exported is saved in your own folder and stays yours either way.",
+    q: "What does joining the wishlist mean?",
+    a: "You'll hear from us when Shortzy is ready to download. No spam, and you can leave the list at any time.",
   },
 ];
 

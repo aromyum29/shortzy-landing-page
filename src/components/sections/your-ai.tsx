@@ -11,7 +11,7 @@ const STAYS = [
   "Your original video files, never modified",
   "Every preview, render and export",
   "Your projects and earlier clip sets",
-  "Your API key, kept in the macOS Keychain",
+  "Your API key, kept in your system's secure keychain",
 ];
 
 export function YourAI() {
@@ -88,7 +88,7 @@ export function YourAI() {
               <span className="grid size-8 place-items-center rounded-lg bg-maroon text-white">
                 <HardDrive className="size-4" aria-hidden="true" />
               </span>
-              Stays on your Mac
+              Stays on your computer
             </p>
             <ul className="mt-3 space-y-2">
               {STAYS.map((s) => (
