@@ -361,7 +361,7 @@ export function HowItWorks() {
                         <span
                           className={cn(
                             "block text-[17px] font-semibold leading-snug",
-                            active ? "text-ink" : "text-ink/60",
+                            active ? "text-ink" : "text-mute",
                           )}
                         >
                           {s.title}
