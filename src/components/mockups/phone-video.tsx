@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Heart, MessageCircle, Send } from "lucide-react";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
@@ -33,7 +33,7 @@ export function PhoneVideo({ clip, className }: { clip: PhoneClip; className?: s
             initial={{ opacity: 0, scale: 1.04 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ type: "spring", bounce: 0, visualDuration: 0.5 }}
           >
             <ClipVideo clip={clip} still={reduce} />
           </motion.div>
@@ -73,7 +73,7 @@ export function PhoneVideo({ clip, className }: { clip: PhoneClip; className?: s
 
 function ClipVideo({ clip, still }: { clip: PhoneClip; still: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [progress, setProgress] = useState(0);
+  const bar = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const v = ref.current;
@@ -82,6 +82,14 @@ function ClipVideo({ clip, still }: { clip: PhoneClip; still: boolean }) {
     v.play().catch(() => {
       /* autoplay can be refused; the poster frame stays visible */
     });
+    // Display-synced progress bar: written straight to the transform each frame, no re-renders.
+    let raf = 0;
+    const tick = () => {
+      if (bar.current && v.duration) bar.current.style.transform = `scaleX(${v.currentTime / v.duration})`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [clip.src, still]);
 
   return (
@@ -100,10 +108,6 @@ function ClipVideo({ clip, still }: { clip: PhoneClip; still: boolean }) {
           preload="metadata"
           aria-hidden="true"
           tabIndex={-1}
-          onTimeUpdate={(e) => {
-            const v = e.currentTarget;
-            if (v.duration) setProgress(v.currentTime / v.duration);
-          }}
           className="h-full w-full object-cover"
         >
           <source src={`${clip.src}.webm`} type="video/webm" />
@@ -111,7 +115,11 @@ function ClipVideo({ clip, still }: { clip: PhoneClip; still: boolean }) {
         </video>
       )}
       <div className="absolute inset-x-[5%] bottom-[2.2%] h-[0.9cqw] overflow-hidden rounded-full bg-white/30">
-        <div className="h-full origin-left rounded-full bg-oat" style={{ transform: `scaleX(${still ? 0.38 : progress})` }} />
+        <div
+          ref={bar}
+          className="h-full origin-left rounded-full bg-oat will-change-transform"
+          style={{ transform: `scaleX(${still ? 0.38 : 0})` }}
+        />
       </div>
     </>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import {
   animate,
   AnimatePresence,
@@ -84,28 +84,55 @@ const SLIDES: Slide[] = [
   },
 ];
 
-const EASE = [0.2, 0.8, 0.2, 1] as const;
+/** Critically damped spring (no overshoot): Apple's default for UI that responds to input. */
+const SPRING = { type: "spring", bounce: 0, visualDuration: 0.45 } as const;
+
+/** Where a flick would come to rest (Apple's deceleration projection, d ≈ 0.998). */
+function project(velocity: number, rate = 0.998) {
+  return ((velocity / 1000) * rate) / (1 - rate);
+}
+
+const slideVariants = {
+  enter: (dir: number) => ({ x: `${dir * 6}%`, opacity: 0 }),
+  center: { x: "0%", opacity: 1 },
+  exit: (dir: number) => ({ x: `${dir * -6}%`, opacity: 0 }),
+};
 
 export function ProductShowcase() {
   const reduce = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const inView = useInView(rootRef, { amount: 0.25 });
-  const [index, setIndex] = useState(0);
+  const [[index, dir], setSlide] = useState<[number, number]>([0, 1]);
   const [paused, setPaused] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const uid = useId();
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const progress = useMotionValue(0);
   const controls = useRef<AnimationPlaybackControls | null>(null);
 
-  const running = !reduce && !paused && !hovered && inView;
+  const running = !reduce && !paused && !hovered && !dragging && inView;
   const slide = SLIDES[index];
 
   const go = useCallback(
-    (i: number) => {
+    (i: number, direction?: number) => {
       progress.set(0);
-      setIndex((i + SLIDES.length) % SLIDES.length);
+      setSlide(([current]) => {
+        const next = (i + SLIDES.length) % SLIDES.length;
+        return [next, direction ?? (next >= current ? 1 : -1)];
+      });
     },
     [progress],
   );
+
+  const onTabKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    const keys: Record<string, number> = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: SLIDES.length - 1 };
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    const next = (keys[e.key] + SLIDES.length) % SLIDES.length;
+    go(next, e.key === "ArrowLeft" || e.key === "Home" ? -1 : 1);
+    tabRefs.current[next]?.focus();
+  };
 
   // Drive the slide timer from one motion value: pan and tab progress both read it.
   useEffect(() => {
@@ -115,7 +142,7 @@ export function ProductShowcase() {
     controls.current = animate(progress, 1, {
       duration: SLIDES[index].seconds * remaining,
       ease: "linear",
-      onComplete: () => go(index + 1),
+      onComplete: () => go(index + 1, 1),
     });
     return () => controls.current?.stop();
   }, [running, index, progress, go]);
@@ -136,7 +163,7 @@ export function ProductShowcase() {
       >
         {/* Live status chip */}
         <div className="absolute -top-4 left-4 z-20 sm:-top-5 sm:left-6">
-          <span className="inline-flex items-center gap-2 rounded-full border border-pebble bg-white px-3 py-1.5 text-[12px] font-semibold text-ink shadow-[0_8px_20px_-12px_rgba(41,38,40,0.5)] sm:text-[13px]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-pebble bg-white px-3 py-1.5 text-[0.75rem] font-semibold text-ink shadow-[0_8px_20px_-12px_rgba(41,38,40,0.5)] sm:text-[0.8125rem]">
             <span className="relative grid size-2 place-items-center">
               <span className="absolute size-2 rounded-full bg-success/40 motion-safe:animate-ping" />
               <span className="size-2 rounded-full bg-success" />
@@ -162,25 +189,47 @@ export function ProductShowcase() {
               <span className="size-2 rounded-full bg-oat sm:size-3" />
               <span className="size-2 rounded-full bg-pebble sm:size-3" />
             </div>
-            <span className="absolute left-1/2 -translate-x-1/2 text-[11px] font-medium text-mute sm:text-[13px]">
+            <span className="absolute left-1/2 -translate-x-1/2 text-[0.6875rem] font-medium text-mute sm:text-[0.8125rem]">
               Shortzy
             </span>
           </div>
 
-          <div className="relative overflow-hidden bg-white" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
-            <AnimatePresence initial={false}>
+          <motion.div
+            id={`${uid}-panel`}
+            role="tabpanel"
+            aria-labelledby={`${uid}-tab-${index}`}
+            className="relative cursor-grab touch-pan-y overflow-hidden bg-white active:cursor-grabbing"
+            style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}
+            // Swipe or drag to change screens: follows the pointer with soft resistance,
+            // then lands where the flick was heading (momentum projection), not where it was let go.
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.5}
+            dragTransition={{ bounceStiffness: 420, bounceDamping: 42 }}
+            onDragStart={() => setDragging(true)}
+            onDragEnd={(_, info) => {
+              setDragging(false);
+              const width = rootRef.current?.offsetWidth ?? 600;
+              const landing = info.offset.x + project(info.velocity.x);
+              if (landing < -width * 0.15) go(index + 1, 1);
+              else if (landing > width * 0.15) go(index - 1, -1);
+            }}
+          >
+            <AnimatePresence initial={false} custom={dir}>
               <motion.div
                 key={slide.id}
+                custom={dir}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ x: SPRING, opacity: { duration: 0.3 } }}
                 className="absolute inset-0"
-                initial={{ opacity: 0, scale: 1.015 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.7, ease: EASE }}
               >
                 <PanningScreen slide={slide} progress={progress} still={reduce} />
               </motion.div>
             </AnimatePresence>
-          </div>
+          </motion.div>
         </div>
 
         <motion.div
@@ -194,21 +243,41 @@ export function ProductShowcase() {
       {/* Tabs */}
       <div className="on-dark relative mt-[13%] flex flex-col items-center gap-3 sm:mt-14 lg:mt-12">
         <div className="flex items-center gap-2">
-          <div role="tablist" aria-label="Product screens" className="flex rounded-full bg-white/10 p-1">
+          <div
+            role="tablist"
+            aria-label="Product screens"
+            onKeyDown={onTabKey}
+            className="flex rounded-full bg-white/10 p-1"
+          >
             {SLIDES.map((s, i) => (
               <button
                 key={s.id}
+                ref={(el) => {
+                  tabRefs.current[i] = el;
+                }}
+                id={`${uid}-tab-${i}`}
                 type="button"
                 role="tab"
                 aria-selected={i === index}
+                aria-controls={`${uid}-panel`}
+                tabIndex={i === index ? 0 : -1}
                 onClick={() => go(i)}
                 className={cn(
-                  "relative overflow-hidden rounded-full px-3 py-1.5 text-[13px] font-semibold transition-colors sm:px-4 sm:text-[14px]",
-                  i === index ? "bg-paper text-maroon" : "text-paper/80 hover:text-paper",
+                  "relative min-h-11 rounded-full px-3.5 text-[0.8125rem] font-semibold transition-[color,transform] duration-100 active:scale-[0.97] sm:px-4 sm:text-[0.875rem]",
+                  i === index ? "text-maroon" : "text-paper/80 hover:text-paper",
                 )}
               >
-                {s.label}
-                {i === index && <TabProgress progress={progress} />}
+                {i === index && (
+                  <motion.span
+                    layoutId={`${uid}-pill`}
+                    transition={SPRING}
+                    aria-hidden="true"
+                    className="absolute inset-0 overflow-hidden rounded-full bg-paper"
+                  >
+                    <TabProgress progress={progress} />
+                  </motion.span>
+                )}
+                <span className="relative">{s.label}</span>
               </button>
             ))}
           </div>
@@ -217,13 +286,15 @@ export function ProductShowcase() {
               type="button"
               onClick={() => setPaused((p) => !p)}
               aria-label={paused ? "Play product tour" : "Pause product tour"}
-              className="grid size-9 place-items-center rounded-full bg-white/10 text-paper hover:bg-white/20"
+              className="grid size-11 place-items-center rounded-full bg-white/10 text-paper transition-transform duration-100 hover:bg-white/20 active:scale-[0.94]"
             >
               {paused ? <Play className="size-4 fill-current" /> : <Pause className="size-4 fill-current" />}
             </button>
           )}
         </div>
-        <p className="text-[12px] text-paper/70 sm:text-[13px]">Real Shortzy screens, shown with a sample workspace.</p>
+        <p className="text-[0.75rem] text-paper/70 sm:text-[0.8125rem]">
+          Real Shortzy screens, shown with a sample workspace. Swipe or use the tabs.
+        </p>
       </div>
     </div>
   );
@@ -233,7 +304,7 @@ function TabProgress({ progress }: { progress: MotionValue<number> }) {
   return (
     <motion.span
       aria-hidden="true"
-      className="absolute inset-x-3 bottom-[3px] h-[2px] origin-left rounded-full bg-maroon/50 sm:inset-x-4"
+      className="absolute inset-x-4 bottom-[5px] h-[2px] origin-left rounded-full bg-maroon/50"
       style={{ scaleX: progress }}
     />
   );

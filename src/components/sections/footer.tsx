@@ -9,13 +9,13 @@ export function Footer() {
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div>
             <Logo />
-            <p className="mt-3 font-display text-[18px] font-semibold tracking-[-0.01em] text-maroon">{site.tagline}</p>
+            <p className="mt-3 font-display text-[1.125rem] font-semibold tracking-[-0.01em] text-maroon">{site.tagline}</p>
           </div>
           <nav aria-label="Footer">
-            <ul className="grid grid-cols-2 gap-x-10 gap-y-2 sm:flex sm:gap-6">
+            <ul className="grid grid-cols-2 gap-x-10 sm:flex sm:gap-6">
               {nav.map((item) => (
                 <li key={item.href}>
-                  <a href={item.href} className="text-[15px] text-ink/80 hover:text-maroon">
+                  <a href={item.href} className="inline-flex min-h-11 items-center text-[0.9375rem] text-ink/80 hover:text-maroon">
                     {item.label}
                   </a>
                 </li>
@@ -23,7 +23,7 @@ export function Footer() {
             </ul>
           </nav>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-pebble pt-6 text-[13px] text-mute sm:flex-row sm:justify-between">
+        <div className="mt-10 flex flex-col gap-2 border-t border-pebble pt-6 text-[0.8125rem] text-mute sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} Shortzy. Made for creators who&apos;d rather be recording.</p>
           <p>Gemini is a trademark of Google LLC. Qwen is a trademark of Alibaba Cloud.</p>
         </div>

@@ -28,7 +28,7 @@ export function YourAI() {
           >
             Bring your own AI brain.
           </h2>
-          <div className="mt-6 max-w-[50ch] space-y-4 text-[17px] leading-relaxed text-white/80 sm:text-[18px]">
+          <div className="mt-6 max-w-[50ch] space-y-4 text-[1.0625rem] leading-relaxed text-white/80 sm:text-[1.125rem]">
             <p>
               Shortzy connects to your own Gemini or Qwen account with a private API key. You pay the provider
               directly, at their rates. Shortzy doesn&apos;t sell AI credits and doesn&apos;t add a markup.
@@ -59,14 +59,14 @@ export function YourAI() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.logo} alt="" width={24} height={24} className="size-6 object-contain" />
                 </span>
-                <p className="font-display text-[22px] font-bold tracking-[-0.02em]">{p.name}</p>
-                <p className="text-[13px] text-white/60">by {p.by}</p>
+                <p className="font-display text-[1.375rem] font-bold tracking-[-0.02em]">{p.name}</p>
+                <p className="text-[0.8125rem] text-white/60">by {p.by}</p>
                 {p.badge && (
                   <span
                     className={
                       p.available
-                        ? "mt-3 inline-block rounded-full bg-oat px-2.5 py-0.5 text-[12px] font-semibold text-ink"
-                        : "mt-3 inline-block rounded-full border border-white/25 px-2.5 py-0.5 text-[12px] font-semibold text-white/75"
+                        ? "mt-3 inline-block rounded-full bg-oat px-2.5 py-0.5 text-[0.75rem] font-semibold text-ink"
+                        : "mt-3 inline-block rounded-full border border-white/25 px-2.5 py-0.5 text-[0.75rem] font-semibold text-white/75"
                     }
                   >
                     {p.badge}
@@ -78,24 +78,24 @@ export function YourAI() {
         </Reveal>
 
         <Reveal delay={0.12} className="self-center rounded-[24px] bg-paper p-6 text-ink sm:p-8">
-          <h3 className="font-display text-[24px] font-bold tracking-[-0.02em]">What goes where</h3>
-          <p className="mt-1 text-[15px] text-mute">Local-first, not offline. Here&apos;s exactly what that means.</p>
+          <h3 className="font-display text-[1.5rem] font-bold tracking-[-0.02em]">What goes where</h3>
+          <p className="mt-1 text-[0.9375rem] text-mute">Local-first, not offline. Here&apos;s exactly what that means.</p>
 
           <div className="mt-6 rounded-2xl border border-pebble bg-white p-5">
-            <p className="flex items-center gap-2 text-[15px] font-semibold">
+            <p className="flex items-center gap-2 text-[0.9375rem] font-semibold">
               <span className="grid size-8 place-items-center rounded-lg bg-rose text-maroon">
                 <ArrowUpRight className="size-4" aria-hidden="true" />
               </span>
               Sent to the AI you chose
             </p>
-            <p className="mt-2 text-[15px] leading-relaxed text-mute">
+            <p className="mt-2 text-[0.9375rem] leading-relaxed text-mute">
               The audio, frames or transcript it needs to find your moments. Only for analysis, and only to the
               provider you connected.
             </p>
           </div>
 
           <div className="mt-3 rounded-2xl border border-pebble bg-white p-5">
-            <p className="flex items-center gap-2 text-[15px] font-semibold">
+            <p className="flex items-center gap-2 text-[0.9375rem] font-semibold">
               <span className="grid size-8 place-items-center rounded-lg bg-maroon text-white">
                 <HardDrive className="size-4" aria-hidden="true" />
               </span>
@@ -103,7 +103,7 @@ export function YourAI() {
             </p>
             <ul className="mt-3 space-y-2">
               {STAYS.map((s) => (
-                <li key={s} className="flex items-start gap-2 text-[15px] text-ink">
+                <li key={s} className="flex items-start gap-2 text-[0.9375rem] text-ink">
                   <span aria-hidden="true" className="mt-[9px] size-1.5 shrink-0 rounded-full bg-maroon" />
                   {s}
                 </li>
@@ -111,7 +111,7 @@ export function YourAI() {
             </ul>
           </div>
 
-          <p className="mt-5 flex items-start gap-2 text-[14px] leading-snug text-mute">
+          <p className="mt-5 flex items-start gap-2 text-[0.875rem] leading-snug text-mute">
             <KeyRound className="mt-0.5 size-4 shrink-0 text-maroon" aria-hidden="true" />
             Shortzy doesn&apos;t run a cloud that receives your videos. Disconnecting removes the key from Shortzy;
             your provider account stays yours.

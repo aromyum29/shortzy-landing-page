@@ -168,7 +168,7 @@ function Stage({ p, step, layout }: { p: MotionValue<number>; step: number; layo
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-[24px] border border-pebble bg-white"
+      className="relative w-full overflow-hidden rounded-[24px] border border-pebble bg-white [contain:layout_paint]"
       style={{ aspectRatio: layout.aspect }}
     >
       {/* Header */}
@@ -297,6 +297,7 @@ export function HowItWorks() {
   const reduce = usePrefersReducedMotion();
   const isDesktop = useMediaQuery("(min-width: 1024px)", true);
   const layout = isDesktop ? DESKTOP : MOBILE;
+  const interactive = isDesktop && !reduce;
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const still = useMotionValue(1);
@@ -338,20 +339,21 @@ export function HowItWorks() {
             <ol className={cn("mt-5 space-y-1 lg:mt-8", !reduce && "sr-only lg:not-sr-only")}>
               {STEPS.map((s, i) => {
                 const active = reduce || i === step;
+                // Jump buttons only where the list is visible; on smaller screens it is read, not focused.
+                const Item = interactive ? "button" : "div";
                 return (
                   <li key={s.title}>
-                    <button
-                      type="button"
-                      onClick={() => goTo(i)}
+                    <Item
+                      {...(interactive ? { type: "button" as const, onClick: () => goTo(i) } : {})}
                       aria-current={!reduce && i === step ? "step" : undefined}
                       className={cn(
-                        "group grid w-full grid-cols-[36px_1fr] gap-x-2 rounded-xl px-3 py-2.5 text-left transition-colors",
+                        "group grid w-full grid-cols-[36px_1fr] gap-x-2 rounded-xl px-3 py-2.5 text-left transition-[background-color,transform] duration-100 active:scale-[0.99]",
                         active ? "bg-white" : "hover:bg-white/60",
                       )}
                     >
                       <span
                         className={cn(
-                          "pt-0.5 font-mono text-[13px] tabular",
+                          "pt-0.5 font-mono text-[0.8125rem] tabular",
                           active ? "text-maroon" : "text-mute",
                         )}
                       >
@@ -360,7 +362,7 @@ export function HowItWorks() {
                       <span>
                         <span
                           className={cn(
-                            "block text-[17px] font-semibold leading-snug",
+                            "block text-[1.0625rem] font-semibold leading-snug",
                             active ? "text-ink" : "text-mute",
                           )}
                         >
@@ -373,11 +375,11 @@ export function HowItWorks() {
                           )}
                         >
                           <span className="overflow-hidden">
-                            <span className="block pt-1 text-[15px] leading-relaxed text-mute">{s.body}</span>
+                            <span className="block pt-1 text-[0.9375rem] leading-relaxed text-mute">{s.body}</span>
                           </span>
                         </span>
                       </span>
-                    </button>
+                    </Item>
                   </li>
                 );
               })}
@@ -418,9 +420,9 @@ export function HowItWorks() {
               <div className="mt-4 flex items-start gap-3">
                 <Mascot pose={STEPS[step].pose} size={64} className="shrink-0" />
                 <div className="min-w-0">
-                  <p className="font-mono text-[12px] text-maroon">Step 0{step + 1} of 05</p>
-                  <p className="mt-0.5 text-[18px] font-semibold leading-snug">{STEPS[step].title}</p>
-                  <p className="mt-1 text-[14px] leading-relaxed text-mute">{STEPS[step].body}</p>
+                  <p className="font-mono text-[0.75rem] text-maroon">Step 0{step + 1} of 05</p>
+                  <p className="mt-0.5 text-[1.125rem] font-semibold leading-snug">{STEPS[step].title}</p>
+                  <p className="mt-1 text-[0.875rem] leading-relaxed text-mute">{STEPS[step].body}</p>
                 </div>
               </div>
             </div>

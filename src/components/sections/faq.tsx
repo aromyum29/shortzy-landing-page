@@ -54,7 +54,7 @@ export function FAQ() {
           >
             Straight answers.
           </h2>
-          <p className="mt-5 max-w-[36ch] text-[17px] leading-relaxed text-mute">
+          <p className="mt-5 max-w-[36ch] text-[1.0625rem] leading-relaxed text-mute">
             The things creators ask before they try it.
           </p>
         </Reveal>
@@ -62,13 +62,13 @@ export function FAQ() {
         <Reveal delay={0.12} className="divide-y divide-pebble border-y border-pebble">
           {FAQS.map((f) => (
             <details key={f.q} className="group">
-              <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-5 text-[17px] font-semibold sm:text-[18px] [&::-webkit-details-marker]:hidden">
+              <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-5 transition-colors duration-100 hover:text-maroon active:text-maroon-pressed text-[1.0625rem] font-semibold sm:text-[1.125rem] [&::-webkit-details-marker]:hidden">
                 {f.q}
                 <span className="grid size-9 shrink-0 place-items-center rounded-full border border-pebble bg-white text-maroon transition-transform duration-200 group-open:rotate-45">
                   <Plus className="size-4" aria-hidden="true" />
                 </span>
               </summary>
-              <p className="max-w-[62ch] pb-6 pr-12 text-[16px] leading-relaxed text-mute">{f.a}</p>
+              <p className="max-w-[62ch] pb-6 pr-12 text-[1rem] leading-relaxed text-mute">{f.a}</p>
             </details>
           ))}
         </Reveal>

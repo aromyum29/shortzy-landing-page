@@ -29,11 +29,11 @@ export function Specs() {
               <dt className="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold leading-none tracking-[-0.03em] text-maroon">
                 {s.big}
               </dt>
-              <dd className="max-w-[24ch] text-[14px] leading-snug text-mute sm:text-[15px]">{s.small}</dd>
+              <dd className="max-w-[24ch] text-[0.875rem] leading-snug text-mute sm:text-[0.9375rem]">{s.small}</dd>
             </Reveal>
           ))}
         </dl>
-        <p className="border-t border-pebble py-5 text-center text-[14px] text-mute sm:text-[15px]">
+        <p className="border-t border-pebble py-5 text-center text-[0.875rem] text-mute sm:text-[0.9375rem]">
           Works best with <span className="font-semibold text-ink">podcasts</span>,{" "}
           <span className="font-semibold text-ink">interviews</span>,{" "}
           <span className="font-semibold text-ink">tutorials</span> and{" "}

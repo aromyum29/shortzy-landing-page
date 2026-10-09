@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  * 12px control radius, 48px minimum height for primary actions.
  */
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg border-2 border-transparent font-semibold transition-[background-color,border-color,color,transform] duration-150 ease-brand disabled:pointer-events-none disabled:border-[#E4E1DD] disabled:bg-[#E4E1DD] disabled:text-mute [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer active:translate-y-px",
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg border-2 border-transparent font-semibold transition-[background-color,border-color,color,transform] duration-100 ease-out disabled:pointer-events-none disabled:border-[#E4E1DD] disabled:bg-[#E4E1DD] disabled:text-mute [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer active:scale-[0.97]",
   {
     variants: {
       variant: {
@@ -27,7 +27,7 @@ const buttonVariants = cva(
         link: "border-0 px-0 text-maroon underline underline-offset-4 hover:text-maroon-hover",
       },
       size: {
-        default: "min-h-12 px-5 py-2.5 text-[15px] [&_svg]:size-[18px]",
+        default: "min-h-12 px-5 py-2.5 text-[0.9375rem] [&_svg]:size-[18px]",
         sm: "min-h-10 px-4 py-2 text-sm [&_svg]:size-4",
         lg: "min-h-14 px-6 py-3 text-base [&_svg]:size-5",
         icon: "size-12 [&_svg]:size-5",

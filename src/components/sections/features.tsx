@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils";
 function Card({ className, children, delay = 0 }: { className?: string; children: React.ReactNode; delay?: number }) {
   return (
     <motion.article
-      initial={{ opacity: 0, y: 28 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.7, delay, ease: [0.2, 0.8, 0.2, 1] }}
+      viewport={{ once: true, amount: 0, margin: "0px 0px -8% 0px" }}
+      transition={{ duration: 0.5, delay, ease: [0.2, 0.8, 0.2, 1] }}
       className={cn("flex flex-col rounded-[24px] border border-pebble bg-white p-6 sm:p-8", className)}
     >
       {children}
@@ -33,7 +33,7 @@ function CardTitle({ children }: { children: React.ReactNode }) {
 }
 
 function CardBody({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <p className={cn("mt-3 text-[16px] leading-relaxed text-mute", className)}>{children}</p>;
+  return <p className={cn("mt-3 text-[1rem] leading-relaxed text-mute", className)}>{children}</p>;
 }
 
 /* ---------------------------------------------------------------- Captions */
@@ -58,7 +58,7 @@ function CaptionsCard() {
             />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/45 to-transparent" />
             <Captions preset={preset} words={LINE} active={active} />
-            <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 font-mono text-[11px] text-ink">
+            <span className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-0.5 font-mono text-[0.6875rem] text-ink">
               Preview
             </span>
           </div>
@@ -80,7 +80,7 @@ function CaptionsCard() {
                   <label
                     key={p.id}
                     className={cn(
-                      "relative flex cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-maroon",
+                      "relative flex cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 transition-[background-color,border-color,transform] duration-100 active:scale-[0.99] has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-maroon",
                       checked ? "border-maroon bg-rose" : "border-transparent bg-paper hover:border-pebble",
                     )}
                   >
@@ -93,10 +93,10 @@ function CaptionsCard() {
                       className="sr-only"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className={cn("block text-[15px] font-semibold", checked && "text-maroon-pressed")}>
+                      <span className={cn("block text-[0.9375rem] font-semibold", checked && "text-maroon-pressed")}>
                         {p.name}
                       </span>
-                      <span className="block text-[13px] leading-snug text-mute">{p.blurb}</span>
+                      <span className="block text-[0.8125rem] leading-snug text-mute">{p.blurb}</span>
                     </span>
                     <span
                       aria-hidden="true"
@@ -150,12 +150,12 @@ function RankedCard() {
       </div>
       <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="What each score is built from">
         {DIMENSIONS.map((d) => (
-          <li key={d} className="rounded-full bg-paper px-2.5 py-1 text-[12px] font-medium text-ink/80">
+          <li key={d} className="rounded-full bg-paper px-2.5 py-1 text-[0.75rem] font-medium text-ink/80">
             {d}
           </li>
         ))}
       </ul>
-      <p className="mt-4 flex items-start gap-2 text-[13px] leading-snug text-mute">
+      <p className="mt-4 flex items-start gap-2 text-[0.8125rem] leading-snug text-mute">
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
         Scores are an editorial estimate from the content itself. They are not a prediction of views.
       </p>
@@ -182,7 +182,7 @@ function FewerCard() {
             ),
           )}
         </div>
-        <p className="mt-3 flex items-center justify-between text-[13px]">
+        <p className="mt-3 flex items-center justify-between text-[0.8125rem]">
           <span className="font-semibold text-ink">6 clips ready</span>
           <span className="text-mute">4 skipped: no clear payoff</span>
         </p>
@@ -213,11 +213,19 @@ function FramingCard() {
               aria-pressed={mode === id}
               onClick={() => setMode(id)}
               className={cn(
-                "flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-[13px] font-semibold transition-colors",
-                mode === id ? "bg-white text-maroon shadow-[0_1px_0_rgba(41,38,40,0.08)]" : "text-mute hover:text-ink",
+                "relative flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-[0.8125rem] font-semibold transition-[color,transform] duration-100 active:scale-[0.97]",
+                mode === id ? "text-maroon" : "text-mute hover:text-ink",
               )}
             >
-              <Icon className="size-4" aria-hidden="true" /> {label}
+              {mode === id && (
+                <motion.span
+                  layoutId="framing-pill"
+                  transition={{ type: "spring", bounce: 0, visualDuration: 0.3 }}
+                  aria-hidden="true"
+                  className="absolute inset-0 rounded-lg bg-white shadow-[0_1px_0_rgba(41,38,40,0.08)]"
+                />
+              )}
+              <Icon className="relative size-4" aria-hidden="true" /> <span className="relative">{label}</span>
             </button>
           ))}
         </div>
@@ -240,7 +248,7 @@ function FramingCard() {
           {mode === "face" ? (
             <div className="absolute inset-y-0 left-[48%] w-[31.6%] -translate-x-1/2 motion-safe:animate-[track_5s_ease-in-out_infinite]">
               <div className="absolute inset-0 rounded-[3px] border-[3px] border-maroon shadow-[0_0_0_999px_rgba(41,38,40,0.45)]" />
-              <span className="absolute -top-px left-1/2 -translate-x-1/2 rounded-b-md bg-maroon px-1.5 py-px font-mono text-[10px] text-white">
+              <span className="absolute -top-px left-1/2 -translate-x-1/2 rounded-b-md bg-maroon px-1.5 py-px font-mono text-[0.625rem] text-white">
                 9:16
               </span>
             </div>
@@ -264,7 +272,7 @@ function FramingCard() {
               )}
             />
           </div>
-          <p className="mt-1.5 text-center font-mono text-[10px] text-mute">Output</p>
+          <p className="mt-1.5 text-center font-mono text-[0.625rem] text-mute">Output</p>
         </div>
       </div>
     </Card>
@@ -295,7 +303,7 @@ function CostCard() {
             className="block h-auto w-full transition-transform duration-700 ease-brand group-hover:scale-[1.02]"
           />
         </div>
-        <figcaption className="mt-3 text-[12px] leading-snug text-mute">
+        <figcaption className="mt-3 text-[0.75rem] leading-snug text-mute">
           Sample estimate from the app for a 24-minute video. Your cost depends on the video&apos;s length and the
           model you choose, and your provider&apos;s bill is final.
         </figcaption>
@@ -316,7 +324,7 @@ export function Features() {
           >
             It makes the tedious calls. <span className="text-maroon">You make the final ones.</span>
           </h2>
-          <p className="mt-5 max-w-[56ch] text-[17px] leading-relaxed text-mute sm:text-[18px]">
+          <p className="mt-5 max-w-[56ch] text-[1.0625rem] leading-relaxed text-mute sm:text-[1.125rem]">
             Every pick comes with its reasoning, and every setting can be changed. Here&apos;s what you get.
           </p>
         </Reveal>

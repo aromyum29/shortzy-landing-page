@@ -67,7 +67,7 @@ export function FinalCTA() {
             >
               Your next short is <span className="text-maroon">already recorded.</span>
             </h2>
-            <p className="mx-auto mt-5 max-w-[50ch] text-[17px] leading-relaxed text-ink/75 sm:text-[18px]">
+            <p className="mx-auto mt-5 max-w-[50ch] text-[1.0625rem] leading-relaxed text-ink/75 sm:text-[1.125rem]">
               Shortzy is coming to Mac and Windows. Join the wishlist and we&apos;ll let you know the moment you can
               point it at last week&apos;s video.
             </p>
@@ -78,6 +78,13 @@ export function FinalCTA() {
               </label>
               <input
                 id={emailId}
+                onBlur={(e) => {
+                  // Validate inline once the person has typed something, not only on submit.
+                  if (e.currentTarget.value) setInvalid(!e.currentTarget.validity.valid);
+                }}
+                onInput={(e) => {
+                  if (invalid && e.currentTarget.validity.valid) setInvalid(false);
+                }}
                 name="email"
                 type="email"
                 required
@@ -85,7 +92,7 @@ export function FinalCTA() {
                 placeholder="you@example.com"
                 aria-invalid={invalid || undefined}
                 aria-describedby={message ? msgId : undefined}
-                className="min-h-14 w-full flex-1 rounded-lg border border-mute bg-white px-4 text-[16px] text-ink placeholder:text-mute hover:border-maroon focus:border-maroon aria-[invalid=true]:border-2 aria-[invalid=true]:border-[#982D3F]"
+                className="min-h-14 w-full flex-1 rounded-lg border border-mute bg-white px-4 text-[1rem] text-ink placeholder:text-mute hover:border-maroon focus:border-maroon aria-[invalid=true]:border-2 aria-[invalid=true]:border-[#982D3F]"
               />
               <Button
                 type="submit"
@@ -99,7 +106,7 @@ export function FinalCTA() {
               </Button>
             </form>
 
-            <p id={msgId} role="status" aria-live="polite" className="mt-3 min-h-6 text-[14px]">
+            <p id={msgId} role="status" aria-live="polite" className="mt-3 min-h-6 text-[0.875rem]">
               {message && (
                 <span
                   className={
@@ -123,7 +130,7 @@ export function FinalCTA() {
                   {site.cta.howItWorks.label}
                 </a>
               </Button>
-              <p className="text-[13px] text-ink/70">No spam. Just one email when it&apos;s ready.</p>
+              <p className="text-[0.8125rem] text-ink/70">No spam. Just one email when it&apos;s ready.</p>
             </div>
           </div>
         </Reveal>

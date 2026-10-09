@@ -15,13 +15,13 @@ const word: Variants = {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.7, delay: 0.08 + i * 0.07, ease: EASE },
+    transition: { duration: 0.55, delay: 0.04 + i * 0.045, ease: EASE },
   }),
 };
 
 const rise: Variants = {
   hidden: { opacity: 0, y: 16 },
-  show: (d: number) => ({ opacity: 1, y: 0, transition: { duration: 0.6, delay: d, ease: EASE } }),
+  show: (d: number) => ({ opacity: 1, y: 0, transition: { duration: 0.45, delay: d, ease: EASE } }),
 };
 
 function BlurWords({ text, offset = 0 }: { text: string; offset?: number }) {
@@ -42,9 +42,9 @@ export function Hero() {
           <motion.p
             variants={rise}
             custom={0}
-            className="inline-flex items-center gap-2 rounded-full border border-maroon/25 bg-white px-3.5 py-1.5 text-[13px] font-semibold text-maroon"
+            className="inline-flex items-center gap-2 rounded-full border border-maroon/25 bg-white px-3.5 py-1.5 text-[0.8125rem] font-semibold text-maroon"
           >
-            <span className="shrink-0 whitespace-nowrap rounded-full bg-maroon px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-white">
+            <span className="shrink-0 whitespace-nowrap rounded-full bg-maroon px-2 py-0.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-white">
               Mac · Windows
             </span>
             Coming soon. A desktop app for creators.
@@ -73,7 +73,7 @@ export function Hero() {
                   strokeLinecap="round"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.8, delay: 0.75, ease: EASE }}
+                  transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
                 />
               </svg>
             </span>
@@ -81,8 +81,8 @@ export function Hero() {
 
           <motion.p
             variants={rise}
-            custom={0.5}
-            className="mt-7 max-w-[640px] text-pretty text-[17px] leading-relaxed text-mute sm:text-[19px]"
+            custom={0.2}
+            className="mt-7 max-w-[640px] text-pretty text-[1.0625rem] leading-relaxed text-mute sm:text-[1.1875rem]"
           >
             Shortzy is a desktop app for Mac and Windows that finds the strongest moments in your podcasts, interviews and tutorials,
             then cuts, frames and captions them into vertical shorts. Your files stay on your computer. Your AI
@@ -91,7 +91,7 @@ export function Hero() {
 
           <motion.div
             variants={rise}
-            custom={0.62}
+            custom={0.26}
             className="mt-9 flex w-full flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center"
           >
             <Button asChild size="lg" className="group">
@@ -112,8 +112,8 @@ export function Hero() {
 
           <motion.ul
             variants={rise}
-            custom={0.72}
-            className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] text-mute"
+            custom={0.32}
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[0.875rem] text-mute"
           >
             {["For Mac and Windows", "Works with Gemini or Qwen", "Your originals are never touched"].map(
               (t) => (
@@ -138,7 +138,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.55, ease: EASE }}
+            transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
           >
             <ProductShowcase />
           </motion.div>
