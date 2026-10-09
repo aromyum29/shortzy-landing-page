@@ -1,0 +1,5 @@
+Founder skills (competitor-matrix, email-sequence, fundraise-prep, go-to-market, landing-page, metrics-dashboard,
+mvp-scope, persona-gen, pitch-deck, pricing-strategy, product-brief, user-interviews, validate-idea) and
+FOUNDER_SKILLS_CONVENTIONS.md come from https://github.com/emotixco/claude-skills-founder (commit 0602cad, v2.1.4),
+MIT licence in FOUNDER_SKILLS_LICENSE. Only change: the shared rules path points at FOUNDER_SKILLS_CONVENTIONS.md.
+Outputs are saved to founder/ at the repo root, as the skills expect.
