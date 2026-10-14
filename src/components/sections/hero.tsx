@@ -71,8 +71,8 @@ export function Hero() {
             className="hero-rise mt-5 max-w-[44rem] text-balance text-[1.0625rem] leading-relaxed text-mute sm:mt-6 sm:text-[1.1875rem]"
             style={at(0.2)}
           >
-            Add your own video or a YouTube link. Shortzy and your Gemini or Qwen account find the moments, and your computer
-            edits them. Pay your AI as you go.
+            Add your own video or a YouTube link. Your Gemini or Qwen account and Shortzy's virality score find the moments,
+            then Shortzy edits them on your computer. Pay your AI as you go.
           </p>
 
           {/* The nav watches this row: once it scrolls under the header, phones get a compact Join button. */}

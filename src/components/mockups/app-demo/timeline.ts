@@ -171,7 +171,7 @@ export const BUBBLES: Bubble[] = [
   },
   {
     // Points at the progress bar from below, in the card's empty lower half on every size.
-    id: "B8", text: "Shortzy and your AI find the moments. Your computer edits.", in: 16050, out: 18250, view: "finish",
+    id: "B8", text: "Your AI finds the moments. Shortzy scores them and edits.", in: 16050, out: 18250, view: "finish",
     anchor: [700, 424], place: "bottom", anchorCompact: [600, 426], placeCompact: "bottom", kind: "main",
   },
   {

@@ -39,7 +39,7 @@ What's inside, Your AI, FAQ.
 |  | Nav | `src/components/sections/nav.tsx` | Sticky, primary CTA always visible, links in page order |
 | 1 | Hero | `hero.tsx`, `mockups/app-demo/` | Headline, the three hook chips, both CTAs, and the auto-looping app demo |
 | 2 | Problem | `problem.tsx` | The choice today: hours of editing, or another monthly bill. Shortzy as the third way |
-| 3 | How it works | `how-it-works.tsx` | Pinned five-step scroll that renders the hero demo's coded app screens (same sample workspace), with a lane showing what runs on your computer and what goes to your AI |
+| 3 | How it works | `how-it-works.tsx` | Pinned five-step scroll of what happens under the hood (no app screens): the video lands on a timeline, the estimate is worked out, your AI and Shortzy's virality score find and rate the moments, Shortzy cuts them into 9:16 shorts, then ranks them for export |
 | 4 | Spec strip | `specs.tsx` | The output at a glance. Honest facts in place of logos or testimonials (none exist yet) |
 | 5 | What's inside | `features.tsx` (`#features`) | Interactive caption presets, ranked with reasons, fewer but better, framing that follows the face, and a coded cost estimate panel |
 | 6 | Your AI | `your-ai.tsx` | Your own Gemini or Qwen account: a flow diagram of what goes where and a "How you pay" receipt (Shortzy once, AI billed by your provider, no markup) ending on the wishlist link |
@@ -61,8 +61,8 @@ given time, which is handy for screenshots and reviews.
 The app's screens are recreated in code from the Shortzy Landing Page UI Kit (real frontend screens captured from the
 QA build, 9 Oct 2026), with the app's own tokens and its Inter typeface:
 
-- `src/components/mockups/app-demo/`: the hero demo's screens. How it works renders the same coded screens through a
-  camera that frames one part of the app per step.
+- `src/components/mockups/app-demo/`: the hero demo's screens. How it works shows no app screens; it uses the same
+  sample data (moments, scores, posters) in an under-the-hood diagram.
 - The What's inside cost card is a small coded copy of the app's estimate card at a readable size.
 
 Assets in `public/product/`, optimized to WebP:

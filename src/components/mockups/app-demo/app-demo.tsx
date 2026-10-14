@@ -537,8 +537,8 @@ export function AppDemo() {
           your provider bills the actual usage.
         </li>
         <li>
-          You agree to send the prepared video to {AI.provider}; Shortzy and your AI find the moments, and your computer
-          frames, captions and exports them.
+          You agree to send the prepared video to {AI.provider}; your AI finds the moments, Shortzy scores them, then
+          frames, captions and exports them on your computer.
         </li>
         <li>
           Six clips arrive ranked by AI estimate scores with reasons; scores are not predictions of views. The recorded AI

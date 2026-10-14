@@ -24,6 +24,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Page order: Hero, Problem, How it works, Specs, What's inside (`#features`), Your AI, FAQ, Wishlist, so the pay-once and
   your-bill story (Your AI ends on "How you pay" and its wishlist link) sits right before the objections and the ask. Nav
   labels: How it works, What's inside, Your AI, FAQ.
+- Say Shortzy does the editing (on your computer), not "your computer does the editing". "Virality score" is the founder's
+  name for Shortzy's own scoring logic (opening, momentum, payoff, clarity, relevance, audio and visual fit); always keep
+  it framed as an AI estimate, never a views promise, and never say "go viral".
 - Shortzy is marketed for Mac and Windows. Windows is not yet a verified build, so never claim feature parity. The logo is the
   app lockup (waving mascot + "shortzy."); beyond the logo the mascot appears only in How it works.
 - Product imagery (the coded app screens in `src/components/mockups/app-demo/`, the coded estimate panel in What's inside and

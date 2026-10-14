@@ -38,7 +38,7 @@ does the editing on your own computer.
 - Estimated AI cost shown as a range before generation. The estimate makes no paid AI call. Two samples, both real
   app fixtures (always name the model next to the cost, call it an estimate and say the provider's bill is final):
   - $0.43 to $1.33 for a 44:48 video on Gemini Flash 3.8, the recommended model (recorded usage $0.43). Used by the
-    hero demo and How it works.
+    hero demo and How it works (estimate step).
   - $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Used by the What's inside cost panel.
   - The FAQ answer to "How much will the AI part cost me?" names both.
 - Local workspace folder for projects, previews and exports. Bundled video tools, on-device face tracking.
@@ -123,10 +123,11 @@ before the objections and the ask, so the money message sits next to the form.
    Shortzy works". The product shot is an auto-looping click-through of the real app with a sample workspace (its
    cost sample: $0.43 to $1.33 on Gemini Flash 3.8).
 2. **Problem ("The choice today"):** hours of editing by hand, or another monthly bill with a credit meter. Shortzy is
-   the third card: pay once, your own AI as you go, your computer does the editing. It closes on "Your AI gets a
+   the third card: pay once, your own AI as you go, Shortzy edits it on your computer. It closes on "Your AI gets a
    prepared copy to find the moments. You see the estimate first.", so the local claim carries its caveat.
-3. **How it works:** the pinned five-step scroll on the hero demo's coded app screens (add a video, pick and see the
-   cost, Shortzy and your AI find the moments, your computer makes the shorts, review and export). The only section
+3. **How it works:** the pinned five-step scroll of what happens under the hood, with no app screens (add a video, pick
+   and see the cost, Shortzy and your AI find the moments, Shortzy does the editing with its virality score logic,
+   review and export). The only section
    with the mascot.
 4. **Spec strip:** the output at a glance (1 to 10 clips, 9:16, 4 caption styles, MP4 or ZIP), plus "From your own
    video or a YouTube link. Made for podcasts, interviews, tutorials and business or AI explainers." Honest facts in
