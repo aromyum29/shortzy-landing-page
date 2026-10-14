@@ -18,22 +18,22 @@ const WHO = [
   {
     icon: Clapperboard,
     title: "Creators",
-    body: "You make long videos and want a steady stream of shorts without taking on a second job.",
+    body: "A steady stream of shorts, no second job.",
   },
   {
     icon: Scissors,
     title: "Clippers",
-    body: "You cut long videos into shorts for the channels you work with. More clips, no per-clip credits.",
+    body: "More clips for your channels, no per-clip credits.",
   },
   {
     icon: Mic,
     title: "Podcasters",
-    body: "Every episode hides a handful of moments worth posting. Find them in one pass.",
+    body: "Every episode's best moments, in one pass.",
   },
   {
     icon: Smartphone,
     title: "Influencers",
-    body: "Keep Shorts, Reels and TikTok fed from the videos you already make.",
+    body: "Shorts, Reels and TikTok, from videos you already make.",
   },
 ];
 
@@ -95,9 +95,8 @@ export function Audience() {
               Shorts get seen. Long videos get watched. <span className="text-maroon">Do both.</span>
             </h2>
             <p className="mt-6 max-w-[34rem] text-[1.0625rem] leading-relaxed text-mute sm:text-[1.125rem]">
-              On YouTube, Instagram and TikTok, short videos now pull far more views and engagement than long ones. They are
-              also the best trailer your long videos can get: a short reaches people who would never press play on an hour,
-              and sends the curious ones back to the full episode.
+              Short videos now pull far more views and engagement than long ones. Each short is a trailer that sends people
+              back to the full episode.
             </p>
           </Reveal>
 
@@ -105,14 +104,14 @@ export function Audience() {
             <div className="rounded-[24px] border border-pebble bg-paper p-4 sm:p-7">
               <Fan />
               <p className="mt-6 border-t border-pebble/70 pt-4 text-center text-[0.8125rem] text-mute">
-                Shortzy exports 9:16 MP4s with captions. You post them wherever your audience is.
+                Captioned 9:16 MP4s. You post them anywhere.
               </p>
             </div>
           </Reveal>
         </div>
 
         <Reveal delay={0.05} className="mt-12 sm:mt-20">
-          <p className="text-[1.0625rem] font-semibold text-ink">For anyone who needs their short-form content handled:</p>
+          <p className="text-[1.0625rem] font-semibold text-ink">Made for</p>
           <ul className="mt-4 grid grid-cols-2 gap-2.5 sm:mt-5 sm:gap-3 lg:grid-cols-4">
             {WHO.map(({ icon: Icon, title, body }) => (
               <li key={title} className="rounded-[20px] border border-pebble bg-paper p-4 sm:p-5">

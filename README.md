@@ -38,6 +38,7 @@ What's inside, Your AI, FAQ.
 | --- | --- | --- | --- |
 |  | Nav | `src/components/sections/nav.tsx` | Sticky, primary CTA always visible, links in page order |
 | 1 | Hero | `hero.tsx`, `mockups/app-demo/` | Headline, the three hook chips, both CTAs, and the auto-looping app demo |
+| 1b | Why Shortzy | `value.tsx` | Three value blocks right after the hero: pay once, up to 10x less per minute, on your computer |
 | 2 | Who it's for | `audience.tsx` | Why shorts (they get seen, long videos get watched), one long video fanning out to 9:16 shorts for YouTube, Instagram and TikTok, and the four audiences: creators, clippers, podcasters, influencers |
 | 2b | Problem | `problem.tsx` | The choice today: hours of editing, or another monthly bill. Shortzy as the third way |
 | 3 | How it works | `how-it-works.tsx` | Pinned five-step scroll of what happens under the hood (no app screens): the video lands on a timeline, the estimate is worked out, your AI and Shortzy's virality score find and rate the moments, Shortzy cuts them into 9:16 shorts, then ranks them for export |

@@ -7,39 +7,35 @@ import { Reveal } from "@/components/ui/reveal";
 const FAQS: { q: string; a: React.ReactNode }[] = [
   {
     q: "How much does it cost?",
-    a: "Pay once and Shortzy is yours for life (the price isn't set yet). After that, the only running cost is the AI for each video you make, billed by your own provider. No subscription, no credits, and no plan deciding how much you can make.",
+    a: "Pay once and Shortzy is yours for life (price not set yet). Then your own AI bills you per video. No subscription, no credits.",
   },
   {
     q: "How much will the AI part cost me?",
-    a: "It depends on the video's length and your model, and Shortzy shows an estimated range before anything runs. Two samples from the app: $0.43 to $1.33 for a 44:48 video on Gemini Flash 3.8 (recommended), and $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Per minute, that is up to 10x less than popular credit-based clipping plans, which work out at about $0.05 to $0.10. Your provider's bill is final.",
+    a: "Shortzy shows an estimate before anything runs. Samples: $0.43 to $1.33 for a 44:48 video on Gemini Flash 3.8, $0.03 to $0.06 for 24 minutes on Qwen 3.8 Omni Flash. Your provider's bill is final.",
   },
   {
     q: "Do I need an AI account?",
-    a: "Yes, a Gemini or Qwen account with an API key. Kimi is coming soon. Any billing is with that provider, not Shortzy. Never made a key? Setup walks you through it and checks the connection. You can look around first, but you need an AI connected to make clips.",
+    a: "Yes, Gemini or Qwen with an API key (Kimi coming soon). Setup walks you through it.",
   },
   {
     q: "Does my video get uploaded anywhere?",
-    a: "Not to Shortzy. To find moments, a prepared copy of the audio and video goes to the AI provider you connected, under their terms. Editing and export happen on your computer, your original is never changed, and your key stays in your system's credential store.",
+    a: "Not to Shortzy. Your AI gets a prepared copy of the audio and video to find moments. Editing and export happen on your computer.",
   },
   {
-    q: "Is Shortzy a website or an app?",
-    a: `An app for your Mac (Apple Silicon, macOS 14 or later) or Windows PC, with everything it needs bundled in. Set aside ${site.storageHint} for your workspace to start. You'll need an internet connection for YouTube imports and AI analysis.`,
-  },
-  {
-    q: "Is it coming to Windows?",
-    a: "Yes. Shortzy is coming to both Mac and Windows. Join the wishlist and we'll tell you when each version is ready.",
+    q: "What do I need to run it?",
+    a: `A Mac (Apple Silicon, macOS 14+) or a Windows PC, ${site.storageHint}, and internet for YouTube imports and AI. Windows is coming alongside Mac.`,
   },
   {
     q: "Will these clips get me views?",
-    a: "Nobody can promise that, and we won't. Each clip gets an editorial score with reasons, like a strong opening or a complete payoff, so you can decide what to post first.",
+    a: "Nobody can promise that. Each clip gets a score with reasons, so you can decide what to post first.",
   },
   {
     q: "Can I clip any YouTube video?",
-    a: "Shortzy imports public videos, keeps the source attribution and doesn't get around private or sign-in restricted videos. Only clip videos you own or have permission to reuse.",
+    a: "Public videos only, with source attribution kept. Only clip videos you own or have permission to reuse.",
   },
   {
     q: "What does joining the wishlist mean?",
-    a: "We'll email you when Shortzy is ready to buy and download. There's no payment to join, no spam, and you can leave the list at any time.",
+    a: "We email you when Shortzy is ready. No payment, no spam, leave any time.",
   },
 ];
 
@@ -56,7 +52,7 @@ export function FAQ() {
             Straight answers.
           </h2>
           <p className="mt-5 max-w-[36ch] text-pretty text-[1.0625rem] leading-relaxed text-mute">
-            What creators ask first: cost, privacy and setup.
+            Cost, privacy and setup.
           </p>
         </Reveal>
 

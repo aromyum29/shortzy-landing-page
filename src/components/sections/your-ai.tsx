@@ -342,8 +342,7 @@ function CostCompare() {
             Up to 10x less than credit plans.
           </h3>
           <p className="mt-3 text-[0.9375rem] leading-relaxed text-white/75">
-            No credits to ration and no plan deciding how much you can make. You pay your AI for the minutes you
-            actually clip.
+            You pay your AI only for the minutes you clip.
           </p>
         </div>
         <div ref={ref} className="lg:col-span-8">
@@ -369,10 +368,9 @@ function CostCompare() {
             ))}
           </ul>
           <p className="mt-6 text-[0.8125rem] leading-relaxed text-white/55">
-            Credit plans: popular clipping plans&apos; listed prices divided by the minutes they include, checked
-            October 2026. Shortzy: the app&apos;s sample estimates ($0.43 to $1.33 for a 44:48 video on Gemini Flash
-            3.8, $0.03 to $0.06 for 24 minutes on Qwen). Your provider&apos;s bill is final. Shortzy&apos;s one-time
-            price is not included.
+            Credit plans: listed price divided by included minutes, October 2026. Shortzy: app sample estimates ($0.43
+            to $1.33 for 44:48 on Gemini Flash 3.8, $0.03 to $0.06 for 24 minutes on Qwen). Provider bill is final.
+            Excludes Shortzy&apos;s one-time price.
           </p>
         </div>
       </div>
@@ -400,8 +398,7 @@ export function YourAI() {
           </div>
           <div className="lg:col-span-5">
             <p className="max-w-[46ch] text-[1.0625rem] leading-relaxed text-white/80 sm:text-[1.125rem]">
-              Pay once and Shortzy is yours for life. For each video you make, your own Gemini or Qwen account bills you
-              for what that video uses. No credits, no gatekeeping: you are in charge, not a plan.
+              Connect Gemini or Qwen. It bills you per video, at its rates. No credits, no gatekeeping.
             </p>
             <p className="mt-3 text-[0.9375rem] leading-6 text-pretty text-white/70">
               <span className="font-semibold text-rose">Never made an API key?</span> Setup walks you through it.
@@ -420,8 +417,8 @@ export function YourAI() {
                 <Diagram />
               </div>
               <p className="mt-7 border-t border-white/10 pt-5 text-[0.875rem] leading-relaxed text-pretty text-white/65">
-                <span className="font-semibold text-white/90">Local-first:</span> a prepared copy of the audio and video
-                goes to the AI you chose. <span className="sm:block">Your files and API key stay on your computer.</span>
+                <span className="font-semibold text-white/90">Local-first:</span> your AI gets a prepared copy of the audio
+                and video. <span className="sm:block">Your files and key stay on your computer.</span>
               </p>
             </div>
           </Reveal>

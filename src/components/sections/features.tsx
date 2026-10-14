@@ -180,8 +180,7 @@ function CaptionsCard() {
     <Card className="lg:col-span-7 lg:row-span-2">
       <CardTitle>Captions people actually read.</CardTitle>
       <CardBody>
-        Word-timed captions in four presets. Change fonts, colors and placement if you like, or keep the defaults and
-        move on.
+        Word-timed captions in four presets, or none.
       </CardBody>
 
       <CardVisual className="grid grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] items-start gap-3 sm:gap-6 sm:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,270px)_minmax(0,1fr)]">
@@ -290,7 +289,7 @@ function RankedCard() {
     <Card className="lg:col-span-5" lag={0.06}>
       <CardTitle>Ranked, with reasons.</CardTitle>
       <CardBody>
-        Every clip arrives titled and scored on 6 things, so you know what to post first and why it was picked.
+        Every clip is titled and scored on 6 things, so you know what to post first.
       </CardBody>
 
       <CardVisual>
@@ -366,7 +365,7 @@ function FewerCard() {
   return (
     <Card className="lg:col-span-5" lag={0.06}>
       <CardTitle>Fewer clips beat filler.</CardTitle>
-      <CardBody>Ask for 10. If only 6 moments hold up, you get 6, plus a plain reason why.</CardBody>
+      <CardBody>Ask for 10. If only 6 hold up, you get 6, and why.</CardBody>
       <CardVisual>
         <div role="img" aria-label="Ten requested clip slots: six filled, four skipped">
           <div className="grid grid-cols-10 gap-1.5">
@@ -513,8 +512,7 @@ function FramingCard() {
     <Card className="lg:col-span-6">
       <CardTitle>Framing that follows the face.</CardTitle>
       <CardBody>
-        Face tracking on your computer keeps people in frame as they move. Slides and screen recordings get fit
-        framing. No face found? Shortzy uses a centered crop and tells you.
+        Face tracking keeps people in frame. Slides get fit framing.
       </CardBody>
 
       <CardVisual>
@@ -699,8 +697,7 @@ function CostCard() {
     <Card className="lg:col-span-6" lag={0.06}>
       <CardTitle>Know the cost before you click.</CardTitle>
       <CardBody>
-        Shortzy works out your AI cost from the video&apos;s length and your model, and shows it as a range. Checking
-        it costs nothing, and nothing runs until you press Find my clips.
+        See the AI cost range before anything runs. Nothing starts until you say so.
       </CardBody>
 
       <CardVisual>
@@ -714,8 +711,7 @@ function CostCard() {
             </motion.div>
           </div>
           <figcaption className="mt-3 text-[0.75rem] leading-snug text-mute">
-            Sample estimate from the app. Your cost depends on the video&apos;s length and your model, and your
-            provider&apos;s bill is final.
+            Sample estimate. Your provider&apos;s bill is final.
           </figcaption>
         </figure>
       </CardVisual>
@@ -736,7 +732,7 @@ export function Features() {
           />
           <ScrubIn y={20} from={0.96} to={0.7}>
             <p className="mt-5 max-w-[56ch] text-[1.0625rem] leading-relaxed text-mute sm:text-[1.125rem]">
-              Every pick comes with its reasoning, and every setting can be changed. Here&apos;s what you get.
+              Every pick comes with a reason. Every setting is yours to change.
             </p>
           </ScrubIn>
         </div>

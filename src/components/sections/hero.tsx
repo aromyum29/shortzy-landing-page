@@ -20,7 +20,7 @@ function BlurWords({ text, offset = 0 }: { text: string; offset?: number }) {
   ));
 }
 
-const CHECKS = ["Pay once, own it for life", "Your AI bills per video. No credits.", "Edits on your Mac or Windows PC"];
+const CHECKS = ["Pay once", "No credits", "Mac and Windows"];
 
 export function Hero() {
   return (
@@ -71,8 +71,7 @@ export function Hero() {
             className="hero-rise mt-5 max-w-[44rem] text-balance text-[1.0625rem] leading-relaxed text-mute sm:mt-6 sm:text-[1.1875rem]"
             style={at(0.2)}
           >
-            Shortzy turns your long videos into shorts ready to post on YouTube, Instagram and TikTok. Add a file or a
-            YouTube link: your own AI finds the moments, and Shortzy scores them and edits them right on your computer.
+            Drop in a long video or a YouTube link. Get ranked, captioned shorts for YouTube, Instagram and TikTok.
           </p>
 
           {/* The nav watches this row: once it scrolls under the header, phones get a compact Join button. */}

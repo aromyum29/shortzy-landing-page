@@ -305,7 +305,7 @@ function ShortzyCard() {
         ))}
       </ul>
       <Closing className="text-[0.875rem] font-normal text-rose sm:text-[0.875rem] md:col-start-1 md:row-start-3 lg:row-start-4">
-        Your AI gets a prepared copy to find the moments. You see the estimate first.
+        Your AI gets a prepared copy. You see the estimate first.
       </Closing>
     </Card>
   );
@@ -332,8 +332,7 @@ export function Problem() {
           </div>
           <ScrubIn y={20} from={0.96} to={0.7}>
             <p className="max-w-[44ch] text-balance text-[1.0625rem] leading-relaxed text-mute sm:text-[1.125rem]">
-              <span className="block">You already made the long video.</span> Getting shorts out of it usually means one
-              of two deals.
+              <span className="block">You made the long video.</span> Shorts usually cost you one of two deals.
             </p>
           </ScrubIn>
         </div>

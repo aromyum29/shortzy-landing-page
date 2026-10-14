@@ -34,13 +34,6 @@ export function Specs() {
             </Reveal>
           ))}
         </dl>
-        <p className="text-balance border-t border-pebble py-5 text-center text-[0.875rem] text-mute sm:text-[0.9375rem]">
-          From your own video or a YouTube link. Made for{" "}
-          <span className="font-semibold text-ink">podcasts</span>,{" "}
-          <span className="font-semibold text-ink">interviews</span>,{" "}
-          <span className="font-semibold text-ink">tutorials</span> and{" "}
-          <span className="font-semibold text-ink">business or AI explainers</span>.
-        </p>
       </Container>
     </section>
   );
