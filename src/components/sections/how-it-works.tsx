@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
-import { ArrowRight, Check, Cloud, FileVideo, FolderOpen, Laptop, Link2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Cloud, FileVideo, FolderOpen, Laptop, Link2 } from "lucide-react";
 import { Container, Eyebrow } from "@/components/ui/container";
 import { Mascot, type MascotPose } from "@/components/brand/mascot";
 import { CLIPS } from "@/components/mockups/app-demo/data";
@@ -591,13 +591,98 @@ function Readout({ step }: { step: number }) {
   );
 }
 
+/** Where a flick would come to rest, Apple's scroll-deceleration projection (rate 0.998). */
+const project = (velocity: number, rate = 0.998) => ((velocity / 1000) * rate) / (1 - rate);
+
+/**
+ * Phones and tablets: one step at a time. A segmented progress bar you can tap, the step's text,
+ * and the diagram, which follows your finger 1:1, resists at the first and last step, and turns
+ * the page when the flick is headed far enough (projected from its velocity, not where it was let go).
+ */
+function Pager({ step, setStep, reduce }: { step: number; setStep: (i: number) => void; reduce: boolean }) {
+  const last = STEPS.length - 1;
+  const go = (i: number) => setStep(Math.min(last, Math.max(0, i)));
+  const s = STEPS[step];
+  return (
+    <div className="mx-auto max-w-[36rem]">
+      <div role="group" aria-label="Steps" className="flex gap-1.5">
+        {STEPS.map((o, i) => (
+          <button
+            key={o.title}
+            type="button"
+            onClick={() => go(i)}
+            aria-pressed={i === step}
+            aria-label={`Step ${i + 1}: ${o.title}`}
+            className="grid h-11 flex-1 place-items-center"
+          >
+            <span
+              className={cn(
+                "block h-1.5 w-full rounded-full transition-colors duration-300 ease-brand",
+                i <= step ? "bg-maroon" : "bg-pebble",
+              )}
+            />
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-2 flex items-start gap-3" aria-live="polite">
+        <PoseStack pose={s.pose} size={52} />
+        <div className="min-w-0">
+          <p className="tabular font-mono text-[0.75rem] text-maroon">Step 0{step + 1} of 05</p>
+          <p className="mt-0.5 text-[1.1875rem] font-semibold leading-snug tracking-[-0.01em]">{s.title}</p>
+        </div>
+      </div>
+      <p className="mt-2 min-h-[4.5em] text-[0.9375rem] leading-relaxed text-mute">{s.body}</p>
+
+      <motion.div
+        className="mt-4 cursor-grab touch-pan-y active:cursor-grabbing"
+        drag={reduce ? false : "x"}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={step === 0 || step === last ? 0.12 : 0.28}
+        dragTransition={{ bounceStiffness: 420, bounceDamping: 40 }}
+        onDragEnd={(_, info) => {
+          const landing = info.offset.x + project(info.velocity.x);
+          if (landing < -90) go(step + 1);
+          else if (landing > 90) go(step - 1);
+        }}
+      >
+        <Engine step={step} animate={!reduce} />
+      </motion.div>
+
+      <div className="mt-4 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => go(step - 1)}
+          disabled={step === 0}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-[0.9375rem] font-semibold text-maroon transition-[opacity,transform] duration-100 active:scale-[0.97] disabled:opacity-35"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" /> Back
+        </button>
+        <span className="text-[0.8125rem] text-mute" aria-hidden="true">
+          Swipe the diagram
+        </span>
+        <button
+          type="button"
+          onClick={() => go(step + 1)}
+          disabled={step === last}
+          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-maroon px-4 text-[0.9375rem] font-semibold text-white transition-[opacity,transform] duration-100 active:scale-[0.97] disabled:opacity-35"
+        >
+          Next <ArrowRight className="size-4" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function HowItWorks() {
   const trackRef = useRef<HTMLDivElement>(null);
   const reduce = usePrefersReducedMotion();
   const isDesktop = useMediaQuery("(min-width: 1024px)", true);
   // Pin only where the stage fits the screen; otherwise the steps become buttons.
   const tall = useMediaQuery(isDesktop ? "(min-height: 620px)" : "(min-height: 640px)", true);
-  const pinned = !reduce && tall;
+  // Phones and tablets get a swipeable step pager instead of a long pinned scroll.
+  const mobile = !isDesktop;
+  const pinned = !reduce && tall && !mobile;
 
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
   const [scrollStep, setScrollStep] = useState(0);
@@ -630,7 +715,13 @@ export function HowItWorks() {
         </h2>
       </Container>
 
-      <div ref={trackRef} className={cn(pinned ? "h-[420vh] lg:h-[400vh]" : "pb-16 pt-8 sm:pb-32 sm:pt-14")}>
+      {mobile && (
+        <Container className="pb-16 pt-6 sm:pb-24 sm:pt-10">
+          <Pager step={picked} setStep={setPicked} reduce={reduce} />
+        </Container>
+      )}
+
+      <div ref={trackRef} hidden={mobile} className={cn(pinned ? "h-[420vh] lg:h-[400vh]" : "pb-16 pt-8 sm:pb-32 sm:pt-14")}>
         <div className={cn(pinned && "sticky top-[72px] flex h-[calc(100svh-72px)] items-center overflow-hidden")}>
           <Container className="grid items-center gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-12">
             <div className={cn(pinned && "hidden lg:block")}>

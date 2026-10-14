@@ -4,6 +4,7 @@ import { useRef, type ReactNode, type RefObject } from "react";
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
 import { Check, Plus, RefreshCw } from "lucide-react";
 import { Container, Eyebrow } from "@/components/ui/container";
+import { SwipeRow } from "@/components/ui/swipe-row";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
@@ -82,6 +83,8 @@ function ScrubIn({
 function Card({ className, children, lag = 0 }: { className?: string; children: ReactNode; lag?: number }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = usePrefersReducedMotion();
+  // Phones show the cards in a horizontal swipe row, which would clip a rise, so they only fade in there.
+  const rise = useMediaQuery("(min-width: 768px)");
   const p = useScrub(ref, ["start 1.02", `start ${0.62 - lag}`]);
   const y = useTransform(p, [0, 1], [96, 0]);
   const scale = useTransform(p, [0, 1], [0.95, 1]);
@@ -91,7 +94,11 @@ function Card({ className, children, lag = 0 }: { className?: string; children: 
     <motion.article
       ref={ref}
       style={
-        reduce ? AT_REST : { y, scale, rotateX, opacity, transformPerspective: 1400, transformOrigin: "50% 100%" }
+        reduce
+          ? AT_REST
+          : rise
+            ? { y, scale, rotateX, opacity, transformPerspective: 1400, transformOrigin: "50% 100%" }
+            : { ...AT_REST, opacity }
       }
       className={cn("flex flex-col rounded-[24px] border p-6 sm:p-7 lg:p-6 xl:p-7", className)}
     >
@@ -331,10 +338,12 @@ export function Problem() {
           </ScrubIn>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-14 lg:grid-cols-3 lg:gap-5">
-          <ByHandCard />
-          <CloudPlanCard />
-          <ShortzyCard />
+        <div className="mt-8 md:mt-12 lg:mt-14">
+          <SwipeRow count={3} label="The two deals today, and Shortzy" className="items-start md:grid md:grid-cols-2 md:items-stretch md:gap-4 lg:grid-cols-3 lg:gap-5">
+            <ByHandCard />
+            <CloudPlanCard />
+            <ShortzyCard />
+          </SwipeRow>
         </div>
       </Container>
     </section>

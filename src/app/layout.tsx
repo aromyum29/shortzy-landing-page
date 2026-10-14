@@ -56,6 +56,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#F3F1EE",
+  // Lets the floating wishlist button sit above the home indicator via env(safe-area-inset-bottom).
+  viewportFit: "cover",
 };
 
 // Pre-launch: no price amount and no offer markup until a price is set.

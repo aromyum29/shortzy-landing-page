@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { nav, site } from "@/lib/site";
@@ -12,9 +12,6 @@ const SPRING = { type: "spring", bounce: 0, visualDuration: 0.3 } as const;
 const INSTANT = { duration: 0 } as const;
 /** Height of the bar (h-[72px]); section anchors land 88px down via scroll-margin-top. */
 const BAR = 72;
-/** The phone header's compact call to action. Its accessible name is the full wishlist label. */
-const COMPACT_CTA = "Join";
-
 /**
  * Which section is under the middle of the viewport, so the nav can say "you are here".
  * Every top-level section is watched, not only the linked ones, so the highlight clears over
@@ -135,6 +132,7 @@ export function Nav() {
   };
 
   return (
+    <>
     <header
       className={cn("sticky top-0 z-50 transition-colors duration-200", scrolled !== false || open ? "bg-paper" : "bg-paper/0")}
     >
@@ -180,29 +178,6 @@ export function Nav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
-          {/* Phones: once the hero buttons are gone, a compact way to join stays in reach. */}
-          <AnimatePresence initial={false}>
-            {showJoin && (
-              <motion.div
-                key="join"
-                className="sm:hidden"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={reduce ? INSTANT : SPRING}
-              >
-                <Button asChild size="sm" className="min-h-11 px-3 min-[360px]:px-4">
-                  <a
-                    href={site.cta.wishlist.href}
-                    aria-label={site.cta.wishlist.label}
-                    onClick={follow(site.cta.wishlist.href)}
-                  >
-                    {COMPACT_CTA}
-                  </a>
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
           <Button asChild size="sm" className="hidden min-h-11 sm:inline-flex">
             <a href={site.cta.wishlist.href}>{site.cta.wishlist.shortLabel}</a>
           </Button>
@@ -282,5 +257,31 @@ export function Nav() {
         )}
       </AnimatePresence>
     </header>
+
+    {/*
+      Phones: once the hero buttons scroll away, the wishlist button floats in thumb reach at the bottom,
+      on a soft paper fade so content passing beneath never collides with it. It leaves the way it came
+      (down), and steps aside at the wishlist form and while the menu is open.
+    */}
+    <AnimatePresence initial={false}>
+      {showJoin && !open && (
+        <motion.div
+          key="dock"
+          className="pointer-events-none fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-paper via-paper/85 to-paper/0 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-6 sm:hidden"
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100%" }}
+          transition={reduce ? INSTANT : SPRING}
+        >
+          <Button asChild className="pointer-events-auto min-h-[3.25rem] w-full rounded-full shadow-[0_12px_28px_-12px_rgba(67,32,43,0.6)]">
+            <a href={site.cta.wishlist.href} onClick={follow(site.cta.wishlist.href)}>
+              {site.cta.wishlist.label}
+              <ArrowRight aria-hidden="true" />
+            </a>
+          </Button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }

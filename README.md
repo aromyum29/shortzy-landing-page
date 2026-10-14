@@ -99,6 +99,19 @@ The FAQ names both. Do not present them as customer results or a price promise.
   [0, 1] and never change a `useTransform` output range after mount; `useTransform` binds its source once (remount with
   a key if the source changes).
 
+## Mobile-first patterns (phones, below the tablet breakpoint)
+
+From Mobbin references (Cash App, Ro, Blue Apron floating CTAs; Cash App and Swiggy peeking card rows; Public and Doji
+step pagers) and the Apple design skill (respond on press, 1:1 drag, momentum projection, rubber-banding, critically
+damped springs, enter and exit on the same path):
+
+- A floating "Join the wishlist" pill in thumb reach once the hero buttons scroll away; it slides back down at the
+  wishlist form and while the menu is open (`nav.tsx`). Safe-area aware (`viewportFit: cover`).
+- The slog's three deals are a snapping swipe row with a counter and dots (`components/ui/swipe-row.tsx`).
+- How it works is a step pager instead of a pinned scroll: tap the segmented progress or Back/Next, or swipe the
+  diagram (it follows the finger, resists at the ends, and turns the page from the projected landing point).
+- Who it's for is a 2x2 tile grid; section padding is 64px; the hero demo camera shows whole screens.
+
 ## Brand
 
 - Brand pack v3.2 (authoritative): `docs/brand/shortzy-brand-v3.2/`. Tokens are mapped in `src/app/globals.css`,

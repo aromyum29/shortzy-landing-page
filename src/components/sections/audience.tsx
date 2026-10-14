@@ -113,17 +113,17 @@ export function Audience() {
 
         <Reveal delay={0.05} className="mt-12 sm:mt-20">
           <p className="text-[1.0625rem] font-semibold text-ink">For anyone who needs their short-form content handled:</p>
-          <ul className="mt-4 grid gap-2.5 sm:mt-5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">
+          <ul className="mt-4 grid grid-cols-2 gap-2.5 sm:mt-5 sm:gap-3 lg:grid-cols-4">
             {WHO.map(({ icon: Icon, title, body }) => (
-              <li key={title} className="flex gap-4 rounded-[20px] border border-pebble bg-paper p-4 sm:block sm:p-5">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-maroon text-white">
+              <li key={title} className="rounded-[20px] border border-pebble bg-paper p-4 sm:p-5">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-maroon text-white sm:size-10">
                   <Icon className="size-5" aria-hidden="true" />
                 </span>
                 <span className="block min-w-0">
-                  <span className="block font-display text-[1.25rem] font-bold leading-tight tracking-[-0.02em] sm:mt-4 sm:text-[1.375rem]">
+                  <span className="mt-3 block font-display text-[1.125rem] font-bold leading-tight tracking-[-0.02em] sm:mt-4 sm:text-[1.375rem]">
                     {title}
                   </span>
-                  <span className="mt-1 block text-[0.9375rem] leading-relaxed text-mute sm:mt-1.5">{body}</span>
+                  <span className="mt-1 block text-[0.8125rem] leading-snug text-mute sm:mt-1.5 sm:text-[0.9375rem] sm:leading-relaxed">{body}</span>
                 </span>
               </li>
             ))}

@@ -4,7 +4,7 @@ import { nav, site } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="border-t border-pebble bg-paper py-12">
+    <footer className="border-t border-pebble bg-paper pb-28 pt-12 sm:py-12">
       <Container>
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div>
