@@ -83,9 +83,9 @@ function Fan() {
 
 export function Audience() {
   return (
-    <section id="who-its-for" aria-labelledby="who-title" className="bg-white py-24 sm:py-32">
+    <section id="who-its-for" aria-labelledby="who-title" className="bg-white py-16 sm:py-32">
       <Container>
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16">
+        <div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16">
           <Reveal>
             <Eyebrow>Who it&apos;s for</Eyebrow>
             <h2
@@ -102,7 +102,7 @@ export function Audience() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="rounded-[24px] border border-pebble bg-paper p-5 sm:p-7">
+            <div className="rounded-[24px] border border-pebble bg-paper p-4 sm:p-7">
               <Fan />
               <p className="mt-6 border-t border-pebble/70 pt-4 text-center text-[0.8125rem] text-mute">
                 Shortzy exports 9:16 MP4s with captions. You post them wherever your audience is.
@@ -111,16 +111,20 @@ export function Audience() {
           </Reveal>
         </div>
 
-        <Reveal delay={0.05} className="mt-16 sm:mt-20">
+        <Reveal delay={0.05} className="mt-12 sm:mt-20">
           <p className="text-[1.0625rem] font-semibold text-ink">For anyone who needs their short-form content handled:</p>
-          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-4 grid gap-2.5 sm:mt-5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">
             {WHO.map(({ icon: Icon, title, body }) => (
-              <li key={title} className="rounded-[20px] border border-pebble bg-paper p-5">
-                <span className="grid size-10 place-items-center rounded-xl bg-maroon text-white">
+              <li key={title} className="flex gap-4 rounded-[20px] border border-pebble bg-paper p-4 sm:block sm:p-5">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-maroon text-white">
                   <Icon className="size-5" aria-hidden="true" />
                 </span>
-                <p className="mt-4 font-display text-[1.375rem] font-bold tracking-[-0.02em]">{title}</p>
-                <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-mute">{body}</p>
+                <span className="block min-w-0">
+                  <span className="block font-display text-[1.25rem] font-bold leading-tight tracking-[-0.02em] sm:mt-4 sm:text-[1.375rem]">
+                    {title}
+                  </span>
+                  <span className="mt-1 block text-[0.9375rem] leading-relaxed text-mute sm:mt-1.5">{body}</span>
+                </span>
               </li>
             ))}
           </ul>

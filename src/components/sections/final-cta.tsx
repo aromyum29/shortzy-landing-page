@@ -56,7 +56,7 @@ export function FinalCTA() {
           : null;
 
   return (
-    <section id="wishlist" aria-labelledby="final-title" className="pb-24 pt-8 sm:pb-32">
+    <section id="wishlist" aria-labelledby="final-title" className="pb-16 pt-8 sm:pb-32">
       <Container>
         <Reveal className="grain relative overflow-hidden rounded-[32px] bg-rose px-6 py-14 sm:px-12 sm:py-16 lg:px-16">
           <div aria-hidden="true" className="perf-rail absolute inset-x-0 top-4 h-3 text-maroon/10" />

@@ -209,14 +209,14 @@ const BubbleView = memo(function BubbleView({
     aha: "bg-oat text-ink",
   }[b.kind];
   const text = {
-    main: compact ? "text-[0.8125rem] font-semibold" : dense ? "text-[0.75rem] font-semibold" : "text-[0.875rem] font-semibold",
+    main: compact ? "text-[0.75rem] font-semibold leading-snug" : dense ? "text-[0.75rem] font-semibold" : "text-[0.875rem] font-semibold",
     qualifier: "text-[0.75rem] font-medium",
     aha: compact ? "text-[0.875rem] font-semibold" : dense ? "text-[0.8125rem] font-semibold" : "text-[0.9375rem] font-semibold",
   }[b.kind];
   const maxW = compact
     ? b.wideCompact
       ? "max-w-[min(17rem,calc(100vw-3rem))]"
-      : "max-w-[min(11.5rem,56vw)]"
+      : "max-w-[min(14rem,62vw)]"
     : dense
       ? "max-w-[15rem]"
       : note

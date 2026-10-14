@@ -184,8 +184,8 @@ function CaptionsCard() {
         move on.
       </CardBody>
 
-      <CardVisual className="grid gap-6 sm:grid-cols-[minmax(0,220px)_minmax(0,1fr)] sm:items-start lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,270px)_minmax(0,1fr)]">
-        <div className="mx-auto w-full max-w-[240px] sm:max-w-none">
+      <CardVisual className="grid grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] items-start gap-3 sm:gap-6 sm:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,270px)_minmax(0,1fr)]">
+        <div className="w-full">
           <div ref={frame} className="@container relative aspect-[9/16] overflow-hidden rounded-[18px] bg-deep">
             <motion.div className="absolute inset-x-0 -top-[8%] h-[116%]" style={reduce ? { y: "0%" } : { y: parallax }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -208,10 +208,10 @@ function CaptionsCard() {
             {CAPTION_PRESETS.map((p, i) => {
               const checked = preset === p.id;
               return (
-                <ScrubIn key={p.id} x={36} y={0} from={0.98 - i * 0.03} to={0.74 - i * 0.03}>
+                <ScrubIn key={p.id} y={14} from={0.98 - i * 0.03} to={0.74 - i * 0.03}>
                   <label
                     className={cn(
-                      "relative flex cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 transition-[background-color,border-color,transform] duration-100 active:scale-[0.99] has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-maroon",
+                      "relative flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border-2 px-3 py-2 transition-[background-color,border-color,transform] duration-100 active:scale-[0.99] has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-maroon",
                       checked ? "border-maroon bg-rose" : "border-transparent bg-paper hover:border-pebble",
                     )}
                   >
@@ -224,10 +224,10 @@ function CaptionsCard() {
                       className="sr-only"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className={cn("block text-[0.9375rem] font-semibold", checked && "text-maroon-pressed")}>
+                      <span className={cn("block text-[0.875rem] font-semibold sm:text-[0.9375rem]", checked && "text-maroon-pressed")}>
                         {p.name}
                       </span>
-                      <span className="block text-[0.8125rem] leading-snug text-mute">{p.blurb}</span>
+                      <span className="hidden text-[0.8125rem] leading-snug text-mute sm:block">{p.blurb}</span>
                     </span>
                     <span
                       aria-hidden="true"
@@ -244,7 +244,7 @@ function CaptionsCard() {
             })}
           </div>
           <ScrubIn y={14} from={0.96} to={0.8}>
-            <div className="mt-4 flex flex-wrap items-center gap-1.5 text-[0.75rem]">
+            <div className="mt-4 hidden flex-wrap items-center gap-1.5 text-[0.75rem] sm:flex">
               <span className="mr-1 font-medium text-mute">Fine-tune:</span>
               {["Font", "Color", "Placement", "Size", "Language"].map((t) => (
                 <span key={t} className="rounded-full border border-pebble bg-white px-2.5 py-1 font-medium text-ink/80">
@@ -725,7 +725,7 @@ function CostCard() {
 
 export function Features() {
   return (
-    <section id="features" aria-labelledby="features-title" className="py-24 sm:py-32">
+    <section id="features" aria-labelledby="features-title" className="py-16 sm:py-32">
       <Container>
         <div className="max-w-[760px]">
           <ScrubIn y={16} from={1} to={0.8}>

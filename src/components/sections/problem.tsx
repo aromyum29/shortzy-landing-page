@@ -277,7 +277,7 @@ function ShortzyCard() {
     >
       <Label className="text-rose md:col-start-1 md:row-start-1">Shortzy</Label>
       <p className="mt-3 font-display text-[clamp(2.5rem,4vw,3.5rem)] font-bold leading-[0.95] tracking-[-0.04em] md:col-start-1 md:row-start-2 md:self-end lg:self-start">
-        <span className="block lg:inline">Pay</span> once.
+        <span className="md:block lg:inline">Pay</span> once.
       </p>
       <ul
         ref={ref}
@@ -306,7 +306,7 @@ function ShortzyCard() {
 
 export function Problem() {
   return (
-    <section aria-labelledby="problem-title" className="py-24 sm:py-32">
+    <section aria-labelledby="problem-title" className="py-16 sm:py-32">
       <Container>
         {/* Same three columns as the cards below: the headline spans the two deals, the intro sits over the answer. */}
         <div className="grid gap-5 lg:grid-cols-3 lg:items-baseline-last">

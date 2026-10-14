@@ -620,7 +620,7 @@ export function HowItWorks() {
 
   return (
     <section id="how-it-works" aria-labelledby="how-title" className="relative bg-paper">
-      <Container className="pt-24 sm:pt-32">
+      <Container className="pt-16 sm:pt-32">
         <Eyebrow>How it works</Eyebrow>
         <h2
           id="how-title"
@@ -630,7 +630,7 @@ export function HowItWorks() {
         </h2>
       </Container>
 
-      <div ref={trackRef} className={cn(pinned ? "h-[420vh] lg:h-[400vh]" : "pb-24 pt-10 sm:pb-32 sm:pt-14")}>
+      <div ref={trackRef} className={cn(pinned ? "h-[420vh] lg:h-[400vh]" : "pb-16 pt-8 sm:pb-32 sm:pt-14")}>
         <div className={cn(pinned && "sticky top-[72px] flex h-[calc(100svh-72px)] items-center overflow-hidden")}>
           <Container className="grid items-center gap-8 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-12">
             <div className={cn(pinned && "hidden lg:block")}>

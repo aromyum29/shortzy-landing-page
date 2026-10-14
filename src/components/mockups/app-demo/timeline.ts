@@ -194,20 +194,21 @@ export const BUBBLES: Bubble[] = [
  * Compact (phone) camera. Each beat names a preferred center `c` and a `must`
  * box [x0, y0, x1, y1] (the clicked element and the bubble anchor) that stays
  * whole in the shot; the camera pans between beats with the brand ease. The
- * visible region is about `s` canvas px square (470 by default: 0.76x on a
- * 390 px phone, 0.72x at 375 px).
+ * visible region is about `s` canvas px square (760 by default: about 0.47x on a
+ * 390 px phone), so whole cards and screens stay in view.
  */
 type Box = readonly [number, number, number, number];
 type Focus = { at: number; c: Pt; must: Box; s?: number };
-const S_COMPACT = 470;
+const S_COMPACT = 760;
+const SIDEBAR_W = 208;
 const PAN_MS = 420;
 const F_LIBRARY: Omit<Focus, "at"> = { c: [235, 255], must: [0, 24, 260, 300] };
-const F_RESULTS: Omit<Focus, "at"> = { c: [489, 365], must: [240, 115, 738, 615], s: 500 };
+const F_RESULTS: Omit<Focus, "at"> = { c: [640, 380], must: [240, 115, 738, 615] };
 const FOCUS: Focus[] = [
   { at: 0, ...F_LIBRARY },
   // Upload: the segmented control, then the dropped file and Create.
   { at: SCENE.upload, c: [500, 525], must: [370, 354, 735, 487] },
-  { at: 3890, c: [575, 525], must: [330, 354, 820, 725], s: 490 },
+  { at: 3890, c: [575, 525], must: [330, 354, 820, 725] },
   // Customize: Your AI (import strip open), then the tabs, then Analyze.
   { at: SCENE.customize, c: [470, 455], must: [235, 221, 640, 690] },
   { at: 6830, c: [470, 480], must: [235, 303, 705, 715] },
@@ -224,7 +225,7 @@ const FOCUS: Focus[] = [
   { at: 14900, c: [936, 500], must: [701, 694, 1124, 736] },
   { at: SCENE.processing, c: [470, 400], must: [240, 302, 610, 470] },
   // Results: the usage line with the score qualifier line, then clip 1 playing.
-  { at: SCENE.results, c: [488, 400], must: [238, 302, 738, 533], s: 500 },
+  { at: SCENE.results, c: [488, 400], must: [238, 302, 738, 533] },
   { at: T.scrollResults[0], ...F_RESULTS },
   { at: LOOP_BACK, ...F_LIBRARY },
 ];
@@ -530,7 +531,7 @@ type Region = { x0: number; y0: number; rw: number; rh: number };
 
 /** The shot for one focus beat in a frame of fw x fh px. */
 function regionFor(f: Omit<Focus, "at">, fw: number, fh: number): Region {
-  const k = clamp(fw / (f.s ?? S_COMPACT), 0.5, 0.9);
+  const k = clamp(fw / (f.s ?? S_COMPACT), 0.36, 0.9);
   const rw = Math.min(CANVAS_W, fw / k);
   const rh = Math.min(CANVAS_H, fh / k);
   const fit = (c: number, lo: number, hi: number, size: number, max: number) => {
@@ -539,8 +540,11 @@ function regionFor(f: Omit<Focus, "at">, fw: number, fh: number): Region {
     v = hi - lo <= size ? Math.min(Math.max(v, hi - size), lo) : lo;
     return clamp(v, 0, max - size);
   };
+  // Never show a sliver of the sidebar: start at its edge or include all of it.
+  let x0 = fit(f.c[0], f.must[0], f.must[2], rw, CANVAS_W);
+  if (x0 > 0 && x0 < SIDEBAR_W) x0 = f.must[0] >= SIDEBAR_W ? Math.min(SIDEBAR_W, CANVAS_W - rw) : 0;
   return {
-    x0: fit(f.c[0], f.must[0], f.must[2], rw, CANVAS_W),
+    x0,
     y0: fit(f.c[1], f.must[1], f.must[3], rh, CANVAS_H),
     rw,
     rh,

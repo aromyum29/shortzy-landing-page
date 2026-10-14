@@ -317,7 +317,7 @@ function Receipt() {
 
 export function YourAI() {
   return (
-    <section id="your-ai" aria-labelledby="ai-title" className="on-dark grain relative bg-deep py-24 text-white sm:py-32">
+    <section id="your-ai" aria-labelledby="ai-title" className="on-dark grain relative bg-deep py-16 text-white sm:py-32">
       {/* Film perforation rails open and close the dark band, like the hero stage and the wishlist card. */}
       <div aria-hidden="true" className="perf-rail absolute inset-x-0 top-5 h-3 text-paper/10" />
       <div aria-hidden="true" className="perf-rail absolute inset-x-0 bottom-5 h-3 text-paper/10" />

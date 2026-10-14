@@ -45,7 +45,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
 
 export function FAQ() {
   return (
-    <section id="faq" aria-labelledby="faq-title" className="py-24 sm:py-32">
+    <section id="faq" aria-labelledby="faq-title" className="py-16 sm:py-32">
       <Container className="grid gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:gap-20">
         <Reveal className="lg:sticky lg:top-28 lg:self-start">
           <Eyebrow>FAQ</Eyebrow>
