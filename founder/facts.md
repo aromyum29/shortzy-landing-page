@@ -7,3 +7,7 @@
 - The app lives on the user's computer: projects, editing and exports are local. AI analysis goes to the provider the user chose. · 2026-10-09 · landing-page
 - Supported AI providers today: Gemini (recommended) and Qwen. Kimi is shown as coming soon. · 2026-10-08 · from docs/SHORTZY_LLM_HANDOFF.md
 - The hooks the founder wants: cost, pay as you use your own AI through an API, one-time fee, free for life after purchase, local. · 2026-10-09 · landing-page
+- Audience: creators, clippers, podcasters and influencers who need their short-form content managed. · 2026-10-14 · landing-page
+- Hook: long videos into shorts ready to post on YouTube, Instagram and TikTok. Short form is a companion to long form. · 2026-10-14 · landing-page
+- Founder belief (not a sourced stat on the page): short-form video now gets far more views and engagement than long-form. · 2026-10-14 · landing-page
+- "Virality score" is the founder's name for Shortzy's own scoring logic; Shortzy does the editing. · 2026-10-14 · landing-page

@@ -1,5 +1,6 @@
 import { Nav } from "@/components/sections/nav";
 import { Hero } from "@/components/sections/hero";
+import { Audience } from "@/components/sections/audience";
 import { Problem } from "@/components/sections/problem";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Specs } from "@/components/sections/specs";
@@ -23,6 +24,7 @@ export default function Home() {
       <Nav />
       <main id="main">
         <Hero />
+        <Audience />
         <Problem />
         <HowItWorks />
         <Specs />

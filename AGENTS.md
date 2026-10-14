@@ -18,10 +18,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Positioning: pay once for Shortzy, connect your own AI (Gemini or Qwen today, Kimi coming soon) paid as you go, editing on
   your computer, from your own video or a YouTube link. Never imply that nothing leaves the computer: where the page explains
   how it works or what stays private, say that a prepared copy of the audio and video goes to the user's AI.
+- The hook names the outcome plainly: long videos into shorts ready to post on YouTube, Instagram and TikTok (Shortzy
+  exports MP4s; it does not post for you).
 - This is a wishlist (pre-launch) page: no trial and no price amount. Shortzy is a one-time purchase: 'Pay once' messaging is
   fine, never call Shortzy free; AI usage is billed by the user's own provider. Links and the wishlist form endpoint live in
   `src/lib/site.ts`.
-- Page order: Hero, Problem, How it works, Specs, What's inside (`#features`), Your AI, FAQ, Wishlist, so the pay-once and
+- Page order: Hero, Who it's for (`#who-its-for`: creators, clippers, podcasters, influencers, and why shorts; no stats
+  unless sourced), Problem, How it works, Specs, What's inside (`#features`), Your AI, FAQ, Wishlist, so the pay-once and
   your-bill story (Your AI ends on "How you pay" and its wishlist link) sits right before the objections and the ask. Nav
   labels: How it works, What's inside, Your AI, FAQ.
 - Say Shortzy does the editing (on your computer), not "your computer does the editing". "Virality score" is the founder's

@@ -35,7 +35,7 @@ export function Hero() {
               Mac · Windows
             </span>
             <span>
-              Coming soon<span className="hidden sm:inline">. A desktop app for creators.</span>
+              Coming soon<span className="hidden sm:inline">. For creators, clippers and podcasters.</span>
             </span>
           </p>
 
@@ -71,8 +71,8 @@ export function Hero() {
             className="hero-rise mt-5 max-w-[44rem] text-balance text-[1.0625rem] leading-relaxed text-mute sm:mt-6 sm:text-[1.1875rem]"
             style={at(0.2)}
           >
-            Add your own video or a YouTube link. Your Gemini or Qwen account and Shortzy's virality score find the moments,
-            then Shortzy edits them on your computer. Pay your AI as you go.
+            Shortzy turns your long videos into shorts ready to post on YouTube, Instagram and TikTok. Add a file or a
+            YouTube link: your own AI finds the moments, and Shortzy scores them and edits them right on your computer.
           </p>
 
           {/* The nav watches this row: once it scrolls under the header, phones get a compact Join button. */}
