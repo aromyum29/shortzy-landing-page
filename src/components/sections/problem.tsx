@@ -243,7 +243,7 @@ function CloudPlanCard() {
 
 /* ---------------------------------------------------------------- Shortzy */
 
-const YOURS = ["No subscription, no credits", "Your own AI, pay as you go", "Shortzy edits it on your computer"];
+const YOURS = ["Pay once, own it for life", "Your AI bills per video, no credits", "Shortzy edits it on your computer"];
 
 function Tick({ i, p, still }: { i: number; p: MotionValue<number>; still: boolean }) {
   const [a, b] = slot(i, YOURS.length, 0.5);

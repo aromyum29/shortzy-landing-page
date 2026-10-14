@@ -20,7 +20,7 @@ function BlurWords({ text, offset = 0 }: { text: string; offset?: number }) {
   ));
 }
 
-const CHECKS = ["Pay once. No subscription.", "No credits. Pay your AI as you go.", "Edits on your Mac or Windows PC"];
+const CHECKS = ["Pay once, own it for life", "Your AI bills per video. No credits.", "Edits on your Mac or Windows PC"];
 
 export function Hero() {
   return (

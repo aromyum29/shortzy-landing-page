@@ -12,7 +12,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Brand authority: `docs/brand/shortzy-brand-v3.2/` (tokens, logo, mascot rules). Product facts: `docs/SHORTZY_LLM_HANDOFF.md`.
 - Write copy from `docs/brand/landing-messaging.md` and `.agents/brand-context.md`. No em dashes or en dashes. Never promise
-  views, "offline" processing, or savings versus competitors, and never name competitors. Do not invent testimonials or numbers.
+  views or "offline" processing, and do not invent testimonials or numbers. Cost versus competitors only as the sourced
+  per-minute comparison in Your AI ("Up to 10x less than credit plans", with its footnote showing the math; founder decision,
+  14 Oct 2026). Do not name competitors on the page until the founder confirms their live prices.
 - Page copy uses American spelling (color, centered, favorite, customize), matching the app UI. Numbers as numerals
   ("If only 6 hold up, you get 6").
 - Positioning: pay once for Shortzy, connect your own AI (Gemini or Qwen today, Kimi coming soon) paid as you go, editing on
@@ -20,8 +22,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   how it works or what stays private, say that a prepared copy of the audio and video goes to the user's AI.
 - The hook names the outcome plainly: long videos into shorts ready to post on YouTube, Instagram and TikTok (Shortzy
   exports MP4s; it does not post for you).
-- This is a wishlist (pre-launch) page: no trial and no price amount. Shortzy is a one-time purchase: 'Pay once' messaging is
-  fine, never call Shortzy free; AI usage is billed by the user's own provider. Links and the wishlist form endpoint live in
+- This is a wishlist (pre-launch) page: no trial and no price amount. Pricing is two separate things, never blurred: pay once
+  and own Shortzy for life; then the user's own AI bills them per video. Avoid bare "pay as you go" next to "pay once". Never
+  call Shortzy free. No credits, no gatekeeping: the user is in charge, not a plan. Links and the wishlist form endpoint live in
   `src/lib/site.ts`.
 - Page order: Hero, Who it's for (`#who-its-for`: creators, clippers, podcasters, influencers, and why shorts; no stats
   unless sourced), Problem, How it works, Specs, What's inside (`#features`), Your AI, FAQ, Wishlist, so the pay-once and

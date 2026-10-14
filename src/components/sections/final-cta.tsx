@@ -70,7 +70,7 @@ export function FinalCTA() {
               Your next short is <span className="text-maroon">already recorded.</span>
             </h2>
             <p className="mx-auto mt-5 max-w-[54ch] text-pretty text-[1.0625rem] leading-relaxed text-ink/75 sm:text-[1.125rem]">
-              Shortzy is coming to Mac and Windows. Pay once, then pay your AI as you go. We&apos;ll tell you when you
+              Shortzy is coming to Mac and Windows. Pay once and it&apos;s yours for life; your own AI bills you per video. We&apos;ll tell you when you
               can point it at last week&apos;s video.
             </p>
 

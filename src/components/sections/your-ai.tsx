@@ -24,10 +24,10 @@ const PROVIDERS = [
 
 /* Two groups of three: what you pay Shortzy, then what you pay your AI. From md to xl they sit as two columns. */
 const RECEIPT = [
-  { label: "Shortzy", value: "Pay once", strong: true },
+  { label: "Shortzy", value: "Pay once, yours for life", strong: true },
   { label: "Subscription", value: "None" },
   { label: "Credits", value: "None" },
-  { label: "AI usage", value: "Billed by your provider" },
+  { label: "AI usage", value: "Per video, by your provider" },
   { label: "Markup", value: "None" },
   { label: "Estimate", value: "Before every run" },
 ];
@@ -258,7 +258,7 @@ function Diagram() {
       </div>
 
       <Node className="w-[12rem] max-w-full justify-self-center border-white/20 bg-white/[0.04] md:col-start-1 md:row-start-2 md:w-auto md:justify-self-stretch">
-        <NodeTitle icon={UserRound} title="You" sub="pay as you go" />
+        <NodeTitle icon={UserRound} title="You" sub="pay per video" />
       </Node>
     </div>
   );
@@ -315,6 +315,71 @@ function Receipt() {
   );
 }
 
+/*
+ * AI cost per minute of video, as ranges. Credit plans: popular clipping plans' listed price divided by the
+ * minutes they include (about $0.05 on a yearly plan to $0.10 on a monthly one; sources in
+ * founder/competitor-matrix.md, checked October 2026). Shortzy rows: the app's own sample estimates
+ * ($0.43 to $1.33 for 44:48 on Gemini Flash 3.8, $0.03 to $0.06 for 24:00 on Qwen 3.8 Omni Flash).
+ * "Up to 10x" is the monthly plan against Gemini's low end ($0.10 / $0.0096). Bars share one scale.
+ */
+const PER_MIN = [
+  { label: "Credit-based clipping plans", range: "$0.05 to $0.10", lo: 0.05, hi: 0.1, tone: "plan" },
+  { label: "Shortzy + Gemini Flash 3.8", range: "$0.01 to $0.03", lo: 0.0096, hi: 0.0297, tone: "you" },
+  { label: "Shortzy + Qwen 3.8 Omni Flash", range: "under $0.01", lo: 0.00125, hi: 0.0025, tone: "you" },
+] as const;
+
+function CostCompare() {
+  const ref = useRef<HTMLDivElement>(null);
+  const seen = useInView(ref, { once: true, amount: 0.4 });
+  const reduce = usePrefersReducedMotion();
+  const show = seen || reduce;
+  return (
+    <Reveal delay={0.05} className="mt-5 rounded-[24px] border border-white/12 bg-white/[0.03] p-5 sm:mt-6 sm:p-7 xl:p-8">
+      <div className="grid gap-6 lg:grid-cols-12 lg:items-center lg:gap-10">
+        <div className="lg:col-span-4">
+          <p className="font-mono text-[0.75rem] uppercase tracking-[0.12em] text-rose">AI cost per minute of video</p>
+          <h3 className="mt-3 font-display text-[clamp(1.75rem,3.2vw,2.5rem)] font-bold leading-[1] tracking-[-0.03em]">
+            Up to 10x less than credit plans.
+          </h3>
+          <p className="mt-3 text-[0.9375rem] leading-relaxed text-white/75">
+            No credits to ration and no plan deciding how much you can make. You pay your AI for the minutes you
+            actually clip.
+          </p>
+        </div>
+        <div ref={ref} className="lg:col-span-8">
+          <ul className="space-y-5">
+            {PER_MIN.map((r, i) => (
+              <li key={r.label}>
+                <div className="flex items-baseline justify-between gap-3 text-[0.9375rem]">
+                  <span className={cn("font-semibold", r.tone === "plan" ? "text-white/70" : "text-white")}>{r.label}</span>
+                  <span className={cn("tabular shrink-0 font-mono text-[0.8125rem]", r.tone === "plan" ? "text-white/60" : "text-oat")}>
+                    {r.range}
+                  </span>
+                </div>
+                <div aria-hidden="true" className="relative mt-2 h-3 rounded-full bg-white/10">
+                  <motion.span
+                    className={cn("absolute inset-y-0 rounded-full", r.tone === "plan" ? "bg-white/35" : "bg-oat")}
+                    style={{ left: `${(r.lo / 0.1) * 100}%`, width: `${Math.max(2.5, ((r.hi - r.lo) / 0.1) * 100)}%`, originX: 0 }}
+                    initial={false}
+                    animate={{ scaleX: show ? 1 : 0, opacity: show ? 1 : 0 }}
+                    transition={{ duration: reduce ? 0 : 0.7, ease: [0.2, 0.8, 0.2, 1], delay: reduce ? 0 : 0.15 + i * 0.15 }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-[0.8125rem] leading-relaxed text-white/55">
+            Credit plans: popular clipping plans&apos; listed prices divided by the minutes they include, checked
+            October 2026. Shortzy: the app&apos;s sample estimates ($0.43 to $1.33 for a 44:48 video on Gemini Flash
+            3.8, $0.03 to $0.06 for 24 minutes on Qwen). Your provider&apos;s bill is final. Shortzy&apos;s one-time
+            price is not included.
+          </p>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
 export function YourAI() {
   return (
     <section id="your-ai" aria-labelledby="ai-title" className="on-dark grain relative bg-deep py-16 text-white sm:py-32">
@@ -335,8 +400,8 @@ export function YourAI() {
           </div>
           <div className="lg:col-span-5">
             <p className="max-w-[46ch] text-[1.0625rem] leading-relaxed text-white/80 sm:text-[1.125rem]">
-              Connect your own Gemini or Qwen account, see the estimate before each run, and pay your provider directly
-              for what you use.
+              Pay once and Shortzy is yours for life. For each video you make, your own Gemini or Qwen account bills you
+              for what that video uses. No credits, no gatekeeping: you are in charge, not a plan.
             </p>
             <p className="mt-3 text-[0.9375rem] leading-6 text-pretty text-white/70">
               <span className="font-semibold text-rose">Never made an API key?</span> Setup walks you through it.
@@ -363,6 +428,8 @@ export function YourAI() {
 
           <Receipt />
         </div>
+
+        <CostCompare />
       </Container>
     </section>
   );

@@ -7,11 +7,11 @@ import { Reveal } from "@/components/ui/reveal";
 const FAQS: { q: string; a: React.ReactNode }[] = [
   {
     q: "How much does it cost?",
-    a: "Shortzy is a one-time purchase, and the price isn't set yet. There's no subscription, because there's no Shortzy cloud to keep paying for, and there are no credits. Your only running cost is your own AI usage, billed by your provider.",
+    a: "Pay once and Shortzy is yours for life (the price isn't set yet). After that, the only running cost is the AI for each video you make, billed by your own provider. No subscription, no credits, and no plan deciding how much you can make.",
   },
   {
     q: "How much will the AI part cost me?",
-    a: "It depends on the video's length and your model, and Shortzy shows an estimated range before anything runs. Two samples from the app: $0.43 to $1.33 for a 44:48 video on Gemini Flash 3.8 (recommended), and $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Your provider's bill is final.",
+    a: "It depends on the video's length and your model, and Shortzy shows an estimated range before anything runs. Two samples from the app: $0.43 to $1.33 for a 44:48 video on Gemini Flash 3.8 (recommended), and $0.03 to $0.06 for a 24-minute video on Qwen 3.8 Omni Flash. Per minute, that is up to 10x less than popular credit-based clipping plans, which work out at about $0.05 to $0.10. Your provider's bill is final.",
   },
   {
     q: "Do I need an AI account?",

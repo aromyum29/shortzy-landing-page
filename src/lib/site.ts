@@ -13,7 +13,7 @@ export const site = {
   headline: "Turn long videos into shorts. Pay once, it's yours.",
   /** Meta and share description (158 characters, from founder/landing-page.md). */
   description:
-    "Turn long videos into shorts for YouTube, Instagram and TikTok, right on your Mac or Windows PC. Pay once, no subscription. Bring your own AI, pay as you go.",
+    "Turn long videos into shorts for YouTube, Instagram and TikTok, right on your Mac or Windows PC. Pay once, own it for life. Your own AI bills per video, no credits.",
   url: "https://shortzy.app", // TODO: replace with the real domain
 
   cta: {

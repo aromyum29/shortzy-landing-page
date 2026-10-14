@@ -11,3 +11,5 @@
 - Hook: long videos into shorts ready to post on YouTube, Instagram and TikTok. Short form is a companion to long form. · 2026-10-14 · landing-page
 - Founder belief (not a sourced stat on the page): short-form video now gets far more views and engagement than long-form. · 2026-10-14 · landing-page
 - "Virality score" is the founder's name for Shortzy's own scoring logic; Shortzy does the editing. · 2026-10-14 · landing-page
+- Pricing wording: pay once and own Shortzy for life; pay per video for the AI you connect. Do not blur the two. · 2026-10-14 · landing-page
+- Founder wants the cost advantage stated: about 10x cheaper than credit-based tools like OpusClip; no gatekeeping, not tied to credits. Page uses the sourced per-minute version ("up to 10x"). · 2026-10-14 · landing-page
